@@ -1,15 +1,14 @@
-
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCL293fwlTPhOaz3SpCOGLFH5NHFwWpPsI",
-  authDomain: "spark-web-85bd2.firebaseapp.com",
-  projectId: "spark-web-85bd2",
-  storageBucket: "spark-web-85bd2.appspot.com",
-  messagingSenderId: "439055851914",
-  appId: "1:439055851914:web:9f58503dd0fff85fd96873",
-  measurementId: "G-L3L3V1DNLW"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
