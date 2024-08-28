@@ -1,6 +1,6 @@
-// app/layout.tsx
 import "./globals.css"; // Global CSS styles
 import { ReactNode } from "react";
+import AdminLink from "./AdminLink"; // Import the AdminLink component
 
 export const metadata = {
   title: "Spark Web",
@@ -38,20 +38,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   Register
                 </a>
               </li>
-              <li>
-                <a
-                  href="/admin"
-                  className="hover:bg-blue-700 px-3 py-2 rounded transition duration-300"
-                >
-                  Admin
-                </a>
-              </li>
+              <AdminLink /> {/* Conditionally render Admin link */}
             </ul>
           </nav>
         </header>
-        <main className="py-8 px-4">
-          {children}
-        </main>
+        <main className="py-8 px-4">{children}</main>
       </body>
     </html>
   );
