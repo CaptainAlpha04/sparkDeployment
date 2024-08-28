@@ -9,6 +9,7 @@ interface Event {
   description: string;
   date: string;
   ticketPrice: number;
+  registeredUsers: string[]; // New field to store registered users
 }
 
 export default function EventsPage() {
@@ -21,13 +22,14 @@ export default function EventsPage() {
         const eventsCollection = collection(db, "events");
         const eventSnapshot = await getDocs(eventsCollection);
         const eventList: Event[] = eventSnapshot.docs.map((doc) => {
-          const data = doc.data() as DocumentData; // Use DocumentData to access properties
+          const data = doc.data() as DocumentData;
           return {
-            id: doc.id, // Ensure `id` is set only once
+            id: doc.id,
             eventName: data.eventName,
             description: data.description,
             date: data.date,
             ticketPrice: data.ticketPrice,
+            registeredUsers: data.registeredUsers || [], // Ensure this field is handled
           };
         });
         setEvents(eventList);
@@ -46,10 +48,18 @@ export default function EventsPage() {
     if (userJson) {
       const user = JSON.parse(userJson);
       try {
+        // Update user's registered events
         const userRef = doc(db, "users", user.email);
         await updateDoc(userRef, {
           registeredEvents: arrayUnion(eventId),
         });
+
+        // Update event's registered users
+        const eventRef = doc(db, "events", eventId);
+        await updateDoc(eventRef, {
+          registeredUsers: arrayUnion(user.name), // or user.name if available
+        });
+
         alert("Registered successfully!");
       } catch (error) {
         console.error("Error registering for event: ", error);
@@ -72,6 +82,7 @@ export default function EventsPage() {
               <p className="text-gray-600 mb-2">{event.description}</p>
               <p className="text-gray-500 mb-2">Date: {event.date}</p>
               <p className="text-gray-800 mb-4">Price: ${event.ticketPrice.toFixed(2)}</p>
+              <p className="text-gray-600 mb-2">Registered Users: {event.registeredUsers.join(', ')}</p> {/* Display registered users */}
               <button
                 onClick={() => handleRegister(event.id)}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-300"
