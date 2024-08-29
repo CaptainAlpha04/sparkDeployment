@@ -1,3 +1,5 @@
+@import url('https://cdn-uicons.flaticon.com/2.5.1/uicons-brands/css/uicons-brands.css');
+@import url('https://cdn-uicons.flaticon.com/2.5.1/uicons-bold-rounded/css/uicons-bold-rounded.css'); 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,6 +8,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --primary-gradient: linear-gradient(90deg, #f17211,  #b10eca);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -13,5 +16,52 @@
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
+  }
+}
+
+.font-poppins {
+  font-family: 'Poppins', sans-serif;
+}
+
+.font-azonix {
+  font-family: 'Azonix', sans-serif;
+}
+
+.font-josefin {
+  font-family: 'Josefin Sans', sans-serif;
+}
+
+.nav-link::before {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background: var(--primary-gradient);
+  transition: width 300ms ease, left 300ms ease;
+}
+
+.nav-link:hover::before {
+  width: 100%;
+  left: 0;
+}
+
+.nav-selected {
+  background-image: var(--primary-gradient);
+  font-weight: bold;
+  background-clip: text;
+  color: transparent;
+  background-size: 100% 5px;
+}
+
+
+@layer components {
+  .btn-stylized {
+    @apply p-3 px-10 rounded-3xl bg-transparent text-gray-100 border-2 border-gray-100
+      bg-gradient-to-r from-transparent to-transparent font-medium hover:border-base-300
+      hover:from-orange-400 hover:via-pink-500 hover:to-violet-700 
+      bg-[length:170%_100%] bg-left hover:bg-right hover:text-white 
+      transition-all duration-500 ease-in-out;
   }
 }

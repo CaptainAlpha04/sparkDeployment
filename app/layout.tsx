@@ -1,6 +1,27 @@
 // app/layout.tsx
 import "./globals.css"; // Global CSS styles
 import { ReactNode } from "react";
+import localFont from 'next/font/local';
+import {Poppins, Josefin_Sans} from 'next/font/google';
+import Header from "./components/Header";
+
+const poppins = Poppins({ subsets: ["latin"], variable: "--font-poppins",
+  weight: ["100", "200", "300", "400", "500", "600", "700"] });
+
+const josefin = Josefin_Sans({ subsets: ["latin"], variable: "--font-josefin", 
+  weight: ["100", "200", "300", "400", "500", "600", "700"] });
+
+const Azonix = localFont(
+  {
+    src: [
+      {
+        path: "../public/fonts/Azonix.otf",
+        style: "normal",
+        weight: "400 700",  
+      }
+    ]
+  }
+);
 
 export const metadata = {
   title: "Spark Web",
@@ -10,46 +31,9 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-gray-100 text-gray-900">
-        <header className="bg-blue-600 text-white shadow-md">
-          <nav className="max-w-7xl mx-auto px-4 py-3">
-            <ul className="flex space-x-4">
-              <li>
-                <a
-                  href="/"
-                  className="hover:bg-blue-700 px-3 py-2 rounded transition duration-300"
-                >
-                  Home
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/events"
-                  className="hover:bg-blue-700 px-3 py-2 rounded transition duration-300"
-                >
-                  Events
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/register"
-                  className="hover:bg-blue-700 px-3 py-2 rounded transition duration-300"
-                >
-                  Register
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/admin"
-                  className="hover:bg-blue-700 px-3 py-2 rounded transition duration-300"
-                >
-                  Admin
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </header>
-        <main className="py-8 px-4">
+      <body className={josefin.className}>
+        <Header />
+        <main className="text-base-content">
           {children}
         </main>
       </body>
