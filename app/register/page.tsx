@@ -1,4 +1,3 @@
-// app/register/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -41,10 +40,26 @@ export default function RegisterPage() {
           degree,
           age,
           registeredEvents: [],
+          admin: false, // Set the admin field to false by default
         });
 
         // Store user info in local storage
-        localStorage.setItem("user", JSON.stringify({ email }));
+        const user = {
+          name,
+          email,
+          password: hashedPassword,
+          phone,
+          university,
+          degree,
+          age,
+          registeredEvents: [],
+          admin: false,
+        };
+
+        await setDoc(doc(db, "users", email), user);
+
+        // Store the entire user object in local storage
+        localStorage.setItem("user", JSON.stringify(user));
 
         setLoading(false);
         setSuccess(true);
