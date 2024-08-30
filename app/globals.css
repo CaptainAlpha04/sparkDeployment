@@ -1,5 +1,6 @@
 @import url('https://cdn-uicons.flaticon.com/2.5.1/uicons-brands/css/uicons-brands.css');
-@import url('https://cdn-uicons.flaticon.com/2.5.1/uicons-bold-rounded/css/uicons-bold-rounded.css'); 
+@import url('https://cdn-uicons.flaticon.com/2.5.1/uicons-bold-rounded/css/uicons-bold-rounded.css');
+@import url('https://cdn-uicons.flaticon.com/2.5.1/uicons-solid-rounded/css/uicons-solid-rounded.css'); 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -55,6 +56,11 @@
   background-size: 100% 5px;
 }
 
+.planet-bg {
+  background-image: url('/planets.jpg');
+  background-size: cover;
+  background-position: center;
+}
 
 @layer components {
   .btn-stylized {
