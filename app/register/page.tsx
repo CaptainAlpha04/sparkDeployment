@@ -1,50 +1,30 @@
 "use client";
-
-import { useState } from "react";
-import { db } from "../firebaseconfig";
-import { doc, setDoc } from "firebase/firestore";
-import bcrypt from "bcryptjs";
-
+import { useState } from 'react';
+import { db } from '../firebaseconfig';
+import { doc, setDoc } from 'firebase/firestore';
+import bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
 export default function RegisterPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
-  const [university, setUniversity] = useState("");
-  const [degree, setDegree] = useState("");
-  const [age, setAge] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
+  const [university, setUniversity] = useState('');
+  const [degree, setDegree] = useState('');
+  const [age, setAge] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
   const handleRegister = async () => {
-    if (
-      name &&
-      email &&
-      password &&
-      phone &&
-      university &&
-      degree &&
-      age
-    ) {
+    if (name && email && password && phone && university && degree && age) {
       setLoading(true);
 
       try {
         const hashedPassword = await bcrypt.hash(password, 10);
+        const verificationToken = uuidv4();
 
-        await setDoc(doc(db, "users", email), {
-          name,
-          email,
-          password: hashedPassword,
-          phone,
-          university,
-          degree,
-          age,
-          registeredEvents: [],
-          admin: false, // Set the admin field to false by default
-        });
-
-        // Store user info in local storage
-        const user = {
+        // Save user with pending verification status
+        await setDoc(doc(db, 'users', email), {
           name,
           email,
           password: hashedPassword,
@@ -54,18 +34,30 @@ export default function RegisterPage() {
           age,
           registeredEvents: [],
           admin: false,
-        };
+          emailVerified: false, // Pending verification
+          verificationToken,
+        });
 
-        await setDoc(doc(db, "users", email), user);
+        // Send verification email
+        const response = await fetch('/api/send-verification-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, token: verificationToken }),
+        });
 
-        // Store the entire user object in local storage
-        localStorage.setItem("user", JSON.stringify(user));
+        const result = await response.json();
 
-        setLoading(false);
-        setSuccess(true);
+        if (response.ok) {
+          setSuccess(true);
+        } else {
+          console.error(result.error);
+        }
       } catch (error) {
+        console.error('Error registering user: ', error);
+      } finally {
         setLoading(false);
-        console.error("Error registering user: ", error);
       }
     }
   };
@@ -135,13 +127,11 @@ export default function RegisterPage() {
           <button
             onClick={handleRegister}
             disabled={loading}
-            className={`w-full px-4 py-2 text-white rounded-lg shadow-md transition duration-300 ${
-              loading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
-            }`}
+            className={`w-full px-4 py-2 text-white rounded-lg shadow-md transition duration-300 ${loading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"}`}
           >
-            {loading ? "Registering..." : "Register"}
+            {loading ? 'Registering...' : 'Register'}
           </button>
-          {success && <p className="text-green-600 mt-4">Registration successful!</p>}
+          {success && <p className="text-green-600 mt-4">Registration successful! Please check your email for verification.</p>}
         </div>
       </div>
     </div>
