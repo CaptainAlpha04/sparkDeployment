@@ -41,8 +41,8 @@ useEffect(() => {
 
 return (
     <>
-    {/*Notification Bar on top*/}
-    {/* <section className='bg-slate-950 w-screen text-gray-100 flex flex-row p-2 font-poppins text-xs place-content-center top-0'>
+    {/* Notification Bar on top*/}
+    {/* <section className='bg-slate-950 w-screen text-gray-100 flex flex-row p-2 font-poppins text-xs place-content-center'>
         <div className='flex flex-row items-center gap-2'>
             <i className="fi fi-br-exclamation text-sm mt-[2px]"></i>
             <h1>Event Registration for Google Webinar 2024 is now Live!</h1>
@@ -50,7 +50,7 @@ return (
     </section> */}
 
     {/*Header*/}
-    <header className={`bg-opacity-0 backdrop-blur-3xl text-gray-100 flex flex-row p-2 px-5 justify-between w-screen fixed top-0 z-20`}>
+    <header className={`bg-opacity-0 backdrop-blur-3xl text-gray-100 flex flex-row p-2 px-5 justify-between w-screen fixed top-0 z-20 transition-all`}>
 
             {/*Logo*/}
             <Link href='/' className='flex flex-row items-center gap-2 cursor-pointer p-1'>
@@ -71,7 +71,7 @@ return (
 
         {/*Register Button*/}
         <div className='flex items-center'>
-            <Link href="/register" className='btn-stylized'>
+            <Link href="/auth/register" className='btn-stylized'>
             Join Now
             </Link>
         </div>
