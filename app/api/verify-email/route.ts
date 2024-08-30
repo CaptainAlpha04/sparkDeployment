@@ -1,6 +1,7 @@
+//app/api/verify-email/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
-import { db } from '../../firebaseconfig'
+import { collection, query, where, getDocs, updateDoc, deleteDoc, doc,setDoc } from 'firebase/firestore';
+import { db } from '../../firebaseconfig';
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
@@ -11,16 +12,24 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const usersRef = collection(db, 'users');
-    const userQuery = query(usersRef, where('verificationToken', '==', token));
+    const pendingUsersRef = collection(db, 'pending_users');
+    const userQuery = query(pendingUsersRef, where('verificationToken', '==', token));
     const querySnapshot = await getDocs(userQuery);
 
     if (!querySnapshot.empty) {
-      const userDoc = querySnapshot.docs[0].ref;
-      await updateDoc(userDoc, {
+      const userDoc = querySnapshot.docs[0];
+      const userData = userDoc.data();
+
+      // Move user to main collection
+      await setDoc(doc(db, 'users', userData.email), {
+        ...userData,
         emailVerified: true,
-        verificationToken: null, // Token used, clear it
+        verificationToken: null,
       });
+
+      // Delete user from pending collection
+      await deleteDoc(userDoc.ref);
+
       return NextResponse.redirect(new URL('/success', request.url));
     } else {
       return NextResponse.redirect(new URL('/error', request.url));

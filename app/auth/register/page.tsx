@@ -4,6 +4,7 @@ import { useState } from "react";
 import { db } from "../../firebaseconfig";
 import { doc, setDoc } from "firebase/firestore";
 import bcrypt from "bcryptjs";
+import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
 
 export default function RegisterPage() {
@@ -34,7 +35,7 @@ export default function RegisterPage() {
         const verificationToken = uuidv4();
 
         // Save user with pending verification status
-        await setDoc(doc(db, 'users', email), {
+        await setDoc(doc(db, 'pending_users', email), {
           name,
           email,
           password: hashedPassword,
@@ -65,7 +66,7 @@ export default function RegisterPage() {
           console.error(result.error);
         }
 
-        // Store user info in local storage
+        // Store the user object in local storage
         const user = {
           name,
           email,
@@ -78,9 +79,6 @@ export default function RegisterPage() {
           admin: false,
         };
 
-        await setDoc(doc(db, "users", email), user);
-
-        // Store the entire user object in local storage
         localStorage.setItem("user", JSON.stringify(user));
 
         setLoading(false);
@@ -93,8 +91,8 @@ export default function RegisterPage() {
   };
 
   return (
-    <section className="h-screen w-screen flex flex-row fixed planet-bg z-30">
-      <div className="pt-4 bg-opacity-0 bg-black p-6 flex flex-col w-1/3 backdrop-blur-3xl gap-4 items-center h-full relative transition-all">
+    <section className="h-screen w-screen flex flex-row fixed planet-bg z-30 overflow-auto">
+      <div className="pt-4 bg-opacity-0 bg-black p-6 flex flex-col w-1/3 backdrop-blur-3xl gap-4 items-center h-max relative transition-all">
         
         <div className='flex flex-row justify-between w-full'>
           <Link href='/' className="btn btn-ghost">
@@ -214,7 +212,3 @@ export default function RegisterPage() {
     </section>
   );
 }
-function uuidv4() {
-  throw new Error("Function not implemented.");
-}
-
