@@ -5,6 +5,7 @@ import { db } from "../../firebaseconfig";
 import { doc, setDoc } from "firebase/firestore";
 import bcrypt from "bcryptjs";
 import Link from "next/link";
+import StarryCanvas from "../../components/StarryCanvas";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -73,6 +74,7 @@ export default function RegisterPage() {
 
   return (
     <section className="h-screen w-screen flex flex-row fixed planet-bg z-30">
+    <StarryCanvas numberOfStars={300}/>
       <div className="pt-4 bg-opacity-0 bg-black p-6 flex flex-col w-1/3 backdrop-blur-3xl gap-4 items-center h-full relative transition-all">
         
         <div className='flex flex-row justify-between w-full'>

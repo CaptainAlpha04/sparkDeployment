@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useRef } from 'react';
 
-const StarryCanvas = () => {
+const StarryCanvas = (props) => {
   const canvasRef = useRef(null);
   const stars = useRef([]);
 
@@ -9,8 +9,8 @@ const StarryCanvas = () => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     
-    const numStars = 200;
-    const starSize = 2; // Base size of stars
+    const numStars = props.numberOfStars || 200;
+    const starSize = props.givenStarSize || 2; // Base size of stars
     
     const initializeStars = () => {
       stars.current = Array.from({ length: numStars }, () => ({
