@@ -65,22 +65,6 @@ export default function RegisterPage() {
         } else {
           console.error(result.error);
         }
-
-        // Store the user object in local storage
-        const user = {
-          name,
-          email,
-          password: hashedPassword,
-          phone,
-          university,
-          degree,
-          age,
-          registeredEvents: [],
-          admin: false,
-        };
-
-        localStorage.setItem("user", JSON.stringify(user));
-
         setLoading(false);
         setSuccess(true);
       } catch (error) {
@@ -206,7 +190,7 @@ export default function RegisterPage() {
           >
             {loading ? "Registering..." : "Register"}
           </button>
-          {success && <p className="text-green-600 mt-4">Registration successful!</p>}
+          {success && <p className="text-green-600 mt-4">Email for verification has been sent</p>}
         </div>
       </div>  
     </section>
