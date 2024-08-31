@@ -30,7 +30,7 @@ export default function EventsPage() {
             description: data.description,
             date: data.date,
             ticketPrice: data.ticketPrice,
-            imageUrl: data.imageUrl,
+            imageUrl: data.imageUrl || "", // Handle imageUrl if it exists
             registeredUsers: data.registeredUsers || [], // Ensure this field is handled
           };
         });

@@ -1,26 +1,45 @@
 "use client";
 import { useState } from "react";
-import { db } from "../firebaseconfig";
+import { db, storage } from "../firebaseconfig";
 import { collection, addDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function AdminPage() {
   const [eventName, setEventName] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
   const [ticketPrice, setTicketPrice] = useState<number>(0);
+  const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImage(e.target.files[0]);
+    }
+  };
 
   const handleCreateEvent = async () => {
     if (eventName && description && date && ticketPrice > 0) {
       setLoading(true);
       try {
+        let imageUrl = "";
+        if (image) {
+          // Upload image
+          const imageRef = ref(storage, `event-images/${image.name}`);
+          await uploadBytes(imageRef, image);
+          imageUrl = await getDownloadURL(imageRef);
+        }
+
+        // Add event to Firestore
         const eventsCollection = collection(db, "events");
         await addDoc(eventsCollection, {
           eventName,
           description,
           date,
           ticketPrice,
+          imageUrl,
         });
+
         alert("Event created successfully!");
       } catch (error) {
         console.error("Error creating event: ", error);
@@ -68,6 +87,12 @@ export default function AdminPage() {
           min="0"
           className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
           required
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
         />
         <button
           onClick={handleCreateEvent}

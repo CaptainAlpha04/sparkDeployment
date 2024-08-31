@@ -5,7 +5,7 @@ export default function SuccessPage() {
   const router = useRouter();
 
   const handleHomeRedirect = () => {
-    router.push('/');
+    router.push('/auth/login');
   };
 
   return (
@@ -22,8 +22,8 @@ export default function SuccessPage() {
     >
       <div>
         <h1>Email Verified Successfully!</h1>
-        <p>Your email address has been verified. You can now return to the home page.</p>
-        <button onClick={handleHomeRedirect}>Go to Home</button>
+        <p>Your email address has been verified. You can now Log in.</p>
+        <button onClick={handleHomeRedirect}>Go to LOGIN</button>
       </div>
     </div>
   );
