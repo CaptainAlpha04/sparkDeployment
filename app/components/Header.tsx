@@ -3,41 +3,12 @@ import React,{useState, useEffect} from 'react'
 import Link from 'next/link'
 
 function Header() {
-const [route, setRoute] = useState<String | null>('home');
-const [isFixed, setIsFixed] = useState(false);
+const [isLogged, setIsLogged] = useState(false)
 useEffect(() => {
-    // Set the initial route when the component mounts
-    setRoute(window.location.pathname);
-
-    // Function to handle route change
-    const handleRouteChange = () => {
-        setRoute(window.location.pathname);
-    };
-
-    // Listen to the 'popstate' event for back/forward navigation
-    window.addEventListener('popstate', handleRouteChange);
-
-    // Clean up the event listener on component unmount
-    return () => {
-    window.removeEventListener('popstate', handleRouteChange);
-    };
-}, []);
-
-useEffect(() => {
-    const handleScroll = () => {
-        if (window.scrollY > 30) {
-        setIsFixed(true);
-        } else {
-        setIsFixed(false);
-        }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-        window.removeEventListener('scroll', handleScroll);
-    };
-}, []);
+    const user = localStorage.getItem('user')
+    if(user) setIsLogged(true)
+    else setIsLogged(false)
+}, [])
 
 return (
     <>
@@ -71,9 +42,34 @@ return (
 
         {/*Register Button*/}
         <div className='flex items-center'>
-            <Link href="/auth/register" className='btn-stylized'>
-            Join Now
-            </Link>
+            {
+                isLogged ? 
+                <div className="dropdown dropdown-end">
+                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                    <div className="w-10 rounded-full">
+                    <img
+                        alt="User"
+                        src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                    </div>
+                </div>
+                <ul
+                    tabIndex={0}
+                    className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                    <li>
+                    <a className="justify-between">
+                        Profile
+                        <span className="badge">New</span>
+                    </a>
+                    </li>
+                    <li><a>Settings</a></li>
+                    <li><a>Logout</a></li>
+                </ul>
+                </div>
+                :
+                <Link href="/auth/register" className='btn-stylized'>
+                Join Now
+                </Link>
+            }
         </div>
     </header>
     </>

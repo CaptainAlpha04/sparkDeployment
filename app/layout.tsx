@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import localFont from 'next/font/local';
 import {Poppins, Josefin_Sans} from 'next/font/google';
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 const poppins = Poppins({ subsets: ["latin"], variable: "--font-poppins",
   weight: ["100", "200", "300", "400", "500", "600", "700"] });
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <main className="text-base-content">
           {children}
         </main>
+        <Footer />
       </body>
     </html>
   );
