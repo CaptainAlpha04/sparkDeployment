@@ -9,6 +9,7 @@ interface Event {
   description: string;
   date: string;
   ticketPrice: number;
+  imageUrl?: string; // Optional field for image URL
   registeredUsers: string[]; // New field to store registered users
 }
 
@@ -29,6 +30,7 @@ export default function EventsPage() {
             description: data.description,
             date: data.date,
             ticketPrice: data.ticketPrice,
+            imageUrl: data.imageUrl || "", // Handle imageUrl if it exists
             registeredUsers: data.registeredUsers || [], // Ensure this field is handled
           };
         });
@@ -78,11 +80,18 @@ export default function EventsPage() {
         <ul className="space-y-4">
           {events.map((event) => (
             <li key={event.id} className="bg-white p-4 rounded-lg shadow-md">
+              {event.imageUrl && (
+                <img
+                  src={event.imageUrl}
+                  alt={event.eventName}
+                  className="w-full h-48 object-cover rounded-t-lg mb-4"
+                />
+              )}
               <h2 className="text-2xl font-semibold text-gray-800 mb-2">{event.eventName}</h2>
               <p className="text-gray-600 mb-2">{event.description}</p>
               <p className="text-gray-500 mb-2">Date: {event.date}</p>
               <p className="text-gray-800 mb-4">Price: ${event.ticketPrice.toFixed(2)}</p>
-              <p className="text-gray-600 mb-2">Registered Users: {event.registeredUsers.join(', ')}</p> {/* Display registered users */}
+              <p className="text-gray-600 mb-2">Registered Users: {event.registeredUsers.join(', ')}</p>
               <button
                 onClick={() => handleRegister(event.id)}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-300"
