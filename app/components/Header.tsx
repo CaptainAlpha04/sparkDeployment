@@ -65,6 +65,7 @@ return (
                 <Link href="/institutions" className='relative nav-link hover:nav-selected'>Institutions</Link>
                 <Link href="/events" className='relative nav-link hover:nav-selected'>Events</Link>
                 <Link href="/highlights" className='relative nav-link hover:nav-selected'>Highlights</Link>
+                <Link href="/admin" className='relative nav-link hover:nav-selected'>Admin</Link>
 
             </div>
 
