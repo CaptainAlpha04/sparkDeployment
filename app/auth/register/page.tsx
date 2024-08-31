@@ -78,7 +78,7 @@ export default function RegisterPage() {
   return (
     <section className="h-screen w-screen flex flex-row fixed planet-bg z-30 overflow-auto">
     <StarryCanvas numberOfStars={300}/>
-      <div className="pt-4 bg-opacity-0 bg-black p-6 flex flex-col w-1/3 backdrop-blur-3xl gap-4 items-center h-max relative transition-all">
+      <div className="pt-4 bg-opacity-0 bg-black p-6 flex flex-col w-1/3 backdrop-blur-3xl gap-4 items-center h-screen relative transition-all">
         
         <div className='flex flex-row justify-between w-full'>
           <Link href='/' className="btn btn-ghost">

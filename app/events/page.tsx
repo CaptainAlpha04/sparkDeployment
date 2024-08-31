@@ -9,7 +9,7 @@ interface Event {
   description: string;
   date: string;
   ticketPrice: number;
-  imageUrl?: string; // Optional field for image URL
+  imageUrl: string;
   registeredUsers: string[]; // New field to store registered users
 }
 
@@ -30,7 +30,7 @@ export default function EventsPage() {
             description: data.description,
             date: data.date,
             ticketPrice: data.ticketPrice,
-            imageUrl: data.imageUrl || "", // Handle imageUrl if it exists
+            imageUrl: data.imageUrl, // Handle imageUrl if it exists
             registeredUsers: data.registeredUsers || [], // Ensure this field is handled
           };
         });
@@ -72,38 +72,53 @@ export default function EventsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-blue-600 mb-6">Upcoming Events</h1>
+    <section className="min-h-screen w-screen p-6 pt-24 font-poppins bg-base-300">
+      <h1 className="text-6xl mb-6 font-extralight"><span className="font-bold">Upcoming</span> <br /> Events</h1>
       {loading ? (
-        <p className="text-gray-700">Loading...</p>
+        <p className = "">Loading...</p>
       ) : events.length > 0 ? (
-        <ul className="space-y-4">
-          {events.map((event) => (
-            <li key={event.id} className="bg-white p-4 rounded-lg shadow-md">
-              {event.imageUrl && (
-                <img
-                  src={event.imageUrl}
-                  alt={event.eventName}
-                  className="w-full h-48 object-cover rounded-t-lg mb-4"
-                />
-              )}
-              <h2 className="text-2xl font-semibold text-gray-800 mb-2">{event.eventName}</h2>
-              <p className="text-gray-600 mb-2">{event.description}</p>
-              <p className="text-gray-500 mb-2">Date: {event.date}</p>
-              <p className="text-gray-800 mb-4">Price: ${event.ticketPrice.toFixed(2)}</p>
-              <p className="text-gray-600 mb-2">Registered Users: {event.registeredUsers.join(', ')}</p>
-              <button
-                onClick={() => handleRegister(event.id)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-300"
-              >
-                Register
-              </button>
-            </li>
-          ))}
-        </ul>
+        <ul className="grid grid-cols-3 gap-5">
+  {events.map((event) => (
+    <li key={event.id} className="bg-base-100 rounded-2xl ">
+      <div className="relative">
+        {/* Blur overlay */}
+        <div className="absolute inset-0 bg-black/50 rounded-2xl"></div> 
+        
+        {/* Image */}
+        <img src={event.imageUrl ?? 'planets.jpg'} alt="" className="w-full rounded-2xl"/>
+
+        {/* Event title */}
+        <h2 className="absolute bottom-0 left-0 text-3xl font-bold pb-4 pl-4 text-white">
+          {event.eventName}
+        </h2>
+      </div>
+      
+      {/* Event details */}
+      <div className="p-6 rounded-xl flex flex-col gap-4">
+        <div className="flex flex-row justify-stretch gap-2 text-xs"> 
+          <p className="bg-purple-400 p-2 text-base-300 rounded-3xl">
+            <b>{event.date}</b>
+          </p>
+          <p className="bg-yellow-400 text-base-300 p-2 rounded-3xl">
+            <b>{event.ticketPrice === 0 ? "Free" : "PKR " + event.ticketPrice.toFixed(2)}</b>
+          </p>
+        </div>
+        {/* Description */}
+        <p className="text-gray-300 text-sm"><b>Details:</b> {event.description}</p>
+
+        <button
+          onClick={() => handleRegister(event.id)}
+          className="btn btn-neutral mt-auto hover:bg-violet-600"
+        >
+          Register
+        </button>
+      </div>
+        </li>
+      ))}
+    </ul>
       ) : (
         <p className="text-gray-700">No events available.</p>
       )}
-    </div>
+    </section>
   );
 }

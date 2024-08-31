@@ -32,6 +32,38 @@
   font-family: 'Josefin Sans', sans-serif;
 }
 
+.animation-swipe-from-bottom {
+  animation: swipe-from-bottom 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+
+@keyframes swipe-from-bottom {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animation-fade-in {
+  animation: fade-in 3s;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
 .nav-link::before {
   content: '';
   position: absolute;
