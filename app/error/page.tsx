@@ -13,8 +13,11 @@ export default function ErrorPage() {
       }}
     >
       <div>
-        <h1>Error Verifying Email</h1>
-        <p>There was an issue verifying your email address. Please try again or contact support.</p>
+        <h1 className='text-2xl flex gap-2 justify-center'>
+          Error Verifying Email
+          <i className="fi fi-ss-cross-circle text-rose-500"></i>
+          </h1>
+        <p>There was an issue verifying your email address. <br /> Please try again or contact support.</p>
       </div>
     </div>
     );

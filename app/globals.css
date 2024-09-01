@@ -1,6 +1,7 @@
 @import url('https://cdn-uicons.flaticon.com/2.5.1/uicons-brands/css/uicons-brands.css');
 @import url('https://cdn-uicons.flaticon.com/2.5.1/uicons-bold-rounded/css/uicons-bold-rounded.css');
 @import url('https://cdn-uicons.flaticon.com/2.5.1/uicons-solid-rounded/css/uicons-solid-rounded.css'); 
+@import url('https://cdn-uicons.flaticon.com/2.5.1/uicons-solid-straight/css/uicons-solid-straight.css');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -31,6 +32,7 @@
 .font-josefin {
   font-family: 'Josefin Sans', sans-serif;
 }
+
 
 .animation-swipe-from-bottom {
   animation: swipe-from-bottom 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
@@ -64,6 +66,8 @@
   }
 }
 
+
+
 .nav-link::before {
   content: '';
   position: absolute;
@@ -92,6 +96,22 @@
   background-image: url('/planets.jpg');
   background-size: cover;
   background-position: center;
+}
+
+.display-animation {
+  animation: display 2s ease-in-out;
+}
+
+@keyframes display {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @layer components {

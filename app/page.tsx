@@ -4,7 +4,7 @@ import StarryCanvas from './components/StarryCanvas';
 
 export default function HomePage() {
   return (
-    <>
+    <section className=''>
       <section className='flex flex-col w-screen h-screen bg-gradient-to-b from-black via-base-300 to-purple-950'>
         <StarryCanvas />
         <div className='flex flex-col items-center justify-center h-full z-10'>
@@ -13,6 +13,6 @@ export default function HomePage() {
         </div>  
       </section>
     
-    </>
+    </section>
   );
 }

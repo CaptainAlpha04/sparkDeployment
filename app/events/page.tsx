@@ -16,6 +16,7 @@ interface Event {
 export default function EventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [eventDetails, setEventDetails] = useState<Event | null>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -71,28 +72,45 @@ export default function EventsPage() {
     }
   }
 
+  const moreDetailsModals = (event: Event) => { 
+    (document.getElementById('my_modal_1') as HTMLDialogElement).showModal();
+    setEventDetails(event);
+  }
+
   return (
     <section className="min-h-screen w-screen p-6 pt-24 font-poppins bg-base-300">
+      <dialog id="my_modal_1" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-2xl">Event Details</h3>
+          <p className="py-4">{eventDetails?.description}</p>
+          <div className="modal-action">
+            <form method="dialog">
+              {/* if there is a button in form, it will close the modal */}
+              <button className="btn btn-primary">Close</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
       <h1 className="text-6xl mb-6 font-extralight"><span className="font-bold">Upcoming</span> <br /> Events</h1>
       {loading ? (
         <p className = "">Loading...</p>
       ) : events.length > 0 ? (
         <ul className="grid grid-cols-3 gap-5">
   {events.map((event) => (
-    <li key={event.id} className="bg-base-100 rounded-2xl ">
-      <div className="relative">
+    <li key={event.id} className="bg-base-100 rounded-2xl display-animation">
+      <div className="relative group">
         {/* Blur overlay */}
-        <div className="absolute inset-0 bg-black/50 rounded-2xl"></div> 
-        
+        <div className="absolute inset-0 bg-black/50 rounded-2xl transition-all duration-300 group-hover:bg-opacity-70 group-hover:backdrop-blur-lg"></div> 
+
         {/* Image */}
         <img src={event.imageUrl ?? 'planets.jpg'} alt="" className="w-full rounded-2xl"/>
 
         {/* Event title */}
-        <h2 className="absolute bottom-0 left-0 text-3xl font-bold pb-4 pl-4 text-white">
+        <h2 className="absolute bottom-0 left-0 text-3xl font-bold pb-4 pl-4 text-white transition-transform duration-300 group-hover:scale-110">
           {event.eventName}
         </h2>
       </div>
-      
+
       {/* Event details */}
       <div className="p-6 rounded-xl flex flex-col gap-4">
         <div className="flex flex-row justify-stretch gap-2 text-xs"> 
@@ -104,7 +122,10 @@ export default function EventsPage() {
           </p>
         </div>
         {/* Description */}
-        <p className="text-gray-300 text-sm"><b>Details:</b> {event.description}</p>
+        <span className="text-gray-300 text-sm flex justify-between">
+          <p><b>Details:</b> {event.description}</p>
+          <b className="cursor-pointer" onClick={() => {moreDetailsModals(event)}}>More...</b>
+          </span>
 
         <button
           onClick={() => handleRegister(event.id)}

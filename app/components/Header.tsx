@@ -10,10 +10,16 @@ useEffect(() => {
     else setIsLogged(false)
 }, [])
 
+const logOut = () => {
+    localStorage.removeItem('user')
+    setIsLogged(false)
+    window.location.reload()
+}
+
 return (
     <>
     {/* Notification Bar on top*/}
-    {/* <section className='bg-slate-950 w-screen text-gray-100 flex flex-row p-2 font-poppins text-xs place-content-center'>
+    {/* <section className='fixed top-0 bg-slate-950 w-screen text-gray-100 flex flex-row p-2 font-poppins text-xs place-content-center z-20'>
         <div className='flex flex-row items-center gap-2'>
             <i className="fi fi-br-exclamation text-sm mt-[2px]"></i>
             <h1>Event Registration for Google Webinar 2024 is now Live!</h1>
@@ -54,18 +60,13 @@ return (
                 </div>
                 <ul
                     tabIndex={0}
-                    className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                    <li>
-                    <a className="justify-between">
-                        Profile
-                        <span className="badge">New</span>
-                    </a>
-                    </li>
+                    className="menu menu-sm dropdown-content bg-base-200 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                    
                     <li><a>Settings</a></li>
-                    <li><a>Logout</a></li>
+                    <li><a onClick={logOut}>Logout</a></li>
                 </ul>
                 </div>
-                :
+                :   
                 <Link href="/auth/register" className='btn-stylized'>
                 Join Now
                 </Link>

@@ -5,6 +5,7 @@ import { doc, getDoc } from "firebase/firestore";
 import bcrypt from "bcryptjs";
 import Link from "next/link";
 import StarryCanvas from "../../components/StarryCanvas";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -12,6 +13,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const router = useRouter();
 
   const handleLogin = async () => {
     if (email && password) {
@@ -31,6 +33,8 @@ export default function LoginPage() {
             // Store user data in local storage
             localStorage.setItem("user", JSON.stringify(userData));
             setSuccess(true);
+            for (let i = 0; i < 2; i++) router.back();
+            window.location.reload();
             setError("");
           } else {
             setError("Invalid email or password");
