@@ -1,13 +1,22 @@
 'use client'
 import React,{useState, useEffect} from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 function Header() {
 const [isLogged, setIsLogged] = useState(false)
+const [profilePic, setProfilePic] = useState('')
+const router = useRouter()
+
 useEffect(() => {
-    const user = localStorage.getItem('user')
-    if(user) setIsLogged(true)
-    else setIsLogged(false)
+  const user = localStorage.getItem('user')
+  if (user) {
+    setIsLogged(true)
+    const userData = JSON.parse(user)
+    setProfilePic(userData.profilePic || "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp")
+  } else {
+    setIsLogged(false)
+  }
 }, [])
 
 const logOut = () => {
@@ -48,29 +57,26 @@ return (
 
         {/*Register Button*/}
         <div className='flex items-center'>
-            {
-                isLogged ? 
-                <div className="dropdown dropdown-end">
-                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                    <div className="w-10 rounded-full">
-                    <img
-                        alt="User"
-                        src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
-                    </div>
+        {
+            isLogged ?
+              <div className="dropdown dropdown-end">
+                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar" onClick={() => router.push('/settings')}>
+                  <div className="w-10 rounded-full">
+                    <img alt="User" src={profilePic} />
+                  </div>
                 </div>
                 <ul
-                    tabIndex={0}
-                    className="menu menu-sm dropdown-content bg-base-200 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                    
-                    <li><a>Settings</a></li>
-                    <li><a onClick={logOut}>Logout</a></li>
+                  tabIndex={0}
+                  className="menu menu-sm dropdown-content bg-base-200 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                  <li><a onClick={() => router.push('/settings')}>Settings</a></li>
+                  <li><a onClick={logOut}>Logout</a></li>
                 </ul>
-                </div>
-                :   
-                <Link href="/auth/register" className='btn-stylized'>
+              </div>
+              :
+              <Link href="/auth/register" className='btn-stylized'>
                 Join Now
-                </Link>
-            }
+              </Link>
+          }
         </div>
     </header>
     </>

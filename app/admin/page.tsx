@@ -9,6 +9,7 @@ export default function AdminPage() {
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
   const [ticketPrice, setTicketPrice] = useState<number>(0);
+  const [eventVenue, setEventVenue] = useState("");  // New state for venue
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [events, setEvents] = useState<any[]>([]);
@@ -36,7 +37,7 @@ export default function AdminPage() {
   };
 
   const handleCreateOrUpdateEvent = async () => {
-    if (eventName && description && date && ticketPrice > 0) {
+    if (eventName && description && date && ticketPrice > 0 && eventVenue) {  // Check for venue
       setLoading(true);
       try {
         let imageUrl = "";
@@ -55,6 +56,7 @@ export default function AdminPage() {
             description,
             date,
             ticketPrice,
+            eventVenue,  // Update venue
             imageUrl,
           });
           alert("Event updated successfully!");
@@ -66,6 +68,7 @@ export default function AdminPage() {
             description,
             date,
             ticketPrice,
+            eventVenue,  // Include venue
             imageUrl,
           });
           alert("Event created successfully!");
@@ -76,6 +79,7 @@ export default function AdminPage() {
         setDescription("");
         setDate("");
         setTicketPrice(0);
+        setEventVenue("");  // Reset venue
         setImage(null);
         setEditingEvent(null);
         const eventsCollection = collection(db, "events");
@@ -97,6 +101,7 @@ export default function AdminPage() {
     setDescription(event.description);
     setDate(event.date);
     setTicketPrice(event.ticketPrice);
+    setEventVenue(event.eventVenue);  // Set venue for editing
     setEditingEvent(event);
   };
 
@@ -155,6 +160,14 @@ export default function AdminPage() {
           required
         />
         <input
+          value={eventVenue}
+          onChange={(e) => setEventVenue(e.target.value)}
+          placeholder="Event Venue"
+          type="text"
+          className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
+          required
+        />
+        <input
           type="file"
           accept="image/*"
           onChange={handleImageChange}
@@ -176,6 +189,7 @@ export default function AdminPage() {
             <p>{event.description}</p>
             <p>Date: {event.date}</p>
             <p>Price: ${event.ticketPrice}</p>
+            <p>Venue: {event.eventVenue}</p> {/* Display venue */}
             {event.imageUrl && <img src={event.imageUrl} alt={event.eventName} className="w-32 h-32 object-cover mt-2" />}
             <div className="flex mt-4 space-x-2">
               <button
