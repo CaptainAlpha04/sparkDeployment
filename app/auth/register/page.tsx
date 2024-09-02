@@ -200,7 +200,7 @@ export default function RegisterPage() {
           >
             {loading ? "Registering..." : "Register"}
           </button>
-          {success && <p className="text-green-600 mt-4">Email for verification has been sent</p>}
+          {success && <p className="text-white mt-2 self-center">An email for account verification has been sent!   </p>}
         </div>
       </div>  
     </section>

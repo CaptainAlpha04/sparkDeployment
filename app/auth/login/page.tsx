@@ -98,8 +98,8 @@ export default function LoginPage() {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
-          {success && <p className="text-green-600 mt-4">Login successful!</p>}
-          {error && <p className="text-red-600 mt-4">{error}</p>}
+          {success && <p className="text-green-400 mt-4 self-center">Login successful!</p>}
+          {error && <p className="text-red-400 mt-4 self-center">{error}</p>}
         </div>
       </div>  
     </section>
