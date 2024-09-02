@@ -147,9 +147,12 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-blue-600 mb-6">Admin Dashboard</h1>
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">{editingEvent ? "Edit Event" : "Create New Event"}</h2>
+    <section className="min-h-screen w-screen px-6 py-24 bg-base-300 text-base-content">
+      <h1 className="text-5xl font-poppins font-extralight mb-10"> <b className="font-bold">Admin</b> <br /> Dashboard</h1>
+      <h2 className="text-3xl">Events</h2>
+      <div>
+
+      <h2 className="text-2xl font-semibold">{editingEvent ? "Edit Event" : "Create New Event"}</h2>
       <div className="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
         <input
           value={eventName}
@@ -158,14 +161,14 @@ export default function AdminPage() {
           type="text"
           className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
           required
-        />
+          />
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Description"
           className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
           required
-        />
+          />
         <input
           value={date}
           onChange={(e) => setDate(e.target.value)}
@@ -173,7 +176,7 @@ export default function AdminPage() {
           type="date"
           className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
           required
-        />
+          />
         <input
           value={ticketPrice}
           onChange={(e) => setTicketPrice(Number(e.target.value))}
@@ -182,7 +185,7 @@ export default function AdminPage() {
           min="0"
           className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
           required
-        />
+          />
         <input
           value={eventVenue}
           onChange={(e) => setEventVenue(e.target.value)}
@@ -196,12 +199,12 @@ export default function AdminPage() {
           accept="image/*"
           onChange={handleImageChange}
           className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
-        />
+          />
         <button
           onClick={handleCreateOrUpdateEvent}
           disabled={loading}
           className="w-full py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-300"
-        >
+          >
           {loading ? "Saving..." : (editingEvent ? "Update Event" : "Create Event")}
         </button>
       </div>
@@ -219,7 +222,7 @@ export default function AdminPage() {
               <button
                 onClick={() => handleEdit(event)}
                 className="py-1 px-4 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-300"
-              >
+                >
                 Edit
               </button>
               <button
@@ -243,13 +246,14 @@ export default function AdminPage() {
               <button
                 onClick={() => handleDeleteUser(user.id)}
                 className="py-1 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300"
-              >
+                >
                 Delete
               </button>
             </div>
           </div>
         ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
