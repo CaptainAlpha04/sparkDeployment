@@ -1,15 +1,8 @@
 "use client";
 import { useState, ChangeEvent } from "react";
-import { storage, db } from "../firebaseconfig";
+import { storage } from "../firebaseconfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { doc, updateDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-
-// Define the type for the user object stored in local storage
-interface User {
-  email: string;
-  profilePic?: string;
-}
 
 export default function Settings() {
   const [file, setFile] = useState<File | null>(null);
@@ -33,25 +26,29 @@ export default function Settings() {
     setUploading(true);
 
     try {
-      const userString = localStorage.getItem('user');
-      if (!userString) throw new Error("User not found in local storage");
-
-      const user: User = JSON.parse(userString);
-      const storageRef = ref(storage, `userpfp/${user.email}`);
+      const storageRef = ref(storage, `userpfp/${file.name}`);
       await uploadBytes(storageRef, file);
 
       const url = await getDownloadURL(storageRef);
 
-      // Update Firestore with new profile picture URL
-      const userDocRef = doc(db, 'users', user.email);
-      await updateDoc(userDocRef, { profilePic: url });
+      // Fetch session ID from cookies
+      const sessionIdCookie = document.cookie.split('; ').find(row => row.startsWith('sessionId='));
+      const sessionId = sessionIdCookie ? sessionIdCookie.split('=')[1] : undefined;
+      console.log(sessionId);
 
-      // Update local storage
-      user.profilePic = url;
-      localStorage.setItem('user', JSON.stringify(user));
+      // Send request to API route to update profile picture
+      const response = await fetch('/api/updatePfp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, profilePic: url }),
+      });
 
-      setSuccess(true);
-      router.push('/'); // Redirect to home or any other page
+      if (response.ok) {
+        setSuccess(true);
+        router.push('/'); // Redirect to home or any other page
+      } else {
+        setError("Failed to update profile picture");
+      }
     } catch (err) {
       setError("Failed to upload profile picture");
       console.error(err);
