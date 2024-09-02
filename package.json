@@ -10,17 +10,21 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cookie": "^0.6.0",
     "cors": "^2.8.5",
     "daisyui": "^4.12.10",
     "firebase": "^10.13.0",
+    "ioredis": "^5.4.1",
     "next": "14.2.6",
     "nodemailer": "^6.9.14",
     "react": "^18",
     "react-dom": "^18",
+    "redis": "^4.7.0",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/cookie": "^0.6.0",
     "@types/node": "^20",
     "@types/nodemailer": "^6.4.15",
     "@types/react": "^18",
