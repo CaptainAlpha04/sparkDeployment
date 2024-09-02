@@ -1,3 +1,4 @@
+// app/components/Header.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -7,7 +8,7 @@ import { getCookie } from '../utils/cookies';
 
 async function fetchUserProfilePic(sessionId: string) {
   try {
-    const response = await fetch('/api/getUserProfilePic', {
+    const response = await fetch('/api/checkSession', { // Updated endpoint to match the session check API
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId }),
@@ -17,8 +18,8 @@ async function fetchUserProfilePic(sessionId: string) {
       throw new Error('Failed to fetch user profile picture');
     }
 
-    const { profilePic } = await response.json();
-    return profilePic || '/default-avatar.png'; // Fallback to a default avatar if no profilePic is found
+    const data = await response.json();
+    return data.authenticated ? data.userData.profilePic || '/default-avatar.png' : '/default-avatar.png'; // Ensure to return profilePic if authenticated
   } catch (error) {
     console.error('Error fetching user profile picture:', error);
     return '/default-avatar.png'; // Fallback to a default avatar on error

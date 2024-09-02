@@ -1,3 +1,4 @@
+// app/api/checkSession/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/app/firebaseconfig';
 import { doc, getDoc } from 'firebase/firestore';
@@ -7,10 +8,10 @@ export async function POST(req: NextRequest) {
   const { sessionId } = await req.json();
 
   try {
-    // Fetch session ID and user email from Redis
+    // Fetch session ID and user data from Redis
     const userDataString = await client.get(sessionId);
     if (!userDataString) {
-      return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
+      return NextResponse.json({ authenticated: false, error: 'Invalid session' }, { status: 401 });
     }
 
     const userData = JSON.parse(userDataString);
@@ -19,11 +20,17 @@ export async function POST(req: NextRequest) {
 
     if (userDoc.exists()) {
       const user = userDoc.data();
-      return NextResponse.json({ profilePic: user.profilePic || '/default-avatar.png' });
+      return NextResponse.json({
+        authenticated: true,
+        userData: {
+          ...user,
+          profilePic: user.profilePic || '/default-avatar.png', // Ensure a default profile picture
+        },
+      });
     } else {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ authenticated: false, error: 'User not found' }, { status: 404 });
     }
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch profile picture' }, { status: 500 });
+    return NextResponse.json({ authenticated: false, error: 'Failed to fetch user data' }, { status: 500 });
   }
 }
