@@ -95,14 +95,16 @@ function Header() {
           {
             isLogged ?
               <div className="dropdown dropdown-end">
-                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar" onClick={() => router.push('/settings')}>
+                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                   <div className="w-10 rounded-full">
-                    <img alt="User" src={profilePic} />
+                    <img alt="User" src={profilePic || '/user.png'} />
                   </div>
                 </div>
                 <ul
                   tabIndex={0}
-                  className="menu menu-sm dropdown-content bg-base-200 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                  className="menu menu-sm dropdown-content bg-base-200 rounded-box z-[1] mt-3 p-2 shadow max-w-fit min-w-52">
+                  <li className='font-bold'></li>
+                  <li className='text-xs mb-2 font-light'></li>
                   <li><a onClick={() => router.push('/settings')}>Settings</a></li>
                   <li><a onClick={logOut}>Logout</a></li>
                 </ul>
