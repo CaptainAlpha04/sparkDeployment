@@ -2,6 +2,7 @@
 import React,{useState, useEffect} from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { getCookie } from '../utils/cookies'
 
 function Header() {
 const [isLogged, setIsLogged] = useState(false)
@@ -9,21 +10,34 @@ const [profilePic, setProfilePic] = useState('')
 const router = useRouter()
 
 useEffect(() => {
-  const user = localStorage.getItem('user')
-  if (user) {
-    setIsLogged(true)
-    const userData = JSON.parse(user)
-    setProfilePic(userData.profilePic || "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp")
-  } else {
-    setIsLogged(false)
-  }
-}, [])
+  const cookies = document.cookie;
+    const sessionId = getCookie('sessionId', cookies);
 
-const logOut = () => {
-    localStorage.removeItem('user')
-    setIsLogged(false)
-    window.location.reload()
-}
+    if (sessionId) {
+      // You might want to validate the sessionId by making a request to your API
+      setIsLogged(true);
+      // Fetch user data using the sessionId
+    } else {
+      setIsLogged(false);
+    }
+  }, []);
+
+  // Handle logout
+  const logOut = async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: getCookie('sessionId', document.cookie) }),
+      });
+
+      document.cookie = 'sessionId=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'; // Clear the cookie
+      setIsLogged(false);
+      // Redirect or update the UI as needed
+    } catch (error) {
+      console.error('Error logging out', error);
+    }
+  };
 
 return (
     <>

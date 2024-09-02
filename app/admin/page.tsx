@@ -9,10 +9,11 @@ export default function AdminPage() {
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
   const [ticketPrice, setTicketPrice] = useState<number>(0);
-  const [eventVenue, setEventVenue] = useState("");  // New state for venue
+  const [eventVenue, setEventVenue] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [events, setEvents] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]); // State for users
   const [editingEvent, setEditingEvent] = useState<any>(null);
 
   useEffect(() => {
@@ -27,7 +28,19 @@ export default function AdminPage() {
       }
     };
 
+    const fetchUsers = async () => {
+      try {
+        const usersCollection = collection(db, "users"); // Collection name is "users"
+        const userSnapshot = await getDocs(usersCollection);
+        const userList = userSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setUsers(userList);
+      } catch (error) {
+        console.error("Error fetching users: ", error);
+      }
+    };
+
     fetchEvents();
+    fetchUsers(); // Fetch users when component mounts
   }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,49 +50,45 @@ export default function AdminPage() {
   };
 
   const handleCreateOrUpdateEvent = async () => {
-    if (eventName && description && date && ticketPrice > 0 && eventVenue) {  // Check for venue
+    if (eventName && description && date && ticketPrice > 0 && eventVenue) {
       setLoading(true);
       try {
         let imageUrl = "";
         if (image) {
-          // Upload image
           const imageRef = ref(storage, `event-images/${image.name}`);
           await uploadBytes(imageRef, image);
           imageUrl = await getDownloadURL(imageRef);
         }
 
         if (editingEvent) {
-          // Update existing event
           const eventRef = doc(db, "events", editingEvent.id);
           await updateDoc(eventRef, {
             eventName,
             description,
             date,
             ticketPrice,
-            eventVenue,  // Update venue
+            eventVenue,
             imageUrl,
           });
           alert("Event updated successfully!");
         } else {
-          // Create new event
           const eventsCollection = collection(db, "events");
           await addDoc(eventsCollection, {
             eventName,
             description,
             date,
             ticketPrice,
-            eventVenue,  // Include venue
+            eventVenue,
             imageUrl,
           });
           alert("Event created successfully!");
         }
 
-        // Reset form and fetch updated events
         setEventName("");
         setDescription("");
         setDate("");
         setTicketPrice(0);
-        setEventVenue("");  // Reset venue
+        setEventVenue("");
         setImage(null);
         setEditingEvent(null);
         const eventsCollection = collection(db, "events");
@@ -101,23 +110,38 @@ export default function AdminPage() {
     setDescription(event.description);
     setDate(event.date);
     setTicketPrice(event.ticketPrice);
-    setEventVenue(event.eventVenue);  // Set venue for editing
+    setEventVenue(event.eventVenue);
     setEditingEvent(event);
   };
 
-  const handleDelete = async (eventId: string) => {
+  const handleDeleteEvent = async (eventId: string) => {
     if (confirm("Are you sure you want to delete this event?")) {
       try {
         const eventRef = doc(db, "events", eventId);
         await deleteDoc(eventRef);
         alert("Event deleted successfully!");
-        // Fetch updated events
         const eventsCollection = collection(db, "events");
         const eventSnapshot = await getDocs(eventsCollection);
         const eventList = eventSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setEvents(eventList);
       } catch (error) {
         console.error("Error deleting event: ", error);
+      }
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    if (confirm("Are you sure you want to delete this user?")) {
+      try {
+        const userRef = doc(db, "users", userId); // Collection name is "users"
+        await deleteDoc(userRef);
+        alert("User deleted successfully!");
+        const usersCollection = collection(db, "users");
+        const userSnapshot = await getDocs(usersCollection);
+        const userList = userSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setUsers(userList);
+      } catch (error) {
+        console.error("Error deleting user: ", error);
       }
     }
   };
@@ -189,7 +213,7 @@ export default function AdminPage() {
             <p>{event.description}</p>
             <p>Date: {event.date}</p>
             <p>Price: ${event.ticketPrice}</p>
-            <p>Venue: {event.eventVenue}</p> {/* Display venue */}
+            <p>Venue: {event.eventVenue}</p>
             {event.imageUrl && <img src={event.imageUrl} alt={event.eventName} className="w-32 h-32 object-cover mt-2" />}
             <div className="flex mt-4 space-x-2">
               <button
@@ -199,7 +223,25 @@ export default function AdminPage() {
                 Edit
               </button>
               <button
-                onClick={() => handleDelete(event.id)}
+                onClick={() => handleDeleteEvent(event.id)}
+                className="py-1 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <h2 className="text-2xl font-semibold text-gray-800 mt-6 mb-4">Users List</h2>
+      <div className="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
+        {users.map((user) => (
+          <div key={user.id} className="border-b border-gray-300 py-4">
+            <h3 className="text-xl font-semibold">{user.name}</h3> {/* Assuming user has a 'name' field */}
+            <p>Email: {user.email}</p> {/* Assuming user has an 'email' field */}
+            <div className="flex mt-4 space-x-2">
+              <button
+                onClick={() => handleDeleteUser(user.id)}
                 className="py-1 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300"
               >
                 Delete

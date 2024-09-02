@@ -20,28 +20,21 @@ export default function LoginPage() {
       setLoading(true);
 
       try {
-        // Retrieve user document from Firestore
-        const userDoc = await getDoc(doc(db, 'users', email));
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
 
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
+        const data = await response.json();
 
-          // Compare password with the hashed password
-          const match = await bcrypt.compare(password, userData.password);
-
-          if (match) {
-            // Store user data in local storage
-            localStorage.setItem("user", JSON.stringify(userData));
-            setSuccess(true);
-            for (let i = 0; i < 2; i++) router.back();
-            window.location.reload();
-            setError("");
-          } else {
-            setError("Invalid email or password");
-            setSuccess(false);
-          }
+        if (response.ok) {
+          // Store session ID in a cookie or client storage
+          document.cookie = `sessionId=${data.sessionId}; path=/`;
+          setSuccess(true);
+          router.push('/'); // Redirect or reload
         } else {
-          setError("User does not exist");
+          setError(data.error || 'Error logging in');
           setSuccess(false);
         }
       } catch (error) {
@@ -54,6 +47,7 @@ export default function LoginPage() {
       setError("Please enter both email and password");
     }
   };
+
 
   return (
     <section className="h-screen w-screen flex flex-row fixed planet-bg z-30 overflow-auto">
