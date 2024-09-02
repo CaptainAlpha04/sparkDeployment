@@ -93,12 +93,12 @@ export default function EventsPage() {
             <dialog id="my_modal_1" className="modal">
                 <div className="modal-box">
                     <h3 className="font-bold text-2xl">Event Details</h3>
-                    <p className="py-4">
+                    <p className="pt-4">
+                        <b>Venue:</b> {eventDetails?.eventVenue}
+                    </p>
+                    <p className="py-2 text-wrap w-full">
                         <b>Description:</b> {eventDetails?.description}
                     </p>
-                    <p className="py-4">
-                        <b>Venue:</b> {eventDetails?.eventVenue}
-                    </p>{" "}
                     {/* Added venue */}
                     <div className="modal-action">
                         <form method="dialog">

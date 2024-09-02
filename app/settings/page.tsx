@@ -51,7 +51,7 @@ export default function Settings() {
       localStorage.setItem('user', JSON.stringify(user));
 
       setSuccess(true);
-      router.push('/'); // Redirect to home or any other page
+      window.location.reload();
     } catch (err) {
       setError("Failed to upload profile picture");
       console.error(err);

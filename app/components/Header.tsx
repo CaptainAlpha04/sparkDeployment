@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 
 function Header() {
 const [isLogged, setIsLogged] = useState(false)
+const [name, setName] = useState('')
+const [email, setEmail] = useState('')
 const [profilePic, setProfilePic] = useState('')
 const router = useRouter()
 
@@ -13,9 +15,11 @@ useEffect(() => {
   if (user) {
     setIsLogged(true)
     const userData = JSON.parse(user)
-    setProfilePic(userData.profilePic || "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp")
+    setProfilePic(userData.profilePic)
+    setName(userData.name)
+    setEmail(userData.email)
   } else {
-    setIsLogged(false)
+    setIsLogged(false)  
   }
 }, [])
 
@@ -60,14 +64,16 @@ return (
         {
             isLogged ?
               <div className="dropdown dropdown-end">
-                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar" onClick={() => router.push('/settings')}>
+                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                   <div className="w-10 rounded-full">
-                    <img alt="User" src={profilePic} />
+                    <img alt="User" src={profilePic ?? '  '} />
                   </div>
                 </div>
                 <ul
                   tabIndex={0}
-                  className="menu menu-sm dropdown-content bg-base-200 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                  className="menu menu-sm dropdown-content bg-base-200 rounded-box z-[1] mt-3 p-2 shadow max-w-fit min-w-52">
+                  <li className='font-bold'>{name}</li>
+                  <li className='text-xs mb-2 font-light'>{email}</li>
                   <li><a onClick={() => router.push('/settings')}>Settings</a></li>
                   <li><a onClick={logOut}>Logout</a></li>
                 </ul>
