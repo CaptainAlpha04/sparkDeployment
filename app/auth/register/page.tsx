@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { db } from "../../firebaseconfig";
-import { doc, setDoc } from "firebase/firestore";
+import { collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
@@ -34,7 +34,15 @@ export default function RegisterPage() {
       try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const verificationToken = uuidv4();
-
+        const existingUserQuery = query(collection(db, 'users'), where('email', '==', email));
+        const existingUserSnapshot = await getDocs(existingUserQuery);
+  
+        if (!existingUserSnapshot.empty) {
+          // Email is already in use
+          alert("Email is already in use. Please choose a different email.");
+          setLoading(false);
+          return;
+        }
         // Save user with pending verification status
         await setDoc(doc(db, 'pending_users', email), {
           name,
