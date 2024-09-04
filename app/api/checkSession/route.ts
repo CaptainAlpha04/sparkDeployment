@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
         authenticated: true,
         userData: {
           ...user,
-          profilePic: user.profilePic || '/default-avatar.png', // Ensure a default profile picture
+          profilePic: user.profilePic || '/user.png', // Ensure a default profile picture
         },
       });
     } else {

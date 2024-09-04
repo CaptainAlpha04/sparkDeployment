@@ -95,10 +95,10 @@ export default function RegisterPage() {
           <Link href='/auth/login' className="btn btn-ghost">Login</Link>
         </div>
         
-        <img src="/logoWhite.png" alt="logo" className="w-14 h-14" />
+        <img src="/images/logo-white.png" alt="logo" className="w-14 h-14" />
         <h1 className="text-3xl font-bold text-white">Create an Account</h1>
         <p className="text-white font-light">Enter your details to become a member.</p> 
-        <div className="flex flex-col gap-2 w-full">
+        <form className="flex flex-col gap-2 w-full">
 
         <label className="flex flex-row items-center gap-2">
         <i className="fi fi-sr-user text-lg"></i>
@@ -201,7 +201,7 @@ export default function RegisterPage() {
             {loading ? "Registering..." : "Register"}
           </button>
           {success && <p className="text-white mt-2 self-center">An email for account verification has been sent!   </p>}
-        </div>
+        </form>
       </div>  
     </section>
   );

@@ -1,35 +1,31 @@
-import { NextResponse } from 'next/server';
-import {getCookie} from './app/utils/cookies';
+import { NextRequest, NextResponse } from 'next/server';
 
-async function fetchUserProfilePic(sessionId: string) {
+async function getSession(sessionId: string) {
     try {
-        const response = await fetch('/api/getUserProfilePic', {
+        const response = await fetch('http://localhost:3000/api/checkSession', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId }),
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch user profile picture');
-            return false;
-        } else {
-            return true;
+            throw new Error('Failed to fetch user data');
         }
+    
+        return true;
+
         
     } catch (error) {
-        console.error('Error fetching user profile picture:', error);
+        console.error('Error fetching user data:', error);
         return false;
     }
-        
 }
 
-export function middleware(req: any) {
+export async function middleware(req: NextRequest) {
 
-    const cookies = document.cookie;
-    const sessionId = getCookie('sessionId', cookies);
+    const sessionId = req.cookies.get('sessionId')?.value;
     // Example: Retrieve the authentication token from cookies
-    const token = req.cookies.get('authToken');
-
+    const token = await getSession(sessionId || '');
     // Define the path you want to protect
     const protectedPaths = ['/admin', '/settings'];
 
@@ -37,6 +33,7 @@ export function middleware(req: any) {
     if (protectedPaths.includes(req.nextUrl.pathname)) {
         // If token doesn't exist, redirect to the login page
         if (!token) {
+            console.log('User is not authenticated. Redirecting to login page');
             return NextResponse.redirect(new URL('/auth/login', req.url));
         }
     }

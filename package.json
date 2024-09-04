@@ -13,7 +13,7 @@
     "cookie": "^0.6.0",
     "cors": "^2.8.5",
     "daisyui": "^4.12.10",
-    "firebase": "^10.13.0",
+    "firebase": "^10.13.1",
     "ioredis": "^5.4.1",
     "next": "14.2.6",
     "nodemailer": "^6.9.14",

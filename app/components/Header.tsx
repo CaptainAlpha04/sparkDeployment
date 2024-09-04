@@ -1,6 +1,4 @@
-// app/components/Header.tsx
 'use client';
-
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -19,16 +17,39 @@ async function fetchUserProfilePic(sessionId: string) {
     }
 
     const data = await response.json();
-    return data.authenticated ? data.userData.profilePic || '/default-avatar.png' : '/default-avatar.png'; // Ensure to return profilePic if authenticated
+    return data.authenticated ? data.userData.profilePic || '/user.png' : '/user.png'; // Ensure to return profilePic if authenticated
   } catch (error) {
     console.error('Error fetching user profile picture:', error);
-    return '/default-avatar.png'; // Fallback to a default avatar on error
+    return '/user.png'; // Fallback to a default avatar on error
+  }
+}
+
+async function fetchUserData(sessionId: string) {
+  try {
+    const response = await fetch('/api/checkSession', { // Updated endpoint to match the session check API
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch user data');
+    }
+
+    const data = await response.json();
+    return data.authenticated ? data.userData : null;
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    return null;
   }
 }
 
 function Header() {
   const [isLogged, setIsLogged] = useState(false);
   const [profilePic, setProfilePic] = useState<string>('');
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -38,6 +59,14 @@ function Header() {
     if (sessionId) {
       setIsLogged(true);
       fetchUserProfilePic(sessionId).then(setProfilePic);
+      fetchUserData(sessionId).then((userData) => {
+        if (userData) {
+          console.log(userData);
+          setName(userData.name);
+          setEmail(userData.email);
+          setIsAdmin(userData.admin);
+        }
+      });
     } else {
       setIsLogged(false);
     }
@@ -55,7 +84,7 @@ function Header() {
       document.cookie = 'sessionId=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'; // Clear the cookie
       setIsLogged(false);
       // Redirect or update the UI as needed
-      router.push('/auth/register'); // Redirect to login page or other page as needed
+      router.push('/'); // Redirect to login page or other page as needed
     } catch (error) {
       console.error('Error logging out', error);
     }
@@ -76,7 +105,7 @@ function Header() {
 
         {/* Logo */}
         <Link href='/' className='flex flex-row items-center gap-2 cursor-pointer p-1'>
-          <img src="/logo.png" alt="logo" className='w-14' />
+          <img src="/images/logo.png" alt="logo" className='w-14' />
           <h1 className='text-2xl font-azonix'>SPARK</h1>
         </Link>
 
@@ -87,7 +116,10 @@ function Header() {
           <Link href="/institutions" className='relative nav-link hover:nav-selected'>Institutions</Link>
           <Link href="/events" className='relative nav-link hover:nav-selected'>Events</Link>
           <Link href="/highlights" className='relative nav-link hover:nav-selected'>Highlights</Link>
-          <Link href="/admin" className='relative nav-link hover:nav-selected'>Admin</Link>
+          {
+            isAdmin &&
+            <Link href="/admin" className='relative nav-link hover:nav-selected'>Admin</Link>
+          }
         </div>
 
         {/* Register Button */}
@@ -97,20 +129,20 @@ function Header() {
               <div className="dropdown dropdown-end">
                 <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                   <div className="w-10 rounded-full">
-                    <img alt="User" src={profilePic || '/user.png'} />
+                    <img alt="User" src={profilePic || '/images/profile-user.png'} />
                   </div>
                 </div>
                 <ul
                   tabIndex={0}
                   className="menu menu-sm dropdown-content bg-base-200 rounded-box z-[1] mt-3 p-2 shadow max-w-fit min-w-52">
-                  <li className='font-bold'></li>
-                  <li className='text-xs mb-2 font-light'></li>
+                  <li className='font-bold'>{name}</li>
+                  <li className='text-xs mb-2 font-light'>{email}</li>
                   <li><a onClick={() => router.push('/settings')}>Settings</a></li>
                   <li><a onClick={logOut}>Logout</a></li>
                 </ul>
               </div>
               :
-              <Link href="/auth/register" className='btn-stylized'>
+              <Link href="/auth/login" className='btn-stylized'>
                 Join Now
               </Link>
           }

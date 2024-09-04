@@ -1,8 +1,5 @@
 "use client";
 import { useState } from "react";
-import { db } from "../../firebaseconfig";
-import { doc, getDoc } from "firebase/firestore";
-import bcrypt from "bcryptjs";
 import Link from "next/link";
 import StarryCanvas from "../../components/StarryCanvas";
 import { useRouter } from "next/navigation";
@@ -32,7 +29,8 @@ export default function LoginPage() {
           // Store session ID in a cookie or client storage
           document.cookie = `sessionId=${data.sessionId}; path=/`;
           setSuccess(true);
-          router.push('/'); // Redirect or reload
+          router.push('/  ')
+          router.refresh();
         } else {
           setError(data.error || 'Error logging in');
           setSuccess(false);
@@ -60,10 +58,10 @@ export default function LoginPage() {
           <Link href='/auth/register' className="btn btn-ghost">Register</Link>
         </div>
         
-        <img src="/logoWhite.png" alt="logo" className="w-20 h-20 mt-10" />
+        <img src="/images/logo-white.png" alt="logo" className="w-20 h-20 mt-10" />
         <h1 className="text-3xl font-bold text-white mt-10">Login</h1>
         <p className="text-white font-light">Enter your email and password to log in.</p> 
-        <div className="flex flex-col gap-2 w-full">
+        <form className="flex flex-col gap-2 w-full">
 
           <label className="flex flex-row items-center gap-2">
             <i className="fi fi-sr-envelope text-lg"></i>
@@ -100,7 +98,7 @@ export default function LoginPage() {
           </button>
           {success && <p className="text-green-400 mt-4 self-center">Login successful!</p>}
           {error && <p className="text-red-400 mt-4 self-center">{error}</p>}
-        </div>
+        </form>
       </div>  
     </section>
   );
