@@ -13,7 +13,7 @@ export default function AdminPage() {
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [events, setEvents] = useState<any[]>([]);
-  const [users, setUsers] = useState<any[]>([]); // State for users
+  const [users, setUsers] = useState<any[]>([]);
   const [editingEvent, setEditingEvent] = useState<any>(null);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function AdminPage() {
 
     const fetchUsers = async () => {
       try {
-        const usersCollection = collection(db, "users"); // Collection name is "users"
+        const usersCollection = collection(db, "users");
         const userSnapshot = await getDocs(usersCollection);
         const userList = userSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setUsers(userList);
@@ -40,7 +40,7 @@ export default function AdminPage() {
     };
 
     fetchEvents();
-    fetchUsers(); // Fetch users when component mounts
+    fetchUsers();
   }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,7 +133,7 @@ export default function AdminPage() {
   const handleDeleteUser = async (userId: string) => {
     if (confirm("Are you sure you want to delete this user?")) {
       try {
-        const userRef = doc(db, "users", userId); // Collection name is "users"
+        const userRef = doc(db, "users", userId);
         await deleteDoc(userRef);
         alert("User deleted successfully!");
         const usersCollection = collection(db, "users");
@@ -146,112 +146,117 @@ export default function AdminPage() {
     }
   };
 
+  const toggleAdmin = async (userId: string, isAdmin: boolean) => {
+    try {
+      const userRef = doc(db, "users", userId);
+      await updateDoc(userRef, { admin: !isAdmin });
+      const usersCollection = collection(db, "users");
+      const userSnapshot = await getDocs(usersCollection);
+      const userList = userSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setUsers(userList);
+    } catch (error) {
+      console.error("Error updating user admin status: ", error);
+    }
+  };
+
   return (
     <section className="min-h-screen w-screen px-6 py-24 bg-base-300 text-base-content">
       <h1 className="text-5xl font-poppins font-extralight mb-10"> <b className="font-bold">Admin</b> <br /> Dashboard</h1>
       <h2 className="text-3xl">Events</h2>
       <div>
 
-      <h2 className="text-2xl font-semibold">{editingEvent ? "Edit Event" : "Create New Event"}</h2>
-      <div className="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
-        <input
-          value={eventName}
-          onChange={(e) => setEventName(e.target.value)}
-          placeholder="Event Name"
-          type="text"
-          className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
-          required
+        <h2 className="text-2xl font-semibold">{editingEvent ? "Edit Event" : "Create New Event"}</h2>
+        <div className="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
+          <input
+            value={eventName}
+            onChange={(e) => setEventName(e.target.value)}
+            placeholder="Event Name"
+            type="text"
+            className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
+            required
           />
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Description"
-          className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
-          required
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Description"
+            className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
+            required
           />
-        <input
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          placeholder="Date (YYYY-MM-DD)"
-          type="date"
-          className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
-          required
+          <input
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            placeholder="Date (YYYY-MM-DD)"
+            type="date"
+            className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
+            required
           />
-        <input
-          value={ticketPrice}
-          onChange={(e) => setTicketPrice(Number(e.target.value))}
-          placeholder="Ticket Price"
-          type="number"
-          min="0"
-          className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
-          required
+          <input
+            value={ticketPrice}
+            onChange={(e) => setTicketPrice(Number(e.target.value))}
+            placeholder="Ticket Price"
+            type="number"
+            min="0"
+            className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
+            required
           />
-        <input
-          value={eventVenue}
-          onChange={(e) => setEventVenue(e.target.value)}
-          placeholder="Event Venue"
-          type="text"
-          className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
-          required
-        />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
+          <input
+            value={eventVenue}
+            onChange={(e) => setEventVenue(e.target.value)}
+            placeholder="Event Venue"
+            type="text"
+            className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
+            required
           />
-        <button
-          onClick={handleCreateOrUpdateEvent}
-          disabled={loading}
-          className="w-full py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-300"
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
+          />
+          <button
+            onClick={handleCreateOrUpdateEvent}
+            disabled={loading}
+            className="w-full py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-300"
           >
-          {loading ? "Saving..." : (editingEvent ? "Update Event" : "Create Event")}
-        </button>
-      </div>
-      <h2 className="text-2xl font-semibold text-gray-800 mt-6 mb-4">Events List</h2>
-      <div className="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
-        {events.map((event) => (
-          <div key={event.id} className="border-b border-gray-300 py-4">
-            <h3 className="text-xl font-semibold">{event.eventName}</h3>
-            <p>{event.description}</p>
-            <p>Date: {event.date}</p>
-            <p>Price: ${event.ticketPrice}</p>
-            <p>Venue: {event.eventVenue}</p>
-            {event.imageUrl && <img src={event.imageUrl} alt={event.eventName} className="w-32 h-32 object-cover mt-2" />}
-            <div className="flex mt-4 space-x-2">
-              <button
-                onClick={() => handleEdit(event)}
-                className="py-1 px-4 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-300"
-                >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDeleteEvent(event.id)}
-                className="py-1 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300"
-              >
-                Delete
-              </button>
+            {loading ? "Saving..." : (editingEvent ? "Update Event" : "Create Event")}
+          </button>
+        </div>
+        <h2 className="text-2xl font-semibold text-gray-800 mt-6 mb-4">Events List</h2>
+        <div className="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
+          {events.map((event) => (
+            <div key={event.id} className="border-b border-gray-300 py-4">
+              <h3 className="text-xl font-semibold">{event.eventName}</h3>
+              <p>{event.description}</p>
+              <p>Date: {event.date}</p>
+              <p>Price: ${event.ticketPrice}</p>
+              <p>Venue: {event.eventVenue}</p>
+              {event.imageUrl && <img src={event.imageUrl} alt={event.eventName} className="w-32 h-32 object-cover my-2" />}
+              <button onClick={() => handleEdit(event)} className="mr-4 bg-yellow-500 text-white py-1 px-3 rounded-lg shadow-md hover:bg-yellow-600 transition duration-300">Edit</button>
+              <button onClick={() => handleDeleteEvent(event.id)} className="bg-red-500 text-white py-1 px-3 rounded-lg shadow-md hover:bg-red-600 transition duration-300">Delete</button>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
-      <h2 className="text-2xl font-semibold text-gray-800 mt-6 mb-4">Users List</h2>
-      <div className="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
-        {users.map((user) => (
-          <div key={user.id} className="border-b border-gray-300 py-4">
-            <h3 className="text-xl font-semibold">{user.name}</h3> {/* Assuming user has a 'name' field */}
-            <p>Email: {user.email}</p> {/* Assuming user has an 'email' field */}
-            <div className="flex mt-4 space-x-2">
-              <button
-                onClick={() => handleDeleteUser(user.id)}
-                className="py-1 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300"
-                >
-                Delete
-              </button>
+      <div className="my-10">
+        <h2 className="text-3xl">Users</h2>
+        <div className="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
+          {users.map((user) => (
+            <div key={user.id} className="border-b border-gray-300 py-4">
+              <h3 className="text-xl font-semibold">{user.name} ({user.email})</h3>
+              <p>Admin: {user.admin ? "Yes" : "No"}</p>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={user.admin}
+                  onChange={() => toggleAdmin(user.id, user.admin)}
+                  className="mr-2"
+                />
+                Make Admin
+              </label>
+              <button onClick={() => handleDeleteUser(user.id)} className="bg-red-500 text-white py-1 px-3 rounded-lg shadow-md hover:bg-red-600 transition duration-300">Delete User</button>
             </div>
-          </div>
-        ))}
+          ))}
         </div>
       </div>
     </section>
