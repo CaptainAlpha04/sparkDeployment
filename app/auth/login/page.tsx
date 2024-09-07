@@ -29,8 +29,7 @@ export default function LoginPage() {
           // Store session ID in a cookie or client storage
           document.cookie = `sessionId=${data.sessionId}; path=/`;
           setSuccess(true);
-          router.push('/  ')
-          router.refresh();
+          router.push('/')
         } else {
           setError(data.error || 'Error logging in');
           setSuccess(false);
