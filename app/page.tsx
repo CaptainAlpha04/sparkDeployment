@@ -1,8 +1,5 @@
 import React from "react";
 import StarryCanvas from "./components/StarryCanvas";
-import { Star } from "lucide-react";
-import nec from "./../public/images/nec.png";
-import tensorf from "./../public/images/tensorflow.png";
 import Image from "next/image";
 
 // Defining types for the goal card props
@@ -33,7 +30,7 @@ const goals: { title: string; description: string }[] = [
 //  This is the goal card made using the lucide-react package
 const GoalCard: React.FC<GoalCardProps> = ({ title, description }) => (
   <div className="bg-gray-800 p-6 rounded-lg shadow-lg transform transition duration-300 hover:scale-105">
-    <Star className="text-orange-500 mb-4" size={24} />
+    
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
     <p className="text-gray-300">{description}</p>
   </div>
@@ -41,8 +38,8 @@ const GoalCard: React.FC<GoalCardProps> = ({ title, description }) => (
 
 // This is the sponsors array. For now I have added those sponsors which I have in mind
 const sponsors = [
-  { name: "TensorFlow Groups", logo: tensorf },
-  { name: "NEC Club", logo: nec },
+  { name: "TensorFlow Groups"},
+  { name: "NEC Club"},
 ];
 // This is the benefits array which will be used in the
 const benefits = [
@@ -120,13 +117,7 @@ const HomePage: React.FC = () => {
           <div className="flex justify-center items-center space-x-8">
             {sponsors.map((sponsor, index) => (
               <div key={index} className="text-center">
-                <Image
-                  src={sponsor.logo}
-                  alt={`${sponsor.name} logo`}
-                  width={128}
-                  height={128}
-                  className="object-contain mb-4 filter invert"
-                />
+                
                 <p className="text-lg font-semibold text-gray-300">
                   {sponsor.name}
                 </p>
