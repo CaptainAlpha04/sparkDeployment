@@ -1,4 +1,3 @@
-// app/api/checkSession/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/app/firebaseconfig';
 import { doc, getDoc } from 'firebase/firestore';
@@ -9,12 +8,11 @@ export async function POST(req: NextRequest) {
 
   try {
     // Fetch session ID and user data from Redis
-    const userDataString = await client.get(sessionId);
-    if (!userDataString) {
+    const userData = await client.get(sessionId);
+
+    if (!userData) {
       return NextResponse.json({ authenticated: false, error: 'Invalid session' }, { status: 401 });
     }
-
-    const userData = JSON.parse(userDataString);
     const userDocRef = doc(db, 'users', userData.email);
     const userDoc = await getDoc(userDocRef);
 

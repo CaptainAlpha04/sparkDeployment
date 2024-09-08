@@ -1,6 +1,7 @@
+// app/api/login/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import client from '../../../lib/redis' 
+import client from '@/app/lib/redis'; // Adjust import path if needed
 import { db } from '@/app/firebaseconfig';
 import { doc, getDoc } from 'firebase/firestore';
 import { generateSessionId } from '@/app/utils/session';
