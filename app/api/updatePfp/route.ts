@@ -7,12 +7,11 @@ export async function POST(req: NextRequest) {
   const { sessionId, profilePic } = await req.json();
 
   try {
-    const userDataString = await client.get(sessionId);
-    if (!userDataString) {
+    const userData = await client.get(sessionId);
+    if (!userData) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
-    const userData = JSON.parse(userDataString);
     const userDocRef = doc(db, 'users', userData.email);
     await updateDoc(userDocRef, { profilePic });
 
