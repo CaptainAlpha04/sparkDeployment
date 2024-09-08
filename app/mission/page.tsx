@@ -9,7 +9,7 @@ function Page() {
             OUR <span className="text-yellow-300">MISSION</span>
           </h1>
           <p className="text-2xl mb-12 leading-relaxed">
-            Welcome to <strong>SPARK</strong>, a hub of creativity, innovation, and research in the fields of science and technology. We strive to cultivate a dynamic environment that encourages innovation, entrepreneurship, and psychological enhancement. Our mission is to empower individuals to push boundaries and reimagine the future. Join us, and let's build a brighter, more innovative world together!
+            Welcome to <strong>SPARK</strong>, a hub of creativity, innovation, and research in the fields of science and technology. We strive to cultivate a dynamic environment that encourages innovation, entrepreneurship, and psychological enhancement. Our mission is to empower individuals to push boundaries and reimagine the future. Join us, and {"let's"} build a brighter, more innovative world together!
           </p>
           
           {/* Mottos */}
@@ -30,7 +30,7 @@ function Page() {
 
           <section className="my-16">
             <h2 className="text-4xl font-bold text-yellow-300 mb-4">Technology</h2>
-            <p className="text-lg">Driving technological advancements that push the boundaries of what's possible in today's world.</p>
+            <p className="text-lg">Driving technological advancements that push the boundaries of {"what's"} possible in {"today's"} world.</p>
           </section>
 
           <section className="my-16">

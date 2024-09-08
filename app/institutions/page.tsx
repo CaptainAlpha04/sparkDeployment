@@ -51,7 +51,7 @@ function page() {
             <div className="bg-base-100 shadow-md p-6 rounded-lg">
               <h3 className="text-2xl font-semibold text-primary mb-4">GIKI - Ghulam Ishaq Khan Institute</h3>
               <p className="text-md">
-                SPARK's partnership with GIKI encourages innovation and technological advancement through research-driven projects and initiatives.
+                {"SPARK's"} partnership with GIKI encourages innovation and technological advancement through research-driven projects and initiatives.
               </p>
             </div>
           </div>

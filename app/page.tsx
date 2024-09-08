@@ -6,41 +6,63 @@ import Link from 'next/link';
 interface GoalCardProps {
     title: string;
     description: string;
+    color: string;
   }
   
   // This is the array for storing goals
-  const goals: { title: string; description: string }[] = [
+  const goals: { title: string, description: string, color:string }[] = [
     {
       title: "Innovation",
-      description: "Foster groundbreaking ideas across Pakistan",
+      description: "SPARK is committed to driving innovation by nurturing the next generation of inventors and disruptors. Our goal is to create an ecosystem where curiosity meets technology, and new ideas are turned into impactful solutions. We empower our community to challenge the status quo, experiment with emerging technologies, and lead transformative changes in their respective fields.",
+      color: "from-orange-500"
     },
     {
       title: "Collaboration",
-      description: "Connect innovators, institutions, and industries",
+      description: "We believe that collaboration is the key to achieving greatness. SPARK is dedicated to creating a collaborative culture where diverse minds come together to solve complex problems. We encourage open communication, teamwork, and cross-disciplinary partnerships to drive collective success. Our mission is to break down silos and foster an environment where shared knowledge leads to shared achievements.",
+      color: "from-emerald-500"
+    
     },
     {
       title: "Education",
-      description: "Empower through knowledge and skill development",
+      description: "SPARK is a bridge between academic excellence and real-world impact. Our mission is to redefine the traditional boundaries of academia by integrating modern practices, hands-on learning, and industry connections. We aim to equip students and professionals with the knowledge and skills they need to thrive in an ever-changing world, ensuring that education remains a powerful tool for innovation",
+      color: "from-blue-900"
+    
     },
     {
-      title: "Impact",
-      description: "Drive positive change in society and economy",
+      title: "Creativity",
+      description: "Creativity is at the heart of innovation. SPARK is dedicated to cultivating a creative environment where unconventional thinking flourishes. Our goal is to inspire students and professionals alike to break free from traditional boundaries and explore new perspectives. By encouraging original ideas and artistic expression, we aim to build a community that values the limitless potential of imagination.",
+      color: "from-purple-500"
     },
+    {
+      title: "Technology",
+      description: "Technology is the backbone of modern advancement, and SPARK is dedicated to empowering individuals through cutting-edge tech education and tools. Our goal is to provide the latest technological resources and training, ensuring that our community is prepared to navigate and shape the future of tech-driven industries. From AI to cybersecurity, we are committed to staying at the forefront of technological innovation.",
+      color: 'from-sky-500'
+    },
+    {
+      title: "Entrepreneurship",
+      description: "Our mission is to ignite the entrepreneurial spirit within every individual by providing resources, mentorship, and a nurturing environment. We aim to empower future leaders to take bold risks, solve real-world problems, and develop innovative businesses that impact society. Through SPARK, we foster a mindset of growth, adaptability, and persistence to turn ideas into successful ventures.",
+      color: "from-black"
+    },
+    {
+      title: "Leadership",
+      description: "Leadership at SPARK is about more than just guiding others; it's about inspiring change and leading with vision. Our mission is to cultivate ethical, visionary leaders who can navigate challenges with resilience and empathy. We aim to develop individuals who lead by example, inspire action, and create positive impact in their communities and industries. Through leadership development, we empower the next generation to take charge of the future.",
+      color: "from-red-500"
+    },
+    {
+      title: "Research",
+      description: "At SPARK, we recognize the importance of research in driving progress. Our mission is to support groundbreaking research initiatives that advance knowledge across all fields. We strive to connect researchers with the necessary tools, networks, and platforms to explore unanswered questions and contribute to the global body of knowledge. We promote inquiry-based learning and rigorous exploration to push the frontiers of innovation.",
+      color: "from-blue-600"
+    },
+    
   ];
-
-  //  This is the goal card made using the lucide-react package
-  const GoalCard: React.FC<GoalCardProps> = ({ title, description }) => (
-    <div className="bg-gray-800 p-6 rounded-lg shadow-lg transform transition duration-300 hover:scale-105">
-      
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-gray-300">{description}</p>
-    </div>
-  );
   
   // This is the sponsors array. For now I have added those sponsors which I have in mind
   const sponsors = [
-    { name: "TensorFlow Groups"},
-    { name: "NEC Club"},
+    { name: "TensorFlow Islamabad", logo: "/images/tensorflow.png" },
+    { name: "NUST Entrepreneurs Club", logo: "/images/nec.png" },
+    { name: "Google Pakistan", logo: "/images/google.png" },
+    { name: "Poshish Interiors", logo: "/images/poshish.png" },
+
   ];
   // This is the benefits array which will be used in the
   const benefits = [
@@ -51,7 +73,9 @@ interface GoalCardProps {
   ];
   
   const stats = [
-    { label: "Student Members", value: "5000+" },
+    { label: "Student Members", value: "500+" },
+    { label: "Successful Events", value: "3+" },
+    { label: "Affliated Societies", value: "10+" },
     { label: "Affiliated Institutions", value: "50+" },
   ];
 
@@ -97,69 +121,59 @@ export default function HomePage() {
       </section>
 
       {/* This is the goal section */}
-        <section className="bg-slate-950 relative h-screen w-screen">  
-          <div className="container mx-auto px-4 relative z-10">
-            <h2 className="text-7xl font-bold mb-8 text-center">
-              Our Goals
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {goals.map((goal, index) => (
-              <GoalCard
-                key={index}
-                title={goal.title}
-                description={goal.description}
-              />
+        <section className="bg-slate-950 relative h-full w-screen pb-32 px-8 md:px-36"> 
+          {/* <h1 className='absolute text-8xl left-2 top-10 font-bold text-center z-[0] opacity-20'>Innovation</h1>
+           */}
+          <h2 className="text-7xl font-bold mb-8 text-center">
+            Our Goals
+          </h2>
+          <div className="carousel mx-auto px-10 relative z-10 p-10 flex gap-4">
+              {goals.map((goal, index) => (  
+              <div key={index} className={`carousel-item bg-gradient-to-b ${goal.color} to-slate-950 p-10 rounded-xl max-w-80 transform transition duration-300 hover:scale-105 flex flex-col shadow-md`}>  
+                <h3 className="text-4xl font-bold mb-4">{goal.title}</h3>
+                <p className="text-gray-300 text-justify">{goal.description}</p>
+            </div>
             ))}
-          </div>
         </div>
       </section>
 
-      {/* This is the sponsors section */}
-      <section className="bg-[#0A0A1A] py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold mb-8 text-center text-white">
-            Our Sponsors
-          </h2>
-          <div className="flex justify-center items-center space-x-8">
-            {sponsors.map((sponsor, index) => (
-              <div key={index} className="text-center">
-                
-                <p className="text-lg font-semibold text-gray-300">
-                  {sponsor.name}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Now this is the stats section */}
-      <section className="bg-[#0A0A1A] py-16 relative h-screen">
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500"></div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          <h2 className="text-4xl font-bold mb-12 text-center text-white">
+      <section className="bg-gradient-to-b from-slate-950 to-base-300 py-8 relative h-fit px-10">
+          <h2 className="text-7xl font-bold mb-12 opacity-70 text-center md:text-left">
             Our Impact
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="flex flex-wrap place-content-center gap-10">
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="bg-[#1A1A2A] rounded-lg p-8 text-center transform hover:scale-105 transition duration-300"
+                className="rounded-xl p-16 text-center transform hover:scale-105 transition duration-300"
               >
-                <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-purple-600 mb-2">
+                <div className="text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-purple-600 mb-2">
                   {stat.value}
                 </div>
                 <div className="text-xl text-gray-300">{stat.label}</div>
               </div>
             ))}
           </div>
-        </div>
+      </section>
+
+      {/* This is the sponsors section */}
+      <section className="bg-gradient-to-b from-base-300 to-black py-16 flex flex-col gap-20 items-center">
+        <h1 className='text-xl font-bold text-center'>Sponsors and Partners</h1>
+          <div className="flex gap-20 flex-wrap justify-center items-center p-10">
+            {sponsors.map((sponsor, index) => (
+              <div key={index} className="flex flex-col items-center gap-5 p-6 w-72 rounded-xl hover:scale-110 transition-all duration-300 hover:bg-slate-900">
+                <img src={sponsor.logo} alt={sponsor.name} className='h-20' />
+                <p className='text-xs'>{sponsor.name}</p>
+              </div>
+            ))}
+          </div>
       </section>
       
       {/* This is the why join us section */}
       <section className="py-16 relative h-full w-screen">
-        <div className="absolute inset-0 bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 opacity-20"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 opacity-30"></div>
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500"></div>
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500"></div>
         
@@ -214,6 +228,8 @@ export default function HomePage() {
 
       {/* This is the Community links section containing social links*/}
       <section className='relative flex flex-col bg-base-300 h-full py-32 px-10 items-center z-10'>
+        <div className='absolute w-1/2 h-32 backdrop-blur-3xl z-[-10] bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 opacity-50'></div>
+        <div className='absolute top-0 w-screen h-full backdrop-blur-3xl z-[-10]'></div>
         <h1 className='text-5xl font-bold text-center'>Join Our Community!</h1>
         <p className='mt-8 text-center'>Join Our Community of Innovative and Talented Individuals across various Social Platforms <br />and be a part of something Big!</p>
         
