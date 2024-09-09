@@ -3,7 +3,7 @@ import client from '@/app/lib/redis';
 import { db } from '@/app/firebaseconfig';
 import { doc, updateDoc } from 'firebase/firestore';
 
-export async function POST(req: NextRequest) {
+export async function POST(req) {
   const { sessionId, profilePic } = await req.json();
 
   try {
