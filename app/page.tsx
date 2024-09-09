@@ -85,7 +85,7 @@ export default function HomePage() {
       <section className='flex flex-col w-screen h-screen bg-gradient-to-b from-black via-base-300 to-purple-950'>
         <StarryCanvas />
         <div className='flex flex-col items-center justify-center h-full z-10'>
-          <h1 className='text-7xl font-azonix text-center animation-swipe-from-bottom px-4'>Here Ideas <br />SPARK into Reality</h1>
+          <h1 className='text-7xl md:text-8xl font-extrabold text-center animation-swipe-from-bottom px-4'>Here Ideas <br />Spark into Reality</h1>
           <p className='text-lg font-poppins animation-fade-in text-center'>The <b>Fastest</b> Growing Innovation Community of Pakistan</p>
         </div>  
       </section>
@@ -121,10 +121,10 @@ export default function HomePage() {
       </section>
 
       {/* This is the goal section */}
-        <section className="bg-slate-950 relative h-full w-screen pb-32 px-8 md:px-36"> 
+        {/* <section className="bg-slate-950 relative h-full w-screen pb-32 px-8 md:px-36">  */}
           {/* <h1 className='absolute text-8xl left-2 top-10 font-bold text-center z-[0] opacity-20'>Innovation</h1>
            */}
-          <h2 className="text-7xl font-bold mb-8 text-center">
+          {/* <h2 className="text-7xl font-bold mb-8 text-center">
             Our Goals
           </h2>
           <div className="carousel mx-auto px-10 relative z-10 p-10 flex gap-4">
@@ -135,15 +135,14 @@ export default function HomePage() {
             </div>
             ))}
         </div>
-      </section>
-
+      </section> */}
 
       {/* Now this is the stats section */}
-      <section className="bg-gradient-to-b from-slate-950 to-base-300 py-8 relative h-fit px-10">
-          <h2 className="text-7xl font-bold mb-12 opacity-70 text-center md:text-left">
+      <section className="bg-gradient-to-b from-slate-950 to-base-300 relative h-fit px-10">
+          <h2 className="text-7xl font-bold mb-12 opacity-70 text-center">
             Our Impact
           </h2>
-          <div className="flex flex-wrap place-content-center gap-10">
+          <div className="flex flex-wrap place-content-center gap-x-10">
             {stats.map((stat, index) => (
               <div
                 key={index}
@@ -250,8 +249,8 @@ export default function HomePage() {
           </div>
           {/* This is the Instagram Card */}
           <div className='group flex flex-col bg-slate-950 p-10 w-80 gap-4 text-center rounded-3xl transition-all duration-300 hover:scale-105'>
-            <i className="fi fi-brands-instagram text-6xl transition-colors duration-500 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-tr from-purple-700 to-orange-500"></i>
-            <h3 className='text-2xl font-bold text-white transition-colors duration-500 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-tr from-purple-700 to-orange-500'>Instagram</h3>
+            <i className="fi fi-brands-instagram text-6xl transition-all duration-500 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-tr from-purple-700 to-orange-500"></i>
+            <h3 className='text-2xl font-bold text-white transition-all duration-500 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-tr from-purple-700 to-orange-500'>Instagram</h3>
             <p>Follow up on our Events and Progress</p>
             <a href="https://www.instagram.com/sparkchapter?igsh=dzZzMG01NjAxbmNi" target='_blank' className='btn btn-outline'>Join Now</a>
           </div>
@@ -260,7 +259,7 @@ export default function HomePage() {
             <i className="fi fi-brands-whatsapp text-6xl transition-colors duration-500 group-hover:text-emerald-500"></i>
             <h3 className='text-2xl font-bold text-white transition-colors duration-500 group-hover:text-emerald-500'>WhatsApp</h3>
             <p>Ask Questions and get Resources curated for Community</p>
-            <a href="" target='_blank' className='btn btn-outline'>Join Now</a>
+            <a href="https://chat.whatsapp.com/FYSriy557mw7FTKxWGprfS" target='_blank' className='btn btn-outline'>Join Now</a>
           </div>
 
         </div>

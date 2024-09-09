@@ -46,6 +46,7 @@ async function fetchUserData(sessionId: string) {
 
 function Header() {
   const [isLogged, setIsLogged] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [profilePic, setProfilePic] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
@@ -109,8 +110,8 @@ function Header() {
           <h1 className='text-2xl font-azonix'>SPARK</h1>
         </Link>
 
-        {/* Navigation Links */}
-        <div className='flex flex-row items-center gap-12 text-gray-100'>
+        {/* Navigation Links for desktop */}
+        <div className='flex flex-row items-center gap-12 text-gray-100 md:hidden '>
           <Link href="/" className='relative nav-link hover:nav-selected'>Home</Link>
           <Link href="/mission" className='relative nav-link hover:nav-selected'>Our Mission</Link>
           <Link href="/institutions" className='relative nav-link hover:nav-selected'>Institutions</Link>
@@ -123,7 +124,7 @@ function Header() {
         </div>
 
         {/* Register Button */}
-        <div className='flex items-center'>
+        <div className='flex items-center md:hidden'>
           {
             isLogged ?
               <div className="dropdown dropdown-end">
@@ -147,6 +148,83 @@ function Header() {
               </Link>
           }
         </div>
+
+        {/* Navigation Links for  */}
+        {/* Hamburger Icon */}
+      <div className='md:visible fixed top-4 left-4 z-50'>
+        <button 
+          onClick={() => setIsOpen(!isOpen)}
+          className="text-gray-100 focus:outline-none">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Sidebar */}
+      <div className={`fixed top-0 left-0 h-full bg-gray-900 text-gray-100 z-40 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out w-64`}>
+        {/* Close Button */}
+        <button 
+          onClick={() => setIsOpen(false)}
+          className="absolute top-4 right-4 text-gray-100 focus:outline-none">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {/* User Info */}
+        <div className="p-6">
+          {
+            isLogged ? (
+              <div className="flex items-center gap-4 mb-6">
+                <div className="avatar">
+                  <div className="w-12 rounded-full">
+                    <img alt="User" src={profilePic || '/images/profile-user.png'} />
+                  </div>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold">{name}</span>
+                  <span className="text-xs font-light">{email}</span>
+                </div>
+              </div>
+            ) : (
+              <Link href="/auth/login" className='btn-stylized mb-6'>
+                Join Now
+              </Link>
+            )
+          }
+
+          {/* Navigation Links */}
+          <nav className="flex flex-col gap-4">
+            <Link href="/" className="nav-link hover:nav-selected" onClick={() => setIsOpen(false)}>Home</Link>
+            <Link href="/mission" className="nav-link hover:nav-selected" onClick={() => setIsOpen(false)}>Our Mission</Link>
+            <Link href="/institutions" className="nav-link hover:nav-selected" onClick={() => setIsOpen(false)}>Institutions</Link>
+            <Link href="/events" className="nav-link hover:nav-selected" onClick={() => setIsOpen(false)}>Events</Link>
+            <Link href="/highlights" className="nav-link hover:nav-selected" onClick={() => setIsOpen(false)}>Highlights</Link>
+            {
+              isAdmin && (
+                <Link href="/admin" className="nav-link hover:nav-selected" onClick={() => setIsOpen(false)}>Admin</Link>
+              )
+            }
+          </nav>
+
+          {/* Settings and Logout Buttons */}
+          {isLogged && (
+            <div className="mt-auto flex flex-col gap-4">
+              <button 
+                onClick={() => { router.push('/settings'); setIsOpen(false); }}
+                className="w-full py-2 px-4 bg-blue-600 rounded-lg text-white font-semibold">
+                Settings
+              </button>
+              <button 
+                onClick={() => { logOut(); setIsOpen(false); }}
+                className="w-full py-2 px-4 bg-red-600 rounded-lg text-white font-semibold">
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
       </header>
     </>
   );

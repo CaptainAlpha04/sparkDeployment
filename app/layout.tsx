@@ -1,7 +1,7 @@
 import "./globals.css"; // Global CSS styles
 import { ReactNode } from "react";
 import localFont from 'next/font/local';
-import {Poppins, Josefin_Sans} from 'next/font/google';
+import {Poppins, Josefin_Sans, Audiowide} from 'next/font/google';
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
@@ -10,6 +10,9 @@ const poppins = Poppins({ subsets: ["latin"], variable: "--font-poppins",
 
 const josefin = Josefin_Sans({ subsets: ["latin"], variable: "--font-josefin", 
   weight: ["100", "200", "300", "400", "500", "600", "700"] });
+
+const audiowide = Audiowide({ subsets: ["latin"], variable: "--font-audiowide",
+  weight: ["400"] });
 
 const Azonix = localFont(
   {
