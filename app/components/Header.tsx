@@ -106,12 +106,12 @@ function Header() {
 
         {/* Logo */}
         <Link href='/' className='flex flex-row items-center gap-2 cursor-pointer p-1'>
-          <img src="/images/logo.png" alt="logo" className='w-14' />
+          <img src="/images/logo.png" alt="logo" className=' w-14' />
           <h1 className='text-2xl font-azonix'>SPARK</h1>
         </Link>
 
         {/* Navigation Links for desktop */}
-        <div className='flex flex-row items-center gap-12 text-gray-100 md:hidden '>
+        <div className='flex-row hidden items-center gap-12 text-gray-100 lg:visible lg:flex'>
           <Link href="/" className='relative nav-link hover:nav-selected'>Home</Link>
           <Link href="/mission" className='relative nav-link hover:nav-selected'>Our Mission</Link>
           <Link href="/institutions" className='relative nav-link hover:nav-selected'>Institutions</Link>
@@ -124,7 +124,7 @@ function Header() {
         </div>
 
         {/* Register Button */}
-        <div className='flex items-center md:hidden'>
+        <div className='hidden items-center flex-hidden lg:visible lg:flex'>
           {
             isLogged ?
               <div className="dropdown dropdown-end">
@@ -151,7 +151,7 @@ function Header() {
 
         {/* Navigation Links for  */}
         {/* Hamburger Icon */}
-      <div className='md:visible fixed top-4 left-4 z-50'>
+      <div className='visible lg:hidden fixed top-4 right-4 z-20'>
         <button 
           onClick={() => setIsOpen(!isOpen)}
           className="text-gray-100 focus:outline-none">
@@ -162,7 +162,7 @@ function Header() {
       </div>
 
       {/* Sidebar */}
-      <div className={`fixed top-0 left-0 h-full bg-gray-900 text-gray-100 z-40 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out w-64`}>
+      <div className={`fixed top-0 right-0 h-full bg-gray-900 text-gray-100 z-40 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out w-screen h-screen`}>
         {/* Close Button */}
         <button 
           onClick={() => setIsOpen(false)}
@@ -173,7 +173,7 @@ function Header() {
         </button>
 
         {/* User Info */}
-        <div className="p-6">
+        <div className="m-10">
           {
             isLogged ? (
               <div className="flex items-center gap-4 mb-6">
@@ -188,14 +188,14 @@ function Header() {
                 </div>
               </div>
             ) : (
-              <Link href="/auth/login" className='btn-stylized mb-6'>
+              <Link href="/auth/login" className='btn-stylized '>
                 Join Now
               </Link>
             )
           }
 
           {/* Navigation Links */}
-          <nav className="flex flex-col gap-4">
+          <nav className="flex flex-col gap-4 mt-10">
             <Link href="/" className="nav-link hover:nav-selected" onClick={() => setIsOpen(false)}>Home</Link>
             <Link href="/mission" className="nav-link hover:nav-selected" onClick={() => setIsOpen(false)}>Our Mission</Link>
             <Link href="/institutions" className="nav-link hover:nav-selected" onClick={() => setIsOpen(false)}>Institutions</Link>
@@ -210,15 +210,15 @@ function Header() {
 
           {/* Settings and Logout Buttons */}
           {isLogged && (
-            <div className="mt-auto flex flex-col gap-4">
+            <div className="mt-10 flex flex-col gap-4">
               <button 
                 onClick={() => { router.push('/settings'); setIsOpen(false); }}
-                className="w-full py-2 px-4 bg-blue-600 rounded-lg text-white font-semibold">
+                className="btn btn-outline">
                 Settings
               </button>
               <button 
                 onClick={() => { logOut(); setIsOpen(false); }}
-                className="w-full py-2 px-4 bg-red-600 rounded-lg text-white font-semibold">
+                className="btn btn-outline">
                 Logout
               </button>
             </div>
