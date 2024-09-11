@@ -94,7 +94,7 @@ export default function HomePage() {
         <section className="bg-gradient-to-b from-purple-950 to-slate-950 relative w-screen h-fit flex flex-row ">
           <img src="/images/logo-white.png" alt="Logo" className='absolute opacity-30 top-30 right-6 h-96' />
           <div className="container py-40 relative px-10">
-            <h2 className="text-8xl font-bold mb-8 text-left opacity-70">
+            <h2 className="text-5xl md:text-8xl font-bold mb-8 text-left opacity-70">
               How it all <br /> started...
             </h2>
             <div className="max-w-3xl mx-auto">

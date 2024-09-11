@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 function Footer() {
 return (
-<footer className="footer footer-center bg-gradient-to-b from-base-300 to-black text-base-content p-10">
+<footer className="footer footer-center bg-gradient-to-b from-base-300 to-black text-base-content p-10 w-screen">
     <aside>
     <svg
                 xmlns="http://www.w3.org/2000/svg"

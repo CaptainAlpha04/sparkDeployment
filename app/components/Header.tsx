@@ -102,7 +102,7 @@ function Header() {
       </section> */}
 
       {/* Header */}
-      <header className={`bg-opacity-0 backdrop-blur-3xl text-gray-100 flex flex-row p-2 px-5 justify-between w-screen fixed top-0 z-20 transition-all`}>
+      <header className={`w-screen bg-opacity-0 backdrop-blur-3xl text-gray-100 flex flex-row p-2 px-5 justify-between fixed top-0 z-20 transition-all`}>
 
         {/* Logo */}
         <Link href='/' className='flex flex-row items-center gap-2 cursor-pointer p-1'>
