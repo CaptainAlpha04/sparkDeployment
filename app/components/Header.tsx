@@ -106,8 +106,8 @@ function Header() {
 
         {/* Logo */}
         <Link href='/' className='flex flex-row items-center gap-2 cursor-pointer p-1'>
-          <img src="/images/logo.png" alt="logo" className=' w-14' />
-          <h1 className='text-2xl font-azonix'>SPARK</h1>
+          <img src="/images/spark web.png" alt="logo" width={150} />
+          {/* <h1 className='text-2xl font-azonix'>SPARK</h1> */}
         </Link>
 
         {/* Navigation Links for desktop */}

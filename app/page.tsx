@@ -86,7 +86,7 @@ export default function HomePage() {
         <StarryCanvas />
         <div className='flex flex-col items-center justify-center h-full z-10'>
           <h1 className='text-7xl md:text-8xl font-extrabold text-center animation-swipe-from-bottom px-4'>Here Ideas <br />Spark into Reality</h1>
-          <p className='text-lg font-poppins animation-fade-in text-center'>The <b>Fastest</b> Growing Innovation Community of Pakistan</p>
+          <p className='text-lg font-poppins animation-fade-in text-center px-10'>The <b>Fastest</b> Growing Innovation Community of Pakistan</p>
         </div>  
       </section>
 

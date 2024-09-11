@@ -68,7 +68,7 @@ const StarryCanvas = (props) => {
     return () => window.removeEventListener('resize', resizeCanvas);
   }, []);
 
-  return <canvas ref={canvasRef} className="absolute inset-0 z-0" />;
+  return <canvas ref={canvasRef} className="absolute inset-0 z-0 w-screen" />;
 };
 
 export default StarryCanvas;
