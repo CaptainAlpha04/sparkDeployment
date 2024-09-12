@@ -3,7 +3,7 @@ import React from 'react'
 function Page() {
   return (
     <>
-      <section className="min-h-screen w-screen p-10 pt-24 font-poppins bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white">
+      <section className="min-h-screen w-screen p-10 pt-24 font-poppins text-base-content bg-base-300">
         <div className="max-w-5xl mx-auto text-center">
           <h1 className="text-7xl font-bold mb-6 drop-shadow-lg">
             OUR <span className="text-yellow-300">MISSION</span>

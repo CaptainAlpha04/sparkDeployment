@@ -84,9 +84,9 @@ export default function RegisterPage() {
   };
 
   return (
-    <section className="h-screen w-screen flex flex-row fixed planet-bg z-30 overflow-auto">
+    <section className="h-screen w-screen flex flex-row fixed bg-black md:planet-bg z-30 overflow-auto">
     <StarryCanvas numberOfStars={300}/>
-      <div className="pt-4 bg-opacity-0 bg-black p-6 flex flex-col w-1/3 backdrop-blur-3xl gap-4 items-center h-screen relative transition-all">
+      <div className="pt-4 bg-opacity-0 bg-black p-6 flex flex-col w-screen md:w-1/3 backdrop-blur-3xl gap-4 items-center h-screen relative transition-all">
         
         <div className='flex flex-row justify-between w-full'>
           <Link href='/' className="btn btn-ghost">
@@ -126,7 +126,7 @@ export default function RegisterPage() {
           />
           </label>
 
-        <label className="flex flex-row items-center gap-2">
+        <label className="flex flex-row items-center">
           <i className="fi fi-sr-envelope text-lg"></i>
           <h1 className="w-1/5">Email</h1>
           <input

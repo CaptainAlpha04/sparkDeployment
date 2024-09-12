@@ -114,7 +114,7 @@ function Header() {
         <div className='flex-row hidden items-center gap-12 text-gray-100 lg:visible lg:flex'>
           <Link href="/" className='relative nav-link hover:nav-selected'>Home</Link>
           <Link href="/mission" className='relative nav-link hover:nav-selected'>Our Mission</Link>
-          <Link href="/institutions" className='relative nav-link hover:nav-selected'>Institutions</Link>
+          <Link href="/alliance" className='relative nav-link hover:nav-selected'>Alliance</Link>
           <Link href="/events" className='relative nav-link hover:nav-selected'>Events</Link>
           <Link href="/highlights" className='relative nav-link hover:nav-selected'>Highlights</Link>
           {
@@ -198,7 +198,7 @@ function Header() {
           <nav className="flex flex-col gap-4 mt-10">
             <Link href="/" className="nav-link hover:nav-selected" onClick={() => setIsOpen(false)}>Home</Link>
             <Link href="/mission" className="nav-link hover:nav-selected" onClick={() => setIsOpen(false)}>Our Mission</Link>
-            <Link href="/institutions" className="nav-link hover:nav-selected" onClick={() => setIsOpen(false)}>Institutions</Link>
+            <Link href="/alliance" className="nav-link hover:nav-selected" onClick={() => setIsOpen(false)}>Alliance</Link>
             <Link href="/events" className="nav-link hover:nav-selected" onClick={() => setIsOpen(false)}>Events</Link>
             <Link href="/highlights" className="nav-link hover:nav-selected" onClick={() => setIsOpen(false)}>Highlights</Link>
             {

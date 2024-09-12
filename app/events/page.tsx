@@ -115,7 +115,7 @@ export default function EventsPage() {
             {loading ? (
                 <p className="">Loading...</p>
             ) : events.length > 0 ? (
-                <ul className="grid grid-cols-3 gap-5">
+                <ul className="grid grid-cols-subgrid md:grid-cols-3 gap-5 mb-40">
                     {events.map((event) => (
                         <li
                             key={event.id}
@@ -127,7 +127,7 @@ export default function EventsPage() {
 
                                 {/* Image */}
                                 <img
-                                    src={event.imageUrl ?? "planets.jpg"}
+                                    src={event.imageUrl ?? "/images/planets.jpg"}
                                     alt=""
                                     className="w-full rounded-2xl"
                                 />
@@ -149,14 +149,14 @@ export default function EventsPage() {
                                             {event.ticketPrice === 0
                                                 ? "Free"
                                                 : "PKR " +
-                                                  event.ticketPrice.toFixed(2)}
+                                                    event.ticketPrice.toFixed(2)}
                                         </b>
                                     </p>
                                 </div>
                                 {/* Description */}
                                 <span className="text-gray-300 text-sm flex justify-between">
                                     <p>
-                                        <b>Details:</b> {event.description}
+                                        <b>Details:</b> {event.description.length > 50? event.description.substring(0, 50) + "..." : event.description}
                                     </p>
                                     <b
                                         className="cursor-pointer"
