@@ -3,13 +3,14 @@ import Link from 'next/link'
 
 function Footer() {
 return (
-<footer className="footer footer-center bg-gradient-to-b from-base-300 to-black text-base-content p-10 w-screen">
-    <aside>
+
+<footer className="footer footer-center bg-gradient-to-b from-base-300 to-black text-base-content items-center content-center">
+    <aside className='flex flex-col p-4'>
     <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 92.41 97.5"
                 className="w-24 h-24 text-current"
-            >
+                >
                 <g id="Layer_2" data-name="Layer 2">
                 <g id="Layer_1-2" data-name="Layer 1">
                     <path
@@ -28,8 +29,9 @@ return (
     </p>
     <p>Copyright © {new Date().getFullYear()} - All right reserved</p>
     </aside>
-    <nav>
-        <div className='flex flex-row gap-2 w-96 place-content-center flex-wrap'>
+
+    <nav className='p-2'>
+        <div className='flex flex-row gap-2 w-fit place-content-center flex-wrap'>
         <Link href='/legal'>
             <p className='btn btn-ghost'>Legal</p>
         </Link>
@@ -49,7 +51,7 @@ return (
     </nav>
     <nav>
         <p className='mb-2'>Socials</p>
-    <div className="grid grid-flow-col gap-6">
+    <div className="grid grid-flow-col gap-6 pb-10">
         <Link href='https://www.facebook.com/profile.php?id=61564825415487&mibextid=ZbWKwL' target='_blank'>
         <i className='fi fi-brands-facebook text-2xl hover:text-blue-500 duration-200 transition-all'></i>
         </Link>

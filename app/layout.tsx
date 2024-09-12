@@ -36,7 +36,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body className={josefin.className}>
         <Header />
-        <main className="text-base-content">
+        <main className="text-base-content overflow-x-hidden w-screen bg-base-300">
           {children}
         </main>
         <Footer />
