@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import StarryCanvas from "../../components/StarryCanvas";
 import { useRouter } from "next/navigation";
+import React from "react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -47,8 +48,7 @@ export default function LoginPage() {
 
 
   return (
-    <section className="h-screen w-screen flex flex-row fixed bg-base-300 z-30 overflow-auto">
-    <StarryCanvas numberOfStars={300}/>
+    <section className="h-screen w-screen flex flex-row fixed bg-gradient-to-b from-bg-base-300 planet-bg to-slate-950 z-30 overflow-auto">
       <div className="pt-4 bg-opacity-0 bg-black p-6 flex flex-col w-screen md:w-1/3 backdrop-blur-3xl gap-4 items-center h-screen relative transition-all">
         <div className='flex flex-row justify-between w-full'>
           <Link href='/' className="btn btn-ghost">
@@ -64,7 +64,7 @@ export default function LoginPage() {
 
           <label className="flex flex-row items-center gap-2">
             <i className="fi fi-sr-envelope text-lg"></i>
-            <h1 className="w-1/5">Email</h1>
+            <h1 className="hidden md:flex w-1/5">Email</h1>
             <input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -77,7 +77,7 @@ export default function LoginPage() {
 
           <label className="flex flex-row items-center gap-2">
             <i className="fi fi-sr-key text-lg"></i>
-            <h1 className="w-1/5">Password</h1>
+            <h1 className="hidden md:flex w-1/5">Password</h1>
             <input
               value={password}
               onChange={(e) => setPassword(e.target.value)}

@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
 import StarryCanvas from "../../components/StarryCanvas";
+import React from "react";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -84,9 +85,8 @@ export default function RegisterPage() {
   };
 
   return (
-    <section className="h-screen w-screen flex flex-row fixed bg-black md:planet-bg z-30 overflow-auto">
-    <StarryCanvas numberOfStars={300}/>
-      <div className="pt-4 bg-opacity-0 bg-black p-6 flex flex-col w-screen md:w-1/3 backdrop-blur-3xl gap-4 items-center h-screen relative transition-all">
+    <section className="h-screen w-screen flex flex-row fixed bg-gradient-to-b from-bg-base-300 to-slate-950 planet-bg z-30 overflow-auto">
+      <div className="pt-4 bg-opacity-0 bg-black p-6 flex flex-col w-screen md:w-2/3 backdrop-blur-3xl gap-4 items-center h-screen relative transition-all">
         
         <div className='flex flex-row justify-between w-full'>
           <Link href='/' className="btn btn-ghost">
@@ -98,11 +98,11 @@ export default function RegisterPage() {
         <img src="/images/logo-white.png" alt="logo" className="w-14 h-14" />
         <h1 className="text-3xl font-bold text-white">Create an Account</h1>
         <p className="text-white font-light">Enter your details to become a member.</p> 
-        <form className="flex flex-col gap-2 w-full">
+        <form className="flex flex-col gap-2 w-full md:w-1/2">
 
         <label className="flex flex-row items-center gap-2">
         <i className="fi fi-sr-user text-lg"></i>
-        <h1 className="w-1/5">Name</h1>
+        <h1 className="hidden md:flex w-1/5">Name</h1>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -115,7 +115,7 @@ export default function RegisterPage() {
 
         <label className="flex flex-row items-center gap-2">
           <i className="fi fi-sr-age-alt text-lg"></i>
-          <h1 className="w-1/5">Age</h1>
+          <h1 className="hidden md:flex w-1/5">Age</h1>
           <input
             value={age}
             onChange={(e) => setAge(e.target.value)}
@@ -126,9 +126,9 @@ export default function RegisterPage() {
           />
           </label>
 
-        <label className="flex flex-row items-center">
+        <label className="flex flex-row items-center gap-2">
           <i className="fi fi-sr-envelope text-lg"></i>
-          <h1 className="w-1/5">Email</h1>
+          <h1 className="hidden md:flex w-1/5">Email</h1>
           <input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -141,7 +141,7 @@ export default function RegisterPage() {
 
         <label className="flex flex-row items-center gap-2">
           <i className="fi fi-sr-key text-lg"></i>
-          <h1 className="w-1/5">Password</h1>
+          <h1 className="hidden md:flex w-1/5">Password</h1>
           <input
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -154,7 +154,7 @@ export default function RegisterPage() {
 
         <label className="flex flex-row items-center gap-2">
           <i className="fi fi-sr-phone-flip text-lg"></i>
-          <h1 className="w-1/5">Phone</h1>
+          <h1 className="hidden md:flex w-1/5">Phone</h1>
           <input
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
@@ -167,11 +167,11 @@ export default function RegisterPage() {
 
         <label className="flex flex-row items-center gap-2">
           <i className="fi fi-sr-graduation-cap text-lg"></i>
-          <h1 className="w-1/5">University</h1>
+          <h1 className="hidden md:flex w-1/5">University</h1>
           <input
             value={university}
             onChange={(e) => setUniversity(e.target.value)}
-            placeholder="University"
+            placeholder="University or Organization"
             type="text"
             required
             className="p-3 rounded-lg w-full"
@@ -180,11 +180,11 @@ export default function RegisterPage() {
 
         <label className="flex flex-row items-center gap-2">
           <i className="fi fi-sr-degree-credential text-lg"></i>
-          <h1 className="w-1/5">Degree</h1>
+          <h1 className="hidden md:flex w-1/5">Degree</h1>
           <input
             value={degree}
             onChange={(e) => setDegree(e.target.value)}
-            placeholder="Degree"
+            placeholder="Degree or Position"
             type="text"
             required
             className="p-3 rounded-lg w-full"
