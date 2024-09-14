@@ -9,6 +9,7 @@ import {
     updateDoc,
     arrayUnion,
 } from "firebase/firestore";
+import { getCookie } from "../utils/cookies";
 
 interface Event {
     id: string;
@@ -19,46 +20,80 @@ interface Event {
     imageUrl: string;
     registeredUsers: string[]; // New field to store registered users
     eventVenue: string;
+    completed?: boolean; // New field to mark event as completed
+}
+interface User {
+    email: string;
+    name: string;
 }
 
 export default function EventsPage() {
     const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(true);
     const [eventDetails, setEventDetails] = useState<Event | null>(null);
+   
+    const [user, setUser] = useState<User | null>(null); // To store the user data
+    
 
     useEffect(() => {
-        const fetchEvents = async () => {
+        const fetchUserData = async () => {
             try {
-                const eventsCollection = collection(db, "events");
-                const eventSnapshot = await getDocs(eventsCollection);
-                const eventList: Event[] = eventSnapshot.docs.map((doc) => {
-                    const data = doc.data() as DocumentData;
-                    return {
-                        id: doc.id,
-                        eventName: data.eventName,
-                        description: data.description,
-                        date: data.date,
-                        ticketPrice: data.ticketPrice,
-                        imageUrl: data.imageUrl, // Handle imageUrl if it exists
-                        registeredUsers: data.registeredUsers || [], // Ensure this field is handled
-                        eventVenue: data.eventVenue || "", // Handle the new venue field
-                    };
+                const sessionId = getCookie('sessionId', document.cookie); // Fetch sessionId from cookie
+                if (!sessionId) {
+                    throw new Error('Session ID not found');
+                }
+
+                const response = await fetch('/api/checkSession', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sessionId }),
                 });
-                setEvents(eventList);
+
+                const data = await response.json();
+                if (data.authenticated) {
+                    setUser(data.userData);
+                } else {
+                    console.error(data.error);
+                }
             } catch (error) {
-                console.error("Error fetching events: ", error);
-            } finally {
-                setLoading(false);
+                console.error("Error fetching user data: ", error);
             }
         };
 
-        fetchEvents();
+        const fetchEvents = async () => {
+            try {
+              const eventsCollection = collection(db, "events");
+              const eventSnapshot = await getDocs(eventsCollection);
+              const eventList: Event[] = eventSnapshot.docs
+                .map((doc) => {
+                  const data = doc.data() as DocumentData;
+                  return {
+                    id: doc.id,
+                    eventName: data.eventName,
+                    description: data.description,
+                    date: data.date,
+                    ticketPrice: data.ticketPrice,
+                    imageUrl: data.imageUrl,
+                    registeredUsers: data.registeredUsers || [],
+                    eventVenue: data.eventVenue || "",
+                  };
+                })
+                .filter(event => !event.completed); // Filter out completed events
+              setEvents(eventList);
+            } catch (error) {
+              console.error("Error fetching events: ", error);
+            } finally {
+              setLoading(false);
+            }
+          };
+          
+
+        fetchUserData(); // Fetch user data from backend
+        fetchEvents(); // Fetch events data
     }, []);
 
     async function handleRegister(eventId: string) {
-        const userJson = localStorage.getItem("user");
-        if (userJson) {
-            const user = JSON.parse(userJson);
+        if (user) {
             try {
                 // Update user's registered events
                 const userRef = doc(db, "users", user.email);
@@ -69,7 +104,7 @@ export default function EventsPage() {
                 // Update event's registered users
                 const eventRef = doc(db, "events", eventId);
                 await updateDoc(eventRef, {
-                    registeredUsers: arrayUnion(user.name), // or user.name if available
+                    registeredUsers: arrayUnion(user.name), // Register user by name
                 });
 
                 alert("Registered successfully!");
@@ -77,7 +112,7 @@ export default function EventsPage() {
                 console.error("Error registering for event: ", error);
             }
         } else {
-            alert("You need to register first!");
+            alert("You need to log in first!");
         }
     }
 
@@ -99,10 +134,8 @@ export default function EventsPage() {
                     <p className="py-2 text-wrap w-full">
                         <b>Description:</b> {eventDetails?.description}
                     </p>
-                    {/* Added venue */}
                     <div className="modal-action">
                         <form method="dialog">
-                            {/* if there is a button in form, it will close the modal */}
                             <button className="btn btn-primary">Close</button>
                         </form>
                     </div>
@@ -122,23 +155,19 @@ export default function EventsPage() {
                             className="bg-base-100 rounded-2xl display-animation"
                         >
                             <div className="relative group">
-                                {/* Blur overlay */}
                                 <div className="absolute inset-0 bg-black/50 rounded-2xl transition-all duration-300 group-hover:bg-opacity-70 group-hover:backdrop-blur-lg"></div>
 
-                                {/* Image */}
                                 <img
                                     src={event.imageUrl ?? "/images/planets.jpg"}
-                                    alt=""
+                                    alt="Event Image"
                                     className="w-full rounded-2xl"
                                 />
 
-                                {/* Event title */}
                                 <h2 className="absolute bottom-0 left-0 text-3xl font-bold pb-4 pl-4 text-white transition-transform duration-300 group-hover:scale-110">
                                     {event.eventName}
                                 </h2>
                             </div>
 
-                            {/* Event details */}
                             <div className="p-6 rounded-xl flex flex-col gap-4">
                                 <div className="flex flex-row justify-stretch gap-2 text-xs">
                                     <p className="bg-purple-400 p-2 text-base-300 rounded-3xl">
@@ -153,7 +182,7 @@ export default function EventsPage() {
                                         </b>
                                     </p>
                                 </div>
-                                {/* Description */}
+
                                 <span className="text-gray-300 text-sm flex justify-between">
                                     <p>
                                         <b>Details:</b> {event.description.length > 50? event.description.substring(0, 50) + "..." : event.description}
@@ -168,12 +197,22 @@ export default function EventsPage() {
                                     </b>
                                 </span>
 
-                                <button
-                                    onClick={() => handleRegister(event.id)}
-                                    className="btn btn-neutral mt-auto hover:bg-violet-600"
-                                >
-                                    Register
-                                </button>
+                                {/* Check if user is registered for this event */}
+                                {user && event.registeredUsers.includes(user.name) ? (
+                                    <button
+                                        className="btn bg-gray-400 text-gray-700 mt-auto cursor-not-allowed"
+                                        disabled
+                                    >
+                                        Registered
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={() => handleRegister(event.id)}
+                                        className="btn btn-neutral mt-auto hover:bg-violet-600"
+                                    >
+                                        Register
+                                    </button>
+                                )}
                             </div>
                         </li>
                     ))}
