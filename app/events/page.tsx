@@ -20,7 +20,7 @@ interface Event {
     imageUrl: string;
     registeredUsers: string[]; // New field to store registered users
     eventVenue: string;
-    completed?: boolean; // New field to mark event as completed
+    isComplete?: boolean; // New field to mark event as completed
 }
 interface User {
     email: string;
@@ -76,9 +76,10 @@ export default function EventsPage() {
                     imageUrl: data.imageUrl,
                     registeredUsers: data.registeredUsers || [],
                     eventVenue: data.eventVenue || "",
-                  };
-                })
-                .filter(event => !event.completed); // Filter out completed events
+                isComplete: data.isComplete || false, // Ensure isComplete is included
+              };
+            })
+            .filter(event => !event.isComplete); // Filter out completed events
               setEvents(eventList);
             } catch (error) {
               console.error("Error fetching events: ", error);
