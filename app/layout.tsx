@@ -2,6 +2,7 @@ import "./globals.css"; // Global CSS styles
 import { ReactNode } from "react";
 import localFont from 'next/font/local';
 import {Poppins, Josefin_Sans, Audiowide} from 'next/font/google';
+import { Analytics } from "@vercel/analytics/react"
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
@@ -27,7 +28,7 @@ const Azonix = localFont(
 );
 
 export const metadata = {
-  title: "Spark Web",
+  title: "Spark Chapter | The fastest growing community",
   description: "A web app for spark updates",
 };
 

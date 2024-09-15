@@ -107,8 +107,10 @@ export default function EventsPage() {
                 await updateDoc(eventRef, {
                     registeredUsers: arrayUnion(user.name), // Register user by name
                 });
-
-                alert("Registered successfully!");
+                
+                //show the success modal
+                (document.getElementById("success_modal") as HTMLDialogElement).showModal();
+                window.location.reload();
             } catch (error) {
                 console.error("Error registering for event: ", error);
             }
@@ -143,6 +145,17 @@ export default function EventsPage() {
                 </div>
             </dialog>
 
+            <dialog id="success_modal" className="modal">
+                <div className="modal-box">
+                    <h3 className="font-bold text-2xl">Registered Successfully</h3>
+                    <div className="modal-action">
+                        <form method="dialog">
+                            <button className="btn btn-primary">Close</button>
+                        </form>
+                    </div>
+                </div>
+            </dialog>
+
             <h1 className="text-6xl mb-6 font-extralight">
                 <span className="font-bold">Upcoming</span> <br /> Events
             </h1>
@@ -159,7 +172,7 @@ export default function EventsPage() {
                                 <div className="absolute inset-0 bg-black/50 rounded-2xl transition-all duration-300 group-hover:bg-opacity-70 group-hover:backdrop-blur-lg"></div>
 
                                 <img
-                                    src={event.imageUrl ?? "/images/planets.jpg"}
+                                    src={event.imageUrl ?? "/images/login-bg.jpg"}
                                     alt="Event Image"
                                     className="w-full rounded-2xl"
                                 />

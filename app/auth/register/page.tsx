@@ -86,7 +86,7 @@ export default function RegisterPage() {
 
   return (
     <section className="h-screen w-screen flex flex-row fixed bg-gradient-to-b from-bg-base-300 to-slate-950 planet-bg z-30 overflow-auto">
-      <div className="pt-4 bg-opacity-0 bg-black p-6 flex flex-col w-screen md:w-2/3 backdrop-blur-3xl gap-4 items-center h-screen relative transition-all">
+      <div className="pt-4 bg-opacity-0 bg-black p-6 flex flex-col w-screen md:w-1/3 backdrop-blur-3xl gap-4 items-center h-screen relative transition-all">
         
         <div className='flex flex-row justify-between w-full'>
           <Link href='/' className="btn btn-ghost">
@@ -98,7 +98,7 @@ export default function RegisterPage() {
         <img src="/images/logo-white.png" alt="logo" className="w-14 h-14" />
         <h1 className="text-3xl font-bold text-white">Create an Account</h1>
         <p className="text-white font-light">Enter your details to become a member.</p> 
-        <form className="flex flex-col gap-2 w-full md:w-1/2">
+        <form className="flex flex-col gap-2 w-full">
 
         <label className="flex flex-row items-center gap-2">
         <i className="fi fi-sr-user text-lg"></i>

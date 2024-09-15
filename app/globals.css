@@ -92,7 +92,7 @@
 }
 
 .planet-bg {
-  background-image: url('/images/planets.jpg');
+  background-image: url('/images/login-bg.jpg');
   background-size: cover;
   background-position: center;
 }
