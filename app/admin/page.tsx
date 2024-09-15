@@ -63,6 +63,23 @@ export default function AdminPage() {
     }
   };
 
+  const handleToggleAdmin = async (userId: string, currentAdminStatus: boolean) => {
+    try {
+      const userRef = doc(db, "users", userId);
+      await updateDoc(userRef, {
+        admin: !currentAdminStatus,
+      });
+      // Update the local state to reflect the change
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === userId ? { ...user, admin: !currentAdminStatus } : user
+        )
+      );
+      alert(`User ${!currentAdminStatus ? "granted" : "revoked"} admin privileges`);
+    } catch (error) {
+      console.error("Error updating admin status: ", error);
+    }
+  };
   const handleCreateOrUpdateEvent = async () => {
     if (eventName && description && date && ticketPrice > 0 && eventVenue) {
       setLoading(true);
@@ -285,8 +302,16 @@ export default function AdminPage() {
       <div className="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
         {users.map((user) => (
           <div key={user.id} className="border-b border-gray-300 py-4">
-            <h3 className="text-xl font-semibold">{user.name}</h3> {/* Assuming user has a 'name' field */}
-            <p>Email: {user.email}</p> {/* Assuming user has an 'email' field */}
+            <h3 className="text-xl font-semibold">{user.name}</h3> 
+            <p>Email: {user.email}</p>
+            <label className="flex items-center space-x-2 mt-4">
+              <span>Admin</span>
+              <input
+                type="checkbox"
+                checked={user.admin || false} 
+                onChange={() => handleToggleAdmin(user.id, user.admin || false)}
+              />
+            </label>
             <div className="flex mt-4 space-x-2">
               <button
                 onClick={() => handleDeleteUser(user.id)}
