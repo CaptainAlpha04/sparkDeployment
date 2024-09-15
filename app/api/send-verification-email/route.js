@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // API Route for sending verification email
-export async function POST(request: NextRequest) {
+export async function POST(request) {
   try {
     const { email, token } = await request.json();
 

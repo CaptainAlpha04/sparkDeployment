@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { collection, query, where, getDocs, updateDoc, deleteDoc, doc,setDoc } from 'firebase/firestore';
 import { db } from '../../firebaseconfig';
 
-export async function GET(request: NextRequest) {
+export async function GET(request) {
   const url = new URL(request.url);
   const token = url.searchParams.get('token');
 

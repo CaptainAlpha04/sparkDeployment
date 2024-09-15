@@ -2,17 +2,18 @@ import React from 'react'
 
 function Page() {
   return (
-    <>
-      <section className="min-h-screen w-screen p-10 pt-24 font-poppins text-base-content bg-base-300">
-        <div className="max-w-5xl mx-auto text-center">
-          <h1 className="text-7xl font-bold mb-6 drop-shadow-lg">
-            OUR <span className="text-yellow-300">MISSION</span>
-          </h1>
-          <p className="text-2xl mb-12 leading-relaxed">
-            Welcome to <strong>SPARK</strong>, a hub of creativity, innovation, and research in the fields of science and technology. We strive to cultivate a dynamic environment that encourages innovation, entrepreneurship, and psychological enhancement. Our mission is to empower individuals to push boundaries and reimagine the future. Join us, and {"let's"} build a brighter, more innovative world together!
-          </p>
-          
+    <>    
+          {/* Hero Section */}
+          <section className='flex flex-col items-center w-screen h-screen bg-black py-fu'>
+              <h1 className="text-7xl font-extralight mb-6 drop-shadow-lg">
+                OUR <span className="font-bold">MISSION</span>
+              </h1>
+          </section>
+
           {/* Mottos */}
+              <p className="text-2xl mb-12 leading-relaxed">
+                Welcome to <strong>SPARK</strong>, a hub of creativity, innovation, and research in the fields of science and technology. We strive to cultivate a dynamic environment that encourages innovation, entrepreneurship, and psychological enhancement. Our mission is to empower individuals to push boundaries and reimagine the future. Join us, and {"let's"} build a brighter, more innovative world together!
+              </p>
           <section className="my-16">
             <h2 className="text-4xl font-bold text-yellow-300 mb-4">Entrepreneurship</h2>
             <p className="text-lg">Fostering creativity and innovation through entrepreneurship, paving the way for future leaders and innovators.</p>
@@ -57,8 +58,6 @@ function Page() {
           <p className="text-2xl mt-16 mb-8 font-light drop-shadow-lg">
             Join <strong>SPARK</strong> and become part of an extraordinary community working to revolutionize the future through innovation, research, and leadership. Together, we can shape a brighter tomorrow.
           </p>
-        </div>
-      </section>
     </>
   )
 }
