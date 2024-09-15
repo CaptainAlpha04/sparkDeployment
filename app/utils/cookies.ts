@@ -1,3 +1,4 @@
+//cookies.ts
 import cookie from 'cookie';
 
 // Function to get a specific cookie value by name

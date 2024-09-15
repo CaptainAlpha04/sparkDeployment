@@ -1,9 +1,10 @@
+//checkSession
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/app/firebaseconfig';
 import { doc, getDoc } from 'firebase/firestore';
 import client from '@/app/lib/redis';
 
-export async function POST(req) {
+export async function POST(req: NextRequest) {
   const { sessionId } = await req.json();
 
   try {

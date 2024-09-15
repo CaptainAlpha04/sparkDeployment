@@ -15,18 +15,32 @@ export default function AdminPage() {
   const [events, setEvents] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]); // State for users
   const [editingEvent, setEditingEvent] = useState<any>(null);
+  const [registeredUsers, setRegisteredUsers] = useState<{ [key: string]: string[] }>({});
+
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const eventsCollection = collection(db, "events");
-        const eventSnapshot = await getDocs(eventsCollection);
-        const eventList = eventSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setEvents(eventList);
+          const eventsCollection = collection(db, "events");
+          const eventSnapshot = await getDocs(eventsCollection);
+          const eventList = eventSnapshot.docs.map(doc => {
+            const data = doc.data();
+            return { id: doc.id, registeredUsers: data.registeredUsers || [], ...data };
+          });
+          setEvents(eventList);
+
+          // Build the registeredUsers state
+          const usersMap: { [key: string]: string[] } = {};
+          eventList.forEach(event => {
+              usersMap[event.id] = event.registeredUsers || [];
+          });
+          setRegisteredUsers(usersMap);
+
       } catch (error) {
-        console.error("Error fetching events: ", error);
+          console.error("Error fetching events: ", error);
       }
-    };
+  };
+
 
     const fetchUsers = async () => {
       try {
@@ -145,6 +159,20 @@ export default function AdminPage() {
       }
     }
   };
+  const handleMarkAsComplete = async (eventId: string) => {
+    try {
+        const eventRef = doc(db, "events", eventId);
+        await updateDoc(eventRef, { isComplete: true });
+        alert("Event marked as complete!");
+        // Refresh the events list
+        const eventsCollection = collection(db, "events");
+        const eventSnapshot = await getDocs(eventsCollection);
+        const eventList = eventSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setEvents(eventList);
+    } catch (error) {
+        console.error("Error marking event as complete: ", error);
+    }
+};
 
   return (
     <section className="min-h-screen w-screen px-6 py-24 bg-base-300 text-base-content">
@@ -209,31 +237,48 @@ export default function AdminPage() {
         </button>
       </div>
       <h2 className="text-2xl font-semibold text-gray-800 mt-6 mb-4">Events List</h2>
-      <div className="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
+    <div className="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
         {events.map((event) => (
-          <div key={event.id} className="border-b border-gray-300 py-4">
-            <h3 className="text-xl font-semibold">{event.eventName}</h3>
-            <p>{event.description}</p>
-            <p>Date: {event.date}</p>
-            <p>Price: ${event.ticketPrice}</p>
-            <p>Venue: {event.eventVenue}</p>
-            {event.imageUrl && <img src={event.imageUrl} alt={event.eventName} className="w-32 h-32 object-cover mt-2" />}
-            <div className="flex mt-4 space-x-2">
-              <button
+            <div key={event.id} className="border-b border-gray-300 py-4">
+                <h3 className="text-xl font-semibold">{event.eventName}</h3>
+                <p>{event.description}</p>
+                <p>Date: {event.date}</p>
+                <p>Price: ${event.ticketPrice}</p>
+                <p>Venue: {event.eventVenue}</p>
+                {event.imageUrl && <img src={event.imageUrl} alt={event.eventName} className="w-32 h-32 object-cover mt-2" />}
+                <div className="mt-4">
+                    <h4 className="text-lg font-semibold">Registered Users</h4>
+                    <ul>
+                        {registeredUsers[event.id]?.map((user, index) => (
+                            <li key={index}>{user}</li>
+                        ))}
+                    </ul>
+                </div>
+                <div className="flex mt-4 space-x-2">
+            {!event.isComplete && (
+                <button
+                    onClick={() => handleMarkAsComplete(event.id)}
+                    className="py-1 px-4 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300"
+                >
+                    Mark as Complete
+                </button>
+            )}
+            <button
                 onClick={() => handleEdit(event)}
                 className="py-1 px-4 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-300"
-                >
+            >
                 Edit
-              </button>
-              <button
+            </button>
+            <button
                 onClick={() => handleDeleteEvent(event.id)}
                 className="py-1 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300"
-              >
+            >
                 Delete
-              </button>
+            </button>
+        </div>
             </div>
-          </div>
         ))}
+
       </div>
 
       <h2 className="text-2xl font-semibold text-gray-800 mt-6 mb-4">Users List</h2>
