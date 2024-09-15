@@ -15,7 +15,7 @@ const audiowide = Audiowide({ subsets: ["latin"], variable: "--font-audiowide",
   weight: ["400"] });
 
 const Azonix = localFont(
-  {
+  { 
     src: [
       {
         path: "../public/fonts/Azonix.otf",
