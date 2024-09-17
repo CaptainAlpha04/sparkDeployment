@@ -135,7 +135,7 @@ function Page() {
           {/* SPARK elements */}
           <section className="relative w-screen h-fit py-20 px-10 flex flex-col bg-slate-950">
             <h2 className="text-6xl font-bold text-center text-base-content">Our Elements</h2>
-            <p className="text-md text-center font-light mb-20">Discover the core pillars that drive SPARK's mission and vision.</p>
+            <p className="text-md text-center font-light mb-20">Discover the core pillars that drive {`SPARK's`} mission and vision.</p>
 
             <div className="flex flex-row flex-wrap gap-4 place-content-center">
               {
@@ -152,7 +152,7 @@ function Page() {
 
           <section className="relative w-screen h-fit py-20 px-10 pb-30 flex flex-col bg-gradient-to-b from-slate-950 to-base-300">
             <h2 className="text-6xl font-bold text-center text-base-content">Global Impact</h2>
-            <p className='text-md mt-16 font-light drop-shadow-lg md:px-32 text-justify'>We aim to create a <strong className='text-lg'>global impact</strong> by fostering a community of innovators, entrepreneurs, and leaders who are equipped to <strong className='text-lg'>solve</strong> challenges that transcend borders. Through collaboration across industries and cultures, SPARK <strong className='text-lg'>connects</strong> individuals worldwide, enabling the exchange of ideas, skills, and resources. By focusing on <strong className='text-lg'>universal</strong> pillars like creativity, research, and technology, Our initiatives are designed to address global issues such as education reform, <strong className='text-lg'>sustainable</strong> innovation, and social entrepreneurship, ensuring that its solutions benefit not only local communities but also the global society at large.</p>
+            <p className='text-md mt-16 font-light drop-shadow-lg md:px-32 text-justify'>We aim to create a <strong className='text-lg'>global impact</strong> by fostering a community of innovators, entrepreneurs, and leaders who are equipped to <strong className='text-lg'>solve</strong> challenges that transcend borders. Through collaboration across industries and cultures, SPARK <strong className='text-lg'>connects</strong> individuals worldwide, enabling the exchange of ideas, skills, and resources. By focusing on <strong className='text-lg'>universal</strong> pillars like creativity, research, and technology, Our initiatives are designed to address global issues such as education reform, <strong className='text-lg'>sustainable</strong> innovation, and social entrepreneurship, ensuring that its solutions benefit not only local communities but also the global <strong className='text-lg'>society</strong> at large.</p>
             <img src="/designs/globe.png" alt="" className='absolute self-center opacity-30 mask-image-gradient minh-96 min-w-96 w-96'/>
               
           </section> 
