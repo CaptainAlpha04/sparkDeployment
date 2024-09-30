@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { db } from "../../firebaseconfig";
 import { collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
 import bcrypt from "bcryptjs";
@@ -15,22 +15,53 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [university, setUniversity] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [degree, setDegree] = useState("");
   const [age, setAge] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState("");
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [acceptablePassword, setAcceptablePassword] = useState(false);
+
+  const evaluatePasswordStrength = (password: string) => {
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (password.length < 6 || !hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChars) {
+      setAcceptablePassword(false);
+      return "weak";
+    } else if (password.length < 10) {
+      setAcceptablePassword(true);
+      return "medium";
+    } else {
+      setAcceptablePassword(true);
+      return "strong";
+    }
+  };
+
+  useEffect(() => {
+    setPasswordStrength(evaluatePasswordStrength(password));
+  }, [password]);
+
+  useEffect(() => {
+    setPasswordsMatch(password === confirmPassword);
+  }, [password, confirmPassword]);
 
   const handleRegister = async () => {
     if (
       name &&
       email &&
-      password &&
-      phone &&
-      university &&
-      degree &&
-      age
+      password
     ) {
       setLoading(true);
+
+      if (confirmPassword !== password) {
+        setLoading(false);
+        return;
+      }
 
       try {
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -49,10 +80,6 @@ export default function RegisterPage() {
           name,
           email,
           password: hashedPassword,
-          phone,
-          university,
-          degree,
-          age,
           registeredEvents: [],
           admin: false,
           emailVerified: false, // Pending verification
@@ -84,9 +111,26 @@ export default function RegisterPage() {
     }
   };
 
+  const getPasswordBorderColor = () => {
+    switch (passwordStrength) {
+      case "weak":
+        return "border-red-500";
+      case "medium":
+        return "border-orange-500";
+      case "strong":
+        return "border-green-500";
+      default:
+        return "";
+    }
+  };
+
+  const getConfirmPasswordBorderColor = () => {
+    return passwordsMatch && password !== "" ? "border-green-500" : "border-red-500";
+  };
+
   return (
     <section className="h-screen w-screen flex flex-row fixed bg-gradient-to-b from-bg-base-300 to-slate-950 planet-bg z-30 overflow-auto">
-      <div className="pt-4 bg-opacity-0 bg-black p-6 flex flex-col w-screen md:w-1/3 backdrop-blur-3xl gap-4 items-center h-screen relative transition-all">
+      <div className="pt-4 bg-opacity-0 bg-black p-6 flex flex-col w-screen lg:w-1/3 backdrop-blur-3xl gap-8 items-center h-screen relative transition-all">
         
         <div className='flex flex-row justify-between w-full'>
           <Link href='/' className="btn btn-ghost">
@@ -95,9 +139,11 @@ export default function RegisterPage() {
           <Link href='/auth/login' className="btn btn-ghost">Login</Link>
         </div>
         
-        <img src="/images/logo-white.png" alt="logo" className="w-14 h-14" />
-        <h1 className="text-3xl font-bold text-white">Create an Account</h1>
-        <p className="text-white font-light">Enter your details to become a member.</p> 
+        <div className="flex flex-col items-center gap-4">
+          <img src="/images/logo-white.png" alt="logo" className="w-14 h-14" />
+          <h1 className="text-3xl font-bold text-white">Create an Account</h1>
+          <p className="text-white font-light">Enter your details to become a member.</p> 
+        </div>
         <form className="flex flex-col gap-2 w-full">
 
         <label className="flex flex-row items-center gap-2">
@@ -114,19 +160,6 @@ export default function RegisterPage() {
           </label>
 
         <label className="flex flex-row items-center gap-2">
-          <i className="fi fi-sr-age-alt text-lg"></i>
-          <h1 className="hidden md:flex w-1/5">Age</h1>
-          <input
-            value={age}
-            onChange={(e) => setAge(e.target.value)}
-            placeholder="Age"
-            type="number"
-            required
-            className="p-3 rounded-lg w-full"
-          />
-          </label>
-
-        <label className="flex flex-row items-center gap-2">
           <i className="fi fi-sr-envelope text-lg"></i>
           <h1 className="hidden md:flex w-1/5">Email</h1>
           <input
@@ -139,6 +172,7 @@ export default function RegisterPage() {
           />
           </label>
 
+
         <label className="flex flex-row items-center gap-2">
           <i className="fi fi-sr-key text-lg"></i>
           <h1 className="hidden md:flex w-1/5">Password</h1>
@@ -148,54 +182,30 @@ export default function RegisterPage() {
             placeholder="Password"
             type="password"
             required
-            className="p-3 rounded-lg w-full"
+            className={`p-3 rounded-lg w-full border-b-4 ${getPasswordBorderColor()}`}
           />
           </label>
 
-        <label className="flex flex-row items-center gap-2">
-          <i className="fi fi-sr-phone-flip text-lg"></i>
-          <h1 className="hidden md:flex w-1/5">Phone</h1>
+          <label className="flex flex-row items-center gap-2">
+          <i className="fi fi-br-password-alt text-lg"></i>
+          <h1 className="hidden md:flex w-1/5">Confirm</h1>
           <input
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="Phone Number"
-            type="text"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirm Password"
+            type="password"
             required
-            className="p-3 rounded-lg w-full"
+            className={`p-3 rounded-lg w-full border-b-4 ${getConfirmPasswordBorderColor()}`}
           />
           </label>
-
-        <label className="flex flex-row items-center gap-2">
-          <i className="fi fi-sr-graduation-cap text-lg"></i>
-          <h1 className="hidden md:flex w-1/5">University</h1>
-          <input
-            value={university}
-            onChange={(e) => setUniversity(e.target.value)}
-            placeholder="University or Organization"
-            type="text"
-            required
-            className="p-3 rounded-lg w-full"
-          />
-          </label>
-
-        <label className="flex flex-row items-center gap-2">
-          <i className="fi fi-sr-degree-credential text-lg"></i>
-          <h1 className="hidden md:flex w-1/5">Degree</h1>
-          <input
-            value={degree}
-            onChange={(e) => setDegree(e.target.value)}
-            placeholder="Degree or Position"
-            type="text"
-            required
-            className="p-3 rounded-lg w-full"
-          />
-          </label>
+          
+          <p className="text-xs text-center p-2">Password must contain one Uppercase, one Lowercase character. A numerical digit and a Special Character!</p>
 
           <button
             onClick={handleRegister}
             disabled={loading}
-            className={`btn ${
-              loading ? "btn-disabled" : "btn-neutral"
+            className={`btn mt-4 ${
+              loading || !passwordsMatch || !acceptablePassword ? "btn-disabled" : "btn-neutral"
             }`}
           >
             {loading ? "Registering..." : "Register"}
