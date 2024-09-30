@@ -40,13 +40,13 @@ export async function middleware(req: NextRequest) {
         }
     }
 
-    // If user is already logged in, redirect to the home page and disallow access to login and register pages
-    if (loggedInRestrictedPaths.includes(req.nextUrl.pathname)) {
-        if (data?.authenticated) {
-            console.log('User is already authenticated. Redirecting to home page');
-            return NextResponse.redirect(new URL('/', req.url));
-        }
-    }
+    // // If user is already logged in, redirect to the home page and disallow access to login and register pages
+    // if (loggedInRestrictedPaths.includes(req.nextUrl.pathname)) {
+    //     if (data?.authenticated) {
+    //         console.log('User is already authenticated. Redirecting to home page');
+    //         return NextResponse.redirect(new URL('/', req.url));
+    //     }
+    // }
 
     // If the current request is for an admin-only path
     if (adminOnlyPaths.includes(req.nextUrl.pathname)) {
@@ -58,7 +58,6 @@ export async function middleware(req: NextRequest) {
 
     return NextResponse.next();
 }
-
 
 export const config = {
   matcher: ['/admin', '/settings'], // Define routes to protect
