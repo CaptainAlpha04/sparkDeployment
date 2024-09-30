@@ -41,7 +41,7 @@ return (
         <Link href='/products'>
             <p className='btn btn-ghost'>Products</p>
         </Link>
-        <Link href='/products'>
+        <Link href='/research'>
             <p className='btn btn-ghost'>Research</p>
         </Link>
         <Link href='/jobs'>

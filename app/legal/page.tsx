@@ -7,13 +7,13 @@ function page() {
         {/* Hero Section*/}
         <section className='relative flex flex-col w-screen pt-32 p-10 items-center bg-gradient-to-r from-purple-950 to-blue-950 overflow-hidden'>
           {/* Title */}
-          <h1 className="text-7xl mb-3 font-bold text-white z-10">
-            Event Highlights
+          <h1 className="text-4xl md:text-7xl mb-3 font-bold text-white z-10 text-center">
+            Legal Information
           </h1>
 
           {/* Subheading */}
           <p className="text-md text-center mb-10 font-light text-white z-10">
-            Showcasing the best moments from our events!
+            Legal information about our organization and our privacy policy.
           </p>
 
           {/* Random Geometric Elements */}
@@ -31,7 +31,7 @@ function page() {
           <div className='absolute h-1 w-screen bottom-0 bg-gradient-to-r from-purple-600 to-blue-600'></div>
         </section>
 
-        <h1 className='p-10 text-center'>No Highlights Available!</h1>
+        <h1 className='p-10 text-center'>Page Under Construction!</h1>
       </section>
     </>
   )

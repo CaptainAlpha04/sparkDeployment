@@ -216,9 +216,9 @@ export default function HomePage() {
                   Join SPARK today and be part of Pakistan&apos;s
                   fastest-growing innovation community!
                 </p>
-                <button className="btn-stylized">
+                <Link href="/auth/register" className="btn-stylized">
                   Register Now
-                </button>
+                </Link>
               </div>
             </div>
           </div>
