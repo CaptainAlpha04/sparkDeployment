@@ -6,7 +6,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Link from "next/link";
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState<'events' | 'users' | 'overview'>('overview');
+  const [activeTab, setActiveTab] = useState<'events' | 'users' | 'overview' | 'members'>('overview');
   const [eventName, setEventName] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
@@ -20,10 +20,12 @@ export default function AdminPage() {
   const [registeredUsers, setRegisteredUsers] = useState<{ [key: string]: string[] }>({});
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [members, setMembers] = useState<any[]>([]);
 
   useEffect(() => {
     fetchEvents();
     fetchUsers();
+    fetchMembers();
   }, []);
 
   const fetchEvents = async () => {
@@ -56,6 +58,17 @@ export default function AdminPage() {
     } catch (error) {
       console.error("Error fetching users: ", error);
       setError("Failed to load users");
+    }
+  };
+
+  const fetchMembers = async () => {
+    try {
+      const membershipCollection = collection(db, "membership");
+      const memberSnapshot = await getDocs(membershipCollection);
+      const memberList = memberSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setMembers(memberList);
+    } catch (error) {
+      console.error("Error fetching members: ", error);
     }
   };
 
@@ -520,6 +533,45 @@ export default function AdminPage() {
     </div>
   );
 
+  const renderMembers = () => (
+    <div className="space-y-8">
+      <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-8 shadow-2xl">
+        <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
+          <i className="fi fi-sr-star mr-3"></i>
+          Spark Members ({members.length})
+        </h3>
+        <div className="overflow-x-auto">
+          <table className="table table-zebra">
+            <thead>
+              <tr className="text-white/80">
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Age</th>
+                <th>City</th>
+                <th>School/College</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.map((member) => (
+                <tr key={member.id} className="hover:bg-white/5">
+                  <td className="text-white/90">{member.name}</td>
+                  <td className="text-white/80">{member.email}</td>
+                  <td className="text-white/80">{member.phone}</td>
+                  <td className="text-white/80">{member.age}</td>
+                  <td className="text-white/80">{member.city}</td>
+                  <td className="text-white/80">{member.school}</td>
+                  <td className="text-white/60">{member.timestamp ? new Date(member.timestamp.seconds * 1000).toLocaleString() : ''}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <section className="min-h-screen w-screen bg-gradient-to-b from-slate-950 to-base-300">
       {/* Hero Section */}
@@ -603,6 +655,18 @@ export default function AdminPage() {
                     <i className="fi fi-sr-users"></i>
                     <span>Users</span>
                   </button>
+                  
+                  <button
+                    onClick={() => setActiveTab('members')}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors duration-200 ${
+                      activeTab === 'members' 
+                        ? 'bg-gradient-to-r from-yellow-400 to-pink-500 text-white' 
+                        : 'text-white/70 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <i className="fi fi-sr-star"></i>
+                    <span>Members</span>
+                  </button>
                 </nav>
               </div>
             </div>
@@ -612,6 +676,7 @@ export default function AdminPage() {
               {activeTab === 'overview' && renderOverview()}
               {activeTab === 'events' && renderEvents()}
               {activeTab === 'users' && renderUsers()}
+              {activeTab === 'members' && renderMembers()}
             </div>
           </div>
         </div>
