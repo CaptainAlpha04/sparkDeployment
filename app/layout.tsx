@@ -5,6 +5,7 @@ import {Poppins, Josefin_Sans, Audiowide} from 'next/font/google';
 import { Analytics } from "@vercel/analytics/react"
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import { SessionProvider } from './context/sessionContext';
 
 const poppins = Poppins({ subsets: ["latin"], variable: "--font-poppins",
   weight: ["100", "200", "300", "400", "500", "600", "700"] });
@@ -36,11 +37,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className={josefin.className}>
-        <Header />
-        <main className="text-base-content overflow-x-hidden w-screen bg-base-300">
-          {children}
-        </main>
-        <Footer />
+        <SessionProvider>
+          <Header />
+          <main className="text-base-content overflow-x-hidden w-screen bg-base-300">
+            {children}
+          </main>
+          <Footer />
+        </SessionProvider>
       </body>
     </html>
   );

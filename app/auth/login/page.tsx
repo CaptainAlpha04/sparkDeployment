@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import StarryCanvas from "../../components/StarryCanvas";
 import { useRouter } from "next/navigation";
+import { useSession } from "../../context/SessionContext";
 import React from "react";
 
 export default function LoginPage() {
@@ -12,6 +13,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+  const { refreshSession } = useSession();
 
   const handleLogin = async () => {
     if (email && password) {
@@ -27,10 +29,14 @@ export default function LoginPage() {
         const data = await response.json();
 
         if (response.ok) {
-          // Store session ID in a cookie or client storage
+          // Store session ID in a cookie
           document.cookie = `sessionId=${data.sessionId}; path=/`;
           setSuccess(true);
-          router.push('/')
+          
+          // Refresh the session context immediately
+          await refreshSession();
+          
+          router.push('/');
         } else {
           setError(data.error || 'Error logging in');
           setSuccess(false);
