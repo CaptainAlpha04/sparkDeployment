@@ -199,7 +199,7 @@ export default function AdminPage() {
 
       <h2 className="text-2xl font-semibold">{editingEvent ? "Edit Event" : "Create New Event"}</h2>
       <div className="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
-        <input
+        <input  
           value={eventName}
           onChange={(e) => setEventName(e.target.value)}
           placeholder="Event Name"

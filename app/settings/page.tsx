@@ -51,7 +51,10 @@ export default function Settings() {
         return;
       }
 
-      const response = await fetch('/api/checkSession', {
+      // Use absolute URL for production
+      const baseUrl = window.location.origin;
+      
+      const response = await fetch(`${baseUrl}/api/checkSession`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId }),
@@ -110,7 +113,10 @@ export default function Settings() {
       const sessionIdCookie = document.cookie.split('; ').find(row => row.startsWith('sessionId='));
       const sessionId = sessionIdCookie ? sessionIdCookie.split('=')[1] : undefined;
 
-      const response = await fetch('/api/updatePfp', {
+      // Use absolute URL for production
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
+
+      const response = await fetch(`${baseUrl}/api/updatePfp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, profilePic: url }),

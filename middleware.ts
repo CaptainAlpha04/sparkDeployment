@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 async function getSession(sessionId: string): Promise<[boolean, any]> {
     try {
-        const response = await fetch('http://localhost:3000/api/checkSession', {
+        // Use environment variable or construct the URL dynamically
+        const baseUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}`;
+        
+        const response = await fetch(`${baseUrl}/api/checkSession`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sessionId }),
@@ -21,7 +24,6 @@ async function getSession(sessionId: string): Promise<[boolean, any]> {
         return [false, null];
     }
 }
-
 
 export async function middleware(req: NextRequest) {
 
@@ -52,7 +54,7 @@ export async function middleware(req: NextRequest) {
     if (adminOnlyPaths.includes(req.nextUrl.pathname)) {
         if (!isAdmin) {
             console.log('User is not an admin. Redirecting to login page');
-            return NextResponse.redirect(new URL('/auth', req.url));
+            return NextResponse.redirect(new URL('/auth/login', req.url));
         }
     }
 
