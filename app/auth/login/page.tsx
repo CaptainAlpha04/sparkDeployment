@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import StarryCanvas from "../../components/StarryCanvas";
 import { useRouter } from "next/navigation";
-import { useSession } from "../../context/SessionContext";
+import { useSession } from "../../context/sessionContext";
 import React from "react";
 
 export default function LoginPage() {
