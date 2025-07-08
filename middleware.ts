@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 async function getSession(sessionId: string): Promise<[boolean, any]> {
     try {
         // Use environment variable or construct the URL dynamically
-        const baseUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}`;
+        const baseUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}`;
         
         const response = await fetch(`${baseUrl}/api/checkSession`, {
             method: 'POST',
