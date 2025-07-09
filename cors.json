@@ -1,6 +1,6 @@
 [
     {
-      "origin": ["http://localhost:3000"],
+      "origin": ["https://sparkchapter.com", "http://localhost:3000"],
       "method": ["GET", "POST"],
       "maxAgeSeconds": 3600,
       "responseHeader": ["Content-Type", "Authorization"]
