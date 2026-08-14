@@ -162,9 +162,61 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  --font-sans: var(--font-josefin);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-bricolage);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-poppins);
+  --font-heading: var(--font-bricolage);
+
+  /* ---------------------------------------------------------------------
+   * TYPE SCALE
+   *
+   * The old build ran headings at text-8xl (96px) and stat figures at
+   * text-9xl (128px), with everything else close behind — so nothing read as
+   * more important than anything else. These override Tailwind's defaults
+   * rather than adding new names, which re-scales all 15 pages at once and
+   * keeps existing class names meaningful.
+   *
+   * Every display size is fluid, so the mobile case stops being an
+   * afterthought.
+   * ------------------------------------------------------------------- */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.0625rem;
+  --text-xl: 1.1875rem;
+  --text-2xl: 1.375rem;
+  --text-3xl: 1.625rem;
+  --text-4xl: clamp(1.5rem, 2vw, 1.875rem);
+  --text-5xl: clamp(1.75rem, 2.6vw, 2.25rem);
+  --text-6xl: clamp(2rem, 3.2vw, 2.75rem);
+  --text-7xl: clamp(2.25rem, 4vw, 3.25rem);
+  --text-8xl: clamp(2.5rem, 5vw, 4rem);
+  --text-9xl: clamp(2.75rem, 6vw, 4.75rem);
+}
+
+/* Display sizes need tighter leading and optical letter-spacing; at the old
+ * sizes the default tracking left headlines looking loose and unset. */
+h1,
+h2,
+h3 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* Eyebrow labels — small, tracked, mono. Structural signposting that tells
+ * you where you are without another oversized heading. */
+.eyebrow {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
 }
 
 @layer base {

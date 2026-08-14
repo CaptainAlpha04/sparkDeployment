@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SparkMark } from "@/components/brand/spark-mark";
 
 const PAGES = [
   { href: "/legal", label: "Legal" },
@@ -45,20 +46,14 @@ export function Footer() {
   return (
     <footer className="flex w-full flex-col items-center gap-6 bg-gradient-to-b from-background to-black px-6 py-12 text-center text-foreground">
       <div className="flex flex-col items-center gap-2">
-        {/* The SPARK glyph. */}
-        <svg viewBox="0 0 92.41 97.5" className="size-24 text-current" aria-label="SPARK">
-          <path
-            className="fill-current"
-            d="M39.59,41.44,21.44,31.32,14.4,17,27,24.51l1.48.88ZM16,44.28l-1.68.37L0,47.76l14.92,5.65,20.17-5Zm57.32,0-1.68.37L57.32,47.76l14.92,5.65,20.17-5ZM68.62,64.82,67.12,64,54.35,56.78l7.39,14.14,18.39,9.67ZM50.06,76.32,46.28,60.37,41.54,77.76q2,9.87,4,19.74Q47.79,86.91,50.06,76.32Zm1.08-60.38L47.35,0,42.62,17.39q2,9.87,4,19.74Q48.87,26.54,51.14,15.94ZM13.07,79.42l18.39-9.67,7.39-14.14L26.08,62.8l-1.51.85ZM53.29,42,71.44,31.85l7-14.32L65.88,25.05l-1.48.88Z"
-          />
-        </svg>
+        <SparkMark className="size-14 text-muted-foreground transition-colors duration-500 hover:text-primary" />
 
-        <p className="font-poppins font-bold">SPARK Chapter Pakistan</p>
-        <p className="font-poppins font-light text-muted-foreground">
+        <p className="mt-2 font-semibold">SPARK Chapter Pakistan</p>
+        <p className="text-sm text-muted-foreground">
           Providing innovative platform for students since forever
         </p>
-        <p className="text-sm text-muted-foreground">
-          Copyright © {new Date().getFullYear()} - All right reserved
+        <p className="text-xs text-muted-foreground/70">
+          Copyright © {new Date().getFullYear()} — All rights reserved
         </p>
       </div>
 

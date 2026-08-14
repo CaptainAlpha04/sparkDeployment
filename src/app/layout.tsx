@@ -1,23 +1,26 @@
 import type { Metadata } from "next";
-import { Josefin_Sans, Poppins, Noto_Serif_TC } from "next/font/google";
+import { Bricolage_Grotesque, Inter, Noto_Serif_TC } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Header, type HeaderUser } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { getCurrentProfile, isAdminRole } from "@/server/auth";
 
-// Josefin Sans was the old site's body font; Poppins carried headings and the
-// footer. Noto Serif TC is the 傳道部 display face on the mission hero.
-const josefin = Josefin_Sans({
-  variable: "--font-josefin",
+// Bricolage Grotesque carries display: variable width and optical sizing give
+// headlines real personality without a second decorative face. Inter handles
+// body — it is unshowy and holds up at the small sizes the new scale relies on.
+// Noto Serif TC remains the 傳道部 display face on the mission hero.
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700"],
+  display: "swap",
 });
 
 const notoSerifTC = Noto_Serif_TC({
@@ -48,7 +51,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       // Dark-first: the cosmic palette is the default. See globals.css.
-      className={`dark ${josefin.variable} ${poppins.variable} ${notoSerifTC.variable} h-full antialiased`}
+      className={`dark ${bricolage.variable} ${inter.variable} ${notoSerifTC.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col overflow-x-hidden">
         <Header user={user} />
