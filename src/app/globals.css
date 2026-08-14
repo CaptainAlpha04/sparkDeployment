@@ -178,3 +178,96 @@
     @apply font-sans;
   }
 }
+
+/* ---------------------------------------------------------------------------
+ * Ported from the original SPARK stylesheet (git a630ff7:app/globals.css).
+ * Kept because they carry the brand's visual identity.
+ * ------------------------------------------------------------------------ */
+
+/* Orange → magenta brand accent. Drives the nav underline and gradient text. */
+:root {
+  --primary-gradient: linear-gradient(90deg, #f17211, #b10eca);
+}
+
+.planet-bg {
+  background-image: url("/images/login-bg.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.mask-image-gradient {
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+}
+
+/* Underline grows from the centre outward on hover. */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::before {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background: var(--primary-gradient);
+  transition:
+    width 300ms ease,
+    left 300ms ease;
+}
+
+.nav-link:hover::before {
+  width: 100%;
+  left: 0;
+}
+
+/* In the old build this was written as `hover:nav-selected`, which is not a
+ * real Tailwind variant and emitted no CSS — the gradient-text hover never
+ * fired. Implemented properly here as a real hover state. */
+.nav-link:hover,
+.nav-selected {
+  background-image: var(--primary-gradient);
+  font-weight: 700;
+  background-clip: text;
+  color: transparent;
+}
+
+/* The signature entrance curve. Reused by every scroll reveal so new motion
+ * reads as the same design language. */
+@keyframes swipe-from-bottom {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animation-swipe-from-bottom {
+  animation: swipe-from-bottom 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* The original held opacity at 0 for the first 50% of a 3s run — a 1.5s dead
+ * hold. Replaced with a real delay and a shorter fade. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animation-fade-in {
+  animation: fade-in 900ms ease-out 350ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animation-swipe-from-bottom,
+  .animation-fade-in {
+    animation: none;
+  }
+}

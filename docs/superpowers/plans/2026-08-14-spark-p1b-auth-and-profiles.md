@@ -225,13 +225,16 @@ export async function updateSession(request: NextRequest) {
 }
 ```
 
-- [ ] **Step 2: Create the root `proxy.ts`**
+- [ ] **Step 2: Create `src/middleware.ts`**
+
+> **As built — important.** The Next 16 `middleware.ts` → `proxy.ts` rename is documented but **is not active in 16.3.1**. A `proxy.ts` at the repo root *or* in `src/` is silently ignored: no build error, and an empty `middleware-manifest.json`. `middleware.ts` exporting `middleware` is what actually registers. With `--src-dir` it must live at `src/middleware.ts`, not the repo root.
 
 ```ts
+// src/middleware.ts
 import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   return await updateSession(request);
 }
 
@@ -242,13 +245,14 @@ export const config = {
 };
 ```
 
-- [ ] **Step 3: Verify the app still builds and public routes are reachable**
+- [ ] **Step 3: Verify it actually registered — a passing build is NOT sufficient**
 
 ```bash
 npm run build
+node -e "const m=require('./.next/server/middleware-manifest.json');console.log(JSON.stringify(m.sortedMiddleware));if(!m.sortedMiddleware.length)throw new Error('middleware NOT registered')"
 ```
 
-Expected: success. If the build complains the proxy export is named `middleware`, the Next version is below 16 — stop and reconcile with the spec.
+Expected: build output contains `ƒ Proxy (Middleware)`, and the manifest prints `["/"]`. An empty array means the file is in the wrong place or exports the wrong name — and the build will still succeed, which is exactly how this gets missed. Without registration every session silently expires and users are randomly logged out.
 
 - [ ] **Step 4: Commit**
 
