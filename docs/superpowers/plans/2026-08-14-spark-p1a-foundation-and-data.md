@@ -248,21 +248,41 @@ git commit -m "feat: add SPARK design tokens (dark-first, OKLCH)"
 
 - [ ] **Step 1: Init**
 
+> **As built:** CLI 4.18 has no `--base-color` flag — base color moved into presets, and `--css-variables` is already the default. It also prompts for a preset, which hangs a non-interactive shell, so `-p` is required.
+
 ```bash
-npx shadcn@latest init --base-color zinc --css-variables --yes
+npx shadcn@latest init -b radix -p nova --css-variables -y --force
 ```
+
+`-b radix` selects the primitive layer (alternatives: `base`, `aria`). `-p nova` is the Lucide/Geist preset, matching the create-next-app fonts.
 
 - [ ] **Step 2: Verify `components.json`**
 
 Run: `cat components.json`
-Expected: `"style": "new-york"`, `"tailwind.cssVariables": true`, `"tailwind.baseColor": "zinc"`, and `"tailwind.config": ""` (empty — correct for Tailwind 4).
+Expected: `"tailwind.cssVariables": true` and `"tailwind.config": ""` (empty — correct for Tailwind 4). `style` will read `radix-nova`.
 
-**If `cssVariables` is false, delete `components.json` and re-run Step 1.** It cannot be fixed later.
+**If `cssVariables` is false, delete `components.json` and re-run Step 1.** It cannot be fixed later. `baseColor` will read `neutral` rather than `zinc`; that is fine and not worth re-initialising for, since every colour token gets replaced in Step 3 anyway.
 
-- [ ] **Step 3: Confirm init did not overwrite the tokens**
+- [ ] **Step 3: Reconcile the palette — init WILL overwrite it**
 
 Run: `grep -c "nebula" src/app/globals.css`
-Expected: `4` or more. If `0`, shadcn overwrote `globals.css` — restore with `git checkout src/app/globals.css`, then re-apply only shadcn's additions by hand.
+
+shadcn rewrites `globals.css`, replacing `--background`, `--primary`, and every other core token with its greyscale defaults, and restructures the file as light-first with a `.dark` block. The SPARK-specific tokens (`--nebula`, `--ember`, `--void`, `--starlight`) survive; the palette does not.
+
+Reconcile by hand: **keep** shadcn's structural additions (`@import "tw-animate-css"`, `@import "shadcn/tailwind.css"`, `@custom-variant dark`, sidebar and chart tokens, the radius scale, `@layer base`), and **restore** the cosmic values from Task 2 into both `:root` and `.dark`.
+
+Two defects in shadcn's output to fix while you are in there:
+- It emits `--font-sans: var(--font-sans);` — self-referential, resolving to nothing. Change to `var(--font-geist-sans)`.
+- Add `dark` to the `<html>` className in `src/app/layout.tsx`, so `dark:` variants resolve against the dark-first palette.
+
+Verify with a build, then confirm the compiled CSS carries the cosmic purple rather than shadcn's grey:
+
+```bash
+npm run build
+grep -o "primary:#[0-9a-f]*" $(find .next -name "*.css" -path "*static*" | head -1) | head -2
+```
+
+Expected: `primary:#9367e9`. If you see a grey like `#171717`, the reconcile did not take.
 
 - [ ] **Step 4: Add the base component set**
 
@@ -357,8 +377,10 @@ git commit -m "feat: enforce src/server data-access boundary in eslint"
 
 - [ ] **Step 1: Install**
 
+> **As built:** `@vitejs/plugin-react` is deliberately omitted. It pulls `@babel/core@8` via `@rolldown/plugin-babel`, which conflicts with shadcn's `@babel/core@7` and fails install with ERESOLVE. No Phase 1a test renders React, so it is not needed. Add it (with an override) only when component tests arrive.
+
 ```bash
-npm install -D vitest @vitejs/plugin-react vite-tsconfig-paths dotenv cross-env
+npm install -D vitest vite-tsconfig-paths dotenv cross-env tsx
 ```
 
 - [ ] **Step 2: Create `vitest.config.ts`**

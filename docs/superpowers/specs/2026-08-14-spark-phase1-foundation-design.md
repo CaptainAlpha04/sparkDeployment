@@ -31,7 +31,7 @@ Phase 1 replaces the foundation entirely rather than patching it.
 | Payments | **Out of scope.** Free events only; `ticketPrice` is dropped |
 | Certificates | In-app template designer (Phase 3) |
 | DB authorization | App-layer authz in Server Actions; RLS enabled with no policies, sealing the anon-key surface |
-| Visual direction | Evolve the existing cosmic identity, systematized |
+| Visual direction | **Preserve the existing UI exactly** — same layout, copy, and colour identity — rebuilt on tokens and shadcn, with substantially richer animation and effects |
 | Forum shape | Reddit-style: admin-defined categories, cross-category feed, posting inside categories |
 | Next.js version | 16 |
 | Migration strategy | Fresh scaffold, port content across |
@@ -252,7 +252,13 @@ Other rules:
 
 ## 6. Design system
 
-**Tokens before components.** shadcn is initialised with `cssVariables: true` and a chosen base color; **both are immutable after init**, so they are decided up front. Base color: `zinc`.
+**The existing UI is preserved, not redesigned.** Layout, section order, copy, imagery, and colour identity all carry over unchanged. What improves is the *execution*: components rebuilt on tokens and shadcn primitives, and markedly richer motion — scroll-triggered reveals, staggered entrances, parallax on the hero, hover micro-interactions, and a better starfield. No section is moved, renamed, or restyled beyond that.
+
+The old markup remains recoverable from git history at commit `a630ff7` and is the source of truth for the port.
+
+**Tokens before components.** shadcn is initialised with `cssVariables: true` and a base color; **both are immutable after init**, so they are decided up front.
+
+> As built: CLI 4.18 replaced the `--base-color` flag with presets. Init ran as `shadcn init -b radix -p nova`, which set `baseColor: neutral`. This is inert — base color only seeds initial token values, and every one has been replaced by the cosmic palette. The `radix` primitive base is what matters and is as specced.
 
 Three layers, per Tailwind 4's CSS-first model:
 
