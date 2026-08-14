@@ -1,26 +1,83 @@
 @import "tailwindcss";
 
+/*
+ * SPARK design tokens.
+ * Dark-first: `:root` carries the dark palette, `.light` overrides.
+ * Never write a colour literal in a component — reference a token.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: oklch(0.14 0.02 275);
+  --foreground: oklch(0.97 0.01 275);
+
+  --card: oklch(0.18 0.025 275);
+  --card-foreground: oklch(0.97 0.01 275);
+
+  --popover: oklch(0.16 0.025 275);
+  --popover-foreground: oklch(0.97 0.01 275);
+
+  --primary: oklch(0.62 0.19 296);
+  --primary-foreground: oklch(0.99 0.005 296);
+
+  --secondary: oklch(0.24 0.03 275);
+  --secondary-foreground: oklch(0.97 0.01 275);
+
+  --muted: oklch(0.22 0.025 275);
+  --muted-foreground: oklch(0.68 0.02 275);
+
+  --accent: oklch(0.7 0.17 45);
+  --accent-foreground: oklch(0.15 0.02 45);
+
+  --destructive: oklch(0.58 0.21 25);
+  --destructive-foreground: oklch(0.98 0.01 25);
+
+  --border: oklch(0.28 0.03 275);
+  --input: oklch(0.28 0.03 275);
+  --ring: oklch(0.62 0.19 296);
+
+  --radius: 0.75rem;
+
+  /* SPARK-specific */
+  --nebula: oklch(0.62 0.19 296);
+  --ember: oklch(0.7 0.17 45);
+  --void: oklch(0.09 0.015 275);
+  --starlight: oklch(0.99 0.005 275);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-nebula: var(--nebula);
+  --color-ember: var(--ember);
+  --color-void: var(--void);
+  --color-starlight: var(--starlight);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
 }
