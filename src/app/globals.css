@@ -1,8 +1,16 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 /*
  * SPARK design tokens.
- * Dark-first: `:root` carries the dark palette, `.light` overrides.
+ *
+ * The system is dark-first: the cosmic palette is the default in `:root` and
+ * repeated in `.dark` so shadcn's `dark:` variants resolve consistently.
+ * `<html>` carries `className="dark"` (see src/app/layout.tsx).
+ *
  * Never write a colour literal in a component — reference a token.
  */
 :root {
@@ -41,6 +49,68 @@
   --ember: oklch(0.7 0.17 45);
   --void: oklch(0.09 0.015 275);
   --starlight: oklch(0.99 0.005 275);
+
+  /* Categorical ramp: distinct hues at near-equal lightness, so no series
+     reads as more important than another. */
+  --chart-1: oklch(0.62 0.19 296);
+  --chart-2: oklch(0.7 0.17 45);
+  --chart-3: oklch(0.65 0.15 220);
+  --chart-4: oklch(0.72 0.16 150);
+  --chart-5: oklch(0.68 0.18 350);
+
+  --sidebar: oklch(0.16 0.025 275);
+  --sidebar-foreground: oklch(0.97 0.01 275);
+  --sidebar-primary: oklch(0.62 0.19 296);
+  --sidebar-primary-foreground: oklch(0.99 0.005 296);
+  --sidebar-accent: oklch(0.24 0.03 275);
+  --sidebar-accent-foreground: oklch(0.97 0.01 275);
+  --sidebar-border: oklch(0.28 0.03 275);
+  --sidebar-ring: oklch(0.62 0.19 296);
+}
+
+.dark {
+  --background: oklch(0.14 0.02 275);
+  --foreground: oklch(0.97 0.01 275);
+
+  --card: oklch(0.18 0.025 275);
+  --card-foreground: oklch(0.97 0.01 275);
+
+  --popover: oklch(0.16 0.025 275);
+  --popover-foreground: oklch(0.97 0.01 275);
+
+  --primary: oklch(0.62 0.19 296);
+  --primary-foreground: oklch(0.99 0.005 296);
+
+  --secondary: oklch(0.24 0.03 275);
+  --secondary-foreground: oklch(0.97 0.01 275);
+
+  --muted: oklch(0.22 0.025 275);
+  --muted-foreground: oklch(0.68 0.02 275);
+
+  --accent: oklch(0.7 0.17 45);
+  --accent-foreground: oklch(0.15 0.02 45);
+
+  --destructive: oklch(0.58 0.21 25);
+  --destructive-foreground: oklch(0.98 0.01 25);
+
+  --border: oklch(0.28 0.03 275);
+  --input: oklch(0.28 0.03 275);
+  --ring: oklch(0.62 0.19 296);
+
+  --chart-1: oklch(0.62 0.19 296);
+  --chart-2: oklch(0.7 0.17 45);
+  --chart-3: oklch(0.65 0.15 220);
+  --chart-4: oklch(0.72 0.16 150);
+  --chart-5: oklch(0.68 0.18 350);
+
+  --sidebar: oklch(0.16 0.025 275);
+  --sidebar-foreground: oklch(0.97 0.01 275);
+  --sidebar-primary: oklch(0.62 0.19 296);
+  --sidebar-primary-foreground: oklch(0.99 0.005 296);
+  --sidebar-accent: oklch(0.24 0.03 275);
+  --sidebar-accent-foreground: oklch(0.97 0.01 275);
+  --sidebar-border: oklch(0.28 0.03 275);
+  --sidebar-ring: oklch(0.62 0.19 296);
 }
 
 @theme inline {
@@ -69,15 +139,42 @@
   --color-void: var(--void);
   --color-starlight: var(--starlight);
 
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
   --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-geist-sans);
 }
 
-body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }
