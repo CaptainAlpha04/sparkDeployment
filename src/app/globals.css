@@ -398,6 +398,52 @@ p {
   animation: gradient-pan 8s linear infinite;
 }
 
+/* ---------------------------------------------------------------------------
+ * Print — certificate download.
+ *
+ * "Save as PDF" from the print dialog is the download mechanism, so the sheet
+ * has to be the only thing on the page and must fill it edge to edge.
+ * ------------------------------------------------------------------------ */
+@media print {
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    height: auto !important;
+  }
+
+  /* Site chrome never belongs on a printed certificate. */
+  header,
+  footer,
+  nav {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  .certificate-sheet {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    break-inside: avoid;
+  }
+
+  .certificate-sheet > div {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: var(--certificate-aspect, auto);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animation-swipe-from-bottom,
   .animation-fade-in,

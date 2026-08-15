@@ -36,6 +36,20 @@
       "when": 1786714331323,
       "tag": "0004_seed_site_stats",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1786786851616,
+      "tag": "0005_certificates",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1786788348423,
+      "tag": "0006_certificate_assets_bucket",
+      "breakpoints": true
     }
   ]
 }
