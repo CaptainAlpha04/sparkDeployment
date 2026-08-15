@@ -1,16 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import StarryCanvas from "@/components/starry-canvas";
 import { Reveal, Stagger } from "@/components/motion/reveal";
 import { CountUp } from "@/components/motion/count-up";
 import { SparkMark, SparkBullet } from "@/components/brand/spark-mark";
-
-const sponsors = [
-  { name: "TensorFlow Islamabad", logo: "/images/tensorflow.png" },
-  { name: "NUST Entrepreneurs Club", logo: "/images/nec.png" },
-  { name: "Google Pakistan", logo: "/images/google.png" },
-  { name: "Poshish Interiors", logo: "/images/poshish.png" },
-];
+import { getSiteStats } from "@/server/stats";
 
 const benefits = [
   "Access to exclusive innovation events and workshops",
@@ -19,22 +12,10 @@ const benefits = [
   "Potential funding opportunities for promising ideas",
 ];
 
-const stats = [
-  { label: "Student Members", value: "500+" },
-  { label: "Successful Events", value: "3+" },
-  { label: "Affliated Societies", value: "10+" },
-  { label: "Affiliated Institutions", value: "50+" },
-];
-
+// The Discord card is deliberately absent: the invite in the old build
+// (discord.com/invite/5Tx5Ev8K) is dead — Discord's API returns "Unknown
+// Invite". Restore it when there is a working link.
 const communities = [
-  {
-    name: "Discord",
-    body: "Get latest updates on events and get in touch with our Team",
-    href: "https://discord.com/invite/5Tx5Ev8K",
-    hover: "group-hover:text-violet-400",
-    ring: "group-hover:border-violet-400/50",
-    path: "M19.3 5.34A16.7 16.7 0 0 0 15.1 4l-.2.4a12.6 12.6 0 0 1 3.7 1.9 13 13 0 0 0-11.2 0 12.6 12.6 0 0 1 3.7-1.9L10.9 4a16.7 16.7 0 0 0-4.2 1.34C4 9.3 3.3 13.1 3.65 16.86A16.8 16.8 0 0 0 8.8 19.5l.65-.9a11 11 0 0 1-1.7-.83l.42-.32a11.8 11.8 0 0 0 9.66 0l.42.32a11 11 0 0 1-1.7.83l.65.9a16.8 16.8 0 0 0 5.15-2.64c.42-4.35-.7-8.12-3.05-11.52ZM9.55 14.6c-1 0-1.83-.92-1.83-2.05 0-1.13.8-2.06 1.83-2.06s1.85.93 1.83 2.06c0 1.13-.81 2.05-1.83 2.05Zm4.9 0c-1 0-1.83-.92-1.83-2.05 0-1.13.8-2.06 1.83-2.06s1.84.93 1.83 2.06c0 1.13-.8 2.05-1.83 2.05Z",
-  },
   {
     name: "LinkedIn",
     body: "Connect with Industry Experts and like Minded Individuals",
@@ -61,7 +42,11 @@ const communities = [
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Editable by admins rather than hardcoded in JSX, which is how the previous
+  // build ended up publishing figures nobody could substantiate.
+  const stats = await getSiteStats();
+
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
@@ -184,7 +169,7 @@ export default function HomePage() {
           >
             {stats.map((stat) => (
               <div
-                key={stat.label}
+                key={stat.key}
                 className="group border-t border-border pt-5 transition-colors duration-300 hover:border-primary/60"
               >
                 <CountUp
@@ -194,38 +179,6 @@ export default function HomePage() {
                 <div className="mt-2 font-mono text-[0.6875rem] tracking-[0.16em] text-muted-foreground uppercase">
                   {stat.label}
                 </div>
-              </div>
-            ))}
-          </Stagger>
-        </div>
-      </section>
-
-      {/* ── Sponsors ─────────────────────────────────────────────────────── */}
-      <section className="w-full bg-gradient-to-b from-background to-black px-6 py-20">
-        <div className="mx-auto max-w-5xl">
-          <Reveal>
-            <p className="eyebrow mb-10 text-center">Sponsors and partners</p>
-          </Reveal>
-
-          <Stagger
-            step={80}
-            className="flex flex-wrap items-center justify-center gap-x-14 gap-y-10"
-          >
-            {sponsors.map((sponsor) => (
-              <div
-                key={sponsor.name}
-                className="group flex w-40 flex-col items-center gap-3 transition-transform duration-300 hover:-translate-y-1"
-              >
-                <Image
-                  src={sponsor.logo}
-                  alt={sponsor.name}
-                  width={120}
-                  height={48}
-                  className="h-11 w-auto object-contain opacity-60 grayscale transition-all duration-500 group-hover:opacity-100 group-hover:grayscale-0"
-                />
-                <p className="text-center text-xs text-muted-foreground">
-                  {sponsor.name}
-                </p>
               </div>
             ))}
           </Stagger>

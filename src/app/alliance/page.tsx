@@ -11,9 +11,14 @@ export const metadata: Metadata = {
 };
 
 /**
- * Copy is carried over verbatim from the original build
- * (git a630ff7:app/alliance/page.tsx). Intrinsic dimensions were added so
- * next/image can reserve space and avoid layout shift; nothing else changed.
+ * Copy carried over verbatim from the original build
+ * (git a630ff7:app/alliance/page.tsx).
+ *
+ * Reduced to NUST deliberately. The old build showed six universities — FAST,
+ * COMSATS, AIR, UCP and GIKI alongside NUST — but only the NUST relationship
+ * is evidenced anywhere in SPARK's own public communications. Listing chapters
+ * that do not exist is the kind of claim a prospective partner checks.
+ * Re-add the others as they become real.
  */
 const universities = [
   {
@@ -23,46 +28,6 @@ const universities = [
     image: "/brandings/nust.png",
     width: 300,
     height: 269,
-  },
-  {
-    name: "FAST - National University of Computer & Emerging Sciences",
-    description:
-      "At FAST, SPARK nurtures the entrepreneurial spirit and supports student-led initiatives that advance research in emerging technologies.",
-    image: "/brandings/fast.png",
-    width: 494,
-    height: 304,
-  },
-  {
-    name: "COMSATS Institute of Information Technology",
-    description:
-      "COMSATS is a hub of creativity. Through SPARK, students participate in research and entrepreneurship activities that drive technology forward.",
-    image: "/brandings/comsats.png",
-    width: 225,
-    height: 224,
-  },
-  {
-    name: "AIR University",
-    description:
-      "SPARK collaborates with AIR University to promote leadership, empowering students to create innovative solutions for global challenges.",
-    image: "/brandings/air.png",
-    width: 348,
-    height: 287,
-  },
-  {
-    name: "UCP - University of Central Punjab",
-    description:
-      "At UCP, SPARK helps students turn academic projects into real-world applications through mentorship and collaboration.",
-    image: "/brandings/ucp.png",
-    width: 225,
-    height: 225,
-  },
-  {
-    name: "GIKI - Ghulam Ishaq Khan Institute",
-    description:
-      "SPARK's partnership with GIKI encourages innovation and technological advancement through research-driven projects and initiatives.",
-    image: "/brandings/giki.png",
-    width: 512,
-    height: 512,
   },
 ];
 
