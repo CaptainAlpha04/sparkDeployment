@@ -60,7 +60,15 @@ const eslintConfig = defineConfig([
     },
   },
   {
-    files: ["src/server/**/*.ts", "drizzle.config.ts"],
+    // src/test/** is test-only infrastructure and never ships to the client;
+    // *.test.ts files legitimately reach for the database to build fixtures.
+    // Both are narrow, reviewable exemptions — application code stays fenced.
+    files: [
+      "src/server/**/*.ts",
+      "src/test/**/*.ts",
+      "**/*.test.ts",
+      "drizzle.config.ts",
+    ],
     rules: { "no-restricted-imports": "off" },
   },
 ]);

@@ -41,16 +41,17 @@ describe("role assignment", () => {
     }
   });
 
-  it("mints no admin except by deliberate promotion", async () => {
-    // Admins exist only via `npm run db:seed`. Excludes rows this suite
-    // promoted itself, which would otherwise make the assertion
-    // order-dependent on the sibling test above.
+  it("never grants admin as a side effect of signing up", async () => {
+    // The real risk is privilege escalation through the signup path, not the
+    // existence of admins — real admins are expected once someone runs
+    // `npm run db:seed`. So this asserts the trigger's default, not a global
+    // count, which would start failing the moment a genuine admin exists.
+    const id = await makeAuthUser();
     const rows = await db.execute(sql`
-      select count(*)::int as n from profiles p
-      join auth.users u on u.id = p.id
-      where p.role = 'admin' and u.email not like 'azt-%@test.dev'
+      select role from profiles where id = ${id}
     `);
-    expect(rows[0].n).toBe(0);
+    expect(rows[0].role).toBe("member");
+    expect(rows[0].role).not.toBe("admin");
   });
 });
 
