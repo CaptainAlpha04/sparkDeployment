@@ -398,6 +398,36 @@ p {
   animation: gradient-pan 8s linear infinite;
 }
 
+/* Mission page element captions.
+ * Stacked in one grid cell and cross-faded by the container's data-index, so
+ * the scroll loop swaps captions with a single attribute write instead of a
+ * React render per frame. Scoped to .mission-captions. */
+.mission-captions > [data-caption] {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 320ms ease,
+    transform 320ms ease;
+}
+
+.mission-captions[data-index="0"] > [data-caption="0"],
+.mission-captions[data-index="1"] > [data-caption="1"],
+.mission-captions[data-index="2"] > [data-caption="2"],
+.mission-captions[data-index="3"] > [data-caption="3"],
+.mission-captions[data-index="4"] > [data-caption="4"],
+.mission-captions[data-index="5"] > [data-caption="5"],
+.mission-captions[data-index="6"] > [data-caption="6"],
+.mission-captions[data-index="7"] > [data-caption="7"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mission-captions > [data-caption] {
+    transition: none;
+  }
+}
+
 /* ---------------------------------------------------------------------------
  * Print — certificate download.
  *

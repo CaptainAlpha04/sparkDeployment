@@ -134,7 +134,7 @@ export function Header({ user }: { user: HeaderUser | null }) {
           href="/"
           className="group flex shrink-0 items-center gap-2.5 rounded-lg focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         >
-          <SparkMark className="size-6 text-primary transition-transform duration-700 group-hover:rotate-90" />
+          <SparkMark className="size-6 text-white transition-transform duration-700 group-hover:rotate-90" />
           <span className="font-display text-lg font-extrabold tracking-tight">
             SPARK
           </span>
@@ -269,7 +269,7 @@ export function Header({ user }: { user: HeaderUser | null }) {
       >
         <div className="flex h-16 items-center justify-between px-5">
           <div className="flex items-center gap-2.5">
-            <SparkMark className="size-6 text-primary" />
+            <SparkMark className="size-6 text-white" />
             <span className="font-display text-lg font-extrabold">SPARK</span>
           </div>
           <button
