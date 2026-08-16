@@ -63,7 +63,7 @@ Phase 1 replaces the foundation entirely rather than patching it.
 | Icons | lucide-react | 1.31.x |
 | Tests | Vitest + Playwright | current |
 
-Node **>= 20.9** (set explicitly in Vercel project settings).
+Node **>= 22** (set Vercel Project Settings to 24.x; @supabase/* declares node >= 22, and Vercel has deprecated 20.x).
 
 `@supabase/ssr` is pinned exactly, not caret-ranged. It is still 0.x and has shipped signature changes across minors — notably the `setAll(cookiesToSet, headers)` second argument added in 0.10.0.
 
