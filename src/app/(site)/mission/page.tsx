@@ -18,56 +18,56 @@ const elements: MissionElement[] = [
   {
     name: "Research",
     description:
-      "Following a question past the point where the syllabus stops, and being willing to end up somewhere nobody planned.",
+      "Dig into things properly. Go past what the course covers and follow whatever you actually find interesting.",
     image: "/images/atom.png",
     accent: "#3b82f6",
   },
   {
     name: "Entrepreneurship",
     description:
-      "Building the thing instead of describing it. Shipping is its own kind of argument.",
+      "Turn an idea into something real, and find out what breaks once you start building it for other people.",
     image: "/images/rocket.png",
     accent: "#94a3b8",
   },
   {
     name: "Innovation",
     description:
-      "New answers come from people who are allowed to give wrong ones first. That permission is the entire prerequisite.",
+      "Try things that might not work. Most of them will not, and the ones that do are worth all the rest.",
     image: "/images/fire.png",
     accent: "#f97316",
   },
   {
     name: "Leadership",
     description:
-      "Holding a room where nobody is scored, including holding your nerve when it looks like it is not working.",
+      "Run a team, hold a room, and make the call when nobody is going to hand you the right answer.",
     image: "/images/chess.png",
     accent: "#ef4444",
   },
   {
     name: "Creativity",
     description:
-      "Thinking out loud before the thought is finished, which is the only point at which it can still change.",
+      "Room to think differently and share the half finished version, before anyone expects it to be polished.",
     image: "/images/creative.png",
     accent: "#a855f7",
   },
   {
     name: "Education",
     description:
-      "Expertise offered when someone asks for it, never handed down as a verdict. The gap is in knowledge, not in standing.",
+      "Learn from people who know more than you, without being talked down to or quietly tested on it.",
     image: "/images/book.png",
     accent: "#6366f1",
   },
   {
     name: "Technology",
     description:
-      "Real tools and real difficulty with no grade attached, so that struggling reads as method rather than as capacity.",
+      "Get hands on with real tools. Python, machine learning, web, hardware, and whatever you want to build next.",
     image: "/images/cpu.png",
     accent: "#06b6d4",
   },
   {
     name: "Collaboration",
     description:
-      "Rooms where being wrong out loud costs nothing, because the rules belong to everyone sitting in them.",
+      "Meet people who are into the same things you are, work on it together, and keep the network long after the session ends.",
     image: "/images/teamwork.png",
     accent: "#22c55e",
   },
@@ -76,18 +76,18 @@ const elements: MissionElement[] = [
 const stages = [
   {
     step: "01",
-    title: "It empties first",
-    body: "Take the verdict out of a room and it does not fill with questions the next day. A room with no judgement is unreadable to anyone who has never sat in one, and people leave while they work out what it is.",
+    title: "It feels strange at first",
+    body: "Most people have never been in a class where nobody is marking them. It takes a few sessions to believe it is real, and some drop off while they figure that out.",
   },
   {
     step: "02",
     title: "Then they come back",
-    body: "And they pick the hard material voluntarily, with nothing riding on it. Nobody is checking. They do it because it is interesting, which was always the only durable reason.",
+    body: "And they start picking the harder stuff on their own. No grades, no attendance, nobody checking. They do it because it is genuinely interesting.",
   },
   {
     step: "03",
-    title: "And the blame moves",
-    body: "When they hit something they cannot follow, they fault the method or the preparation instead of themselves, and they say they intend to keep going. That shift is the whole point. Everything else we run is in service of it.",
+    title: "And they stop giving up",
+    body: "When something is too hard, they try a different approach instead of deciding they are not smart enough for it. That change is the whole point of what we do.",
   },
 ];
 
@@ -248,8 +248,9 @@ export default function MissionPage() {
 
           <Reveal delay={200}>
             <p className="mt-16 max-w-2xl text-lg leading-relaxed text-foreground">
-              Permission takes a sentence. Belief takes considerably longer. Most of
-              the work is holding the room open in between.
+              Telling people they are free to ask anything takes one sentence.
+              Believing it takes a lot longer. Our job is keeping the room open
+              until they do.
             </p>
           </Reveal>
         </div>
@@ -268,11 +269,11 @@ export default function MissionPage() {
         <div className="relative mx-auto max-w-2xl text-center">
           <Reveal>
             <h2 className="text-5xl font-bold">
-              Come and be wrong in front of people.
+              Ask the thing you have been too embarrassed to ask.
             </h2>
             <p className="mx-auto mt-6 max-w-lg text-lg leading-relaxed text-muted-foreground">
-              It costs nothing, nobody is marking, and you can leave whenever you
-              like. That is most of the design.
+              It is free, nobody is marking you, and you can walk out whenever you
+              want. That is most of the design.
             </p>
           </Reveal>
 
