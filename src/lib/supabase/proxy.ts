@@ -19,9 +19,17 @@ const PUBLIC_PREFIXES = [
   "/login",
   "/signup",
   "/auth",
+  // Certificate verification is public by design. It exists so an employer or
+  // university can confirm a certificate is genuine, and they will not have an
+  // account. Requiring a login here would defeat the entire feature.
+  //
+  // Note this is only the verification result, which shows what is already
+  // printed on the certificate. The holder's downloadable copy lives at
+  // /certificates/<code> and stays behind auth.
+  "/verify",
 ];
 
-function isPublic(pathname: string) {
+export function isPublic(pathname: string) {
   if (pathname === "/") return true;
   return PUBLIC_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(p + "/"),
