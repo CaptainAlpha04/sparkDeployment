@@ -109,7 +109,7 @@ export function ElementsSequence({ elements }: Props) {
         const ray = rayRefs.current[i];
         if (!ray) continue;
         const arrival = clamp01(intro * count - i);
-        ray.style.opacity = String(arrival * 0.5 + eased * 0.5);
+        ray.style.opacity = String((arrival * 0.28 + eased * 0.35) * 0.9);
         ray.style.transform = `scale(${0.7 + 0.3 * easeOutCubic(arrival) + eased * 0.0})`;
       }
 
@@ -184,7 +184,6 @@ export function ElementsSequence({ elements }: Props) {
                 // the assembled shape is exactly the SPARK mark.
                 rotate: `${(i / elements.length) * 360}deg`,
                 mixBlendMode: "screen",
-                filter: "blur(0.4px)",
               }}
             />
           ))}
@@ -220,8 +219,8 @@ export function ElementsSequence({ elements }: Props) {
             <div className="flex flex-col items-center gap-2 text-center">
               <div className="relative">
                 <div
-                  className="absolute inset-0 rounded-full blur-2xl"
-                  style={{ background: element.accent, opacity: 0.35 }}
+                  className="absolute inset-0 rounded-full blur-xl"
+                  style={{ background: element.accent, opacity: 0.18 }}
                   aria-hidden
                 />
                 <Image
