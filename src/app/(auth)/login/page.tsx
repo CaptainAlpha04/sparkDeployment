@@ -2,19 +2,20 @@
 
 import { Suspense, useState, useTransition } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { KeyRound, Mail } from "lucide-react";
-import StarryCanvas from "@/components/starry-canvas";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { AuthShell } from "@/components/auth/auth-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { GoogleButton } from "@/components/auth/google-button";
 import { signIn, signInWithGoogle } from "../actions";
 
 function LoginForm() {
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
+
   const rawNext = useSearchParams().get("next") ?? "/";
   const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/";
 
@@ -22,103 +23,97 @@ function LoginForm() {
     setError(null);
     startTransition(async () => {
       const result = await signIn(formData);
-      if (result.ok) {
-        setSuccess(true);
-        router.push(next);
-      } else {
-        setError(result.error);
-      }
+      if (result.ok) router.push(next);
+      else setError(result.error);
     });
   }
 
   return (
-    <>
-      <form action={onSubmit} className="flex w-full flex-col gap-3">
-        <label className="flex flex-row items-center gap-3">
-          <Mail className="size-5 shrink-0 text-white/70" aria-hidden />
-          <span className="hidden w-1/5 text-white md:flex">Email</span>
+    <div className="space-y-5">
+      <form action={onSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
           <Input
+            id="email"
             name="email"
             type="email"
-            placeholder="Email"
             required
             autoComplete="email"
-            className="h-12 w-full rounded-lg bg-white/95 text-slate-900 placeholder:text-slate-500"
+            placeholder="you@university.edu.pk"
+            className="h-11"
           />
-        </label>
+        </div>
 
-        <label className="flex flex-row items-center gap-3">
-          <KeyRound className="size-5 shrink-0 text-white/70" aria-hidden />
-          <span className="hidden w-1/5 text-white md:flex">Password</span>
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
           <Input
+            id="password"
             name="password"
             type="password"
-            placeholder="Password"
             required
             autoComplete="current-password"
-            className="h-12 w-full rounded-lg bg-white/95 text-slate-900 placeholder:text-slate-500"
+            className="h-11"
           />
-        </label>
+        </div>
 
-        {/* Explicitly typed. The old form left these untyped inside a <form>,
-            so they defaulted to submit and fired a native GET alongside the
-            handler — reloading the page with the password in the URL. */}
-        <Button type="submit" disabled={pending} className="mt-2 h-12 w-full">
-          {pending ? "Logging in…" : "Login"}
-        </Button>
-
-        {success && (
-          <p className="mt-2 self-center text-green-400">Login successful!</p>
+        {error && (
+          <p
+            role="alert"
+            className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm text-destructive"
+          >
+            <AlertCircle className="mt-0.5 size-4 shrink-0" />
+            {error}
+          </p>
         )}
-        {error && <p className="mt-2 self-center text-red-400">{error}</p>}
-      </form>
 
-      <form action={() => signInWithGoogle(next)} className="w-full">
-        <Button
-          type="submit"
-          variant="outline"
-          className="h-12 w-full border-white/40 bg-transparent text-white hover:bg-white/10"
-        >
-          Continue with Google
+        {/* Explicitly typed. The original build left these untyped inside a
+            form, so a click fired the handler and a native GET at once,
+            reloading the page with the password in the URL. */}
+        <Button type="submit" disabled={pending} className="h-11 w-full gap-2">
+          {pending && <Loader2 className="size-4 animate-spin" />}
+          {pending ? "Signing in…" : "Sign in"}
         </Button>
       </form>
-    </>
+
+      <div className="flex items-center gap-3">
+        <span className="h-px flex-1 bg-border" />
+        <span className="text-xs text-muted-foreground">or</span>
+        <span className="h-px flex-1 bg-border" />
+      </div>
+
+      <form action={() => signInWithGoogle(next)}>
+        <GoogleButton>Continue with Google</GoogleButton>
+      </form>
+    </div>
   );
 }
 
 export default function LoginPage() {
   return (
-    <section className="planet-bg fixed z-30 flex h-screen w-screen flex-row overflow-auto">
-      <StarryCanvas numberOfStars={140} />
-
-      <div className="animation-fade-in relative z-10 flex h-screen w-screen flex-col items-center gap-4 bg-black/20 p-6 pt-4 backdrop-blur-3xl transition-all md:w-1/3">
-        <div className="flex w-full flex-row justify-between">
-          <Button asChild variant="ghost" className="text-white hover:bg-white/10">
-            <Link href="/">Back</Link>
-          </Button>
-          <Button asChild variant="ghost" className="text-white hover:bg-white/10">
-            <Link href="/signup">Register</Link>
-          </Button>
-        </div>
-
-        <Image
-          src="/images/logo-white.png"
-          alt="SPARK"
-          width={80}
-          height={80}
-          className="mt-10 size-20 object-contain"
-          priority
-        />
-
-        <h1 className="mt-10 text-3xl font-bold text-white">Login</h1>
-        <p className="font-light text-white">
-          Enter your email and password to log in.
-        </p>
-
-        <Suspense fallback={null}>
-          <LoginForm />
-        </Suspense>
-      </div>
-    </section>
+    <AuthShell
+      eyebrow="Welcome back"
+      title="Sign in"
+      subtitle="Pick up where you left off."
+      aside={{
+        // Seneca states SPARK's own finding almost exactly: what stops people
+        // is not that the material is hard, it is that daring is expensive.
+        quote:
+          "It is not because things are difficult that we do not dare; it is because we do not dare that things are difficult.",
+        source: "Seneca",
+        work: "Letters to Lucilius, c. 65 AD",
+      }}
+      footer={
+        <>
+          New here?{" "}
+          <Link href="/signup" className="text-primary hover:underline">
+            Create an account
+          </Link>
+        </>
+      }
+    >
+      <Suspense fallback={null}>
+        <LoginForm />
+      </Suspense>
+    </AuthShell>
   );
 }

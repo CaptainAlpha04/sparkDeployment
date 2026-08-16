@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Inter, Noto_Serif_TC } from "next/font/google";
+import {
+  Bricolage_Grotesque,
+  Instrument_Serif,
+  Inter,
+  Noto_Serif_TC,
+} from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -18,6 +23,16 @@ const bricolage = Bricolage_Grotesque({
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
+});
+
+// Carries quotations. A sixteenth century line set in the UI sans reads like
+// product copy; a high contrast serif lets it sound like a quotation.
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument",
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -46,7 +61,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       // Dark-first: the cosmic palette is the default. See globals.css.
-      className={`dark ${bricolage.variable} ${inter.variable} ${notoSerifTC.variable} h-full antialiased`}
+      className={`dark ${bricolage.variable} ${inter.variable} ${instrumentSerif.variable} ${notoSerifTC.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col overflow-x-hidden">
         {children}

@@ -166,6 +166,8 @@
   --font-display: var(--font-bricolage);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-bricolage);
+  /* Quotations only. Deliberately not used for UI text. */
+  --font-quote: var(--font-instrument);
 
   /* ---------------------------------------------------------------------
    * TYPE SCALE
@@ -239,12 +241,6 @@ p {
 /* Orange → magenta brand accent. Drives the nav underline and gradient text. */
 :root {
   --primary-gradient: linear-gradient(90deg, #f17211, #b10eca);
-}
-
-.planet-bg {
-  background-image: url("/images/login-bg.jpg");
-  background-size: cover;
-  background-position: center;
 }
 
 .mask-image-gradient {

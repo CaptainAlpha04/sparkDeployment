@@ -2,47 +2,37 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { KeyRound, Mail, ShieldCheck, User } from "lucide-react";
-import StarryCanvas from "@/components/starry-canvas";
+import { AlertCircle, Check, Loader2, MailCheck } from "lucide-react";
+import { AuthShell } from "@/components/auth/auth-shell";
+import { GoogleButton } from "@/components/auth/google-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { signUp, signInWithGoogle } from "../actions";
 
-type Strength = "weak" | "medium" | "strong";
-
-function evaluate(password: string): Strength {
-  const hasUpper = /[A-Z]/.test(password);
-  const hasLower = /[a-z]/.test(password);
-  const hasDigit = /\d/.test(password);
-  const hasSymbol = /[^A-Za-z0-9]/.test(password);
-  const meetsAll = hasUpper && hasLower && hasDigit && hasSymbol;
-
-  if (password.length < 8 || !meetsAll) return "weak";
-  return password.length < 12 ? "medium" : "strong";
-}
-
-// The original swapped a hard border colour class. This animates a filling bar
-// instead, tweening between the same three colours.
-const STRENGTH_STYLE: Record<Strength, { width: string; className: string }> = {
-  weak: { width: "33%", className: "bg-red-500" },
-  medium: { width: "66%", className: "bg-orange-500" },
-  strong: { width: "100%", className: "bg-green-500" },
-};
+/**
+ * The four rules the shared zod schema enforces. Listed rather than described,
+ * so a rejected password shows which rule failed instead of a paragraph the
+ * reader has to re-check themselves against.
+ */
+const RULES = [
+  { label: "8 characters or more", test: (p: string) => p.length >= 8 },
+  { label: "An uppercase letter", test: (p: string) => /[A-Z]/.test(p) },
+  { label: "A lowercase letter", test: (p: string) => /[a-z]/.test(p) },
+  { label: "A number", test: (p: string) => /\d/.test(p) },
+  { label: "A special character", test: (p: string) => /[^A-Za-z0-9]/.test(p) },
+];
 
 export default function SignUpPage() {
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const [pending, startTransition] = useTransition();
 
-  // Derived state — computed during render, not synced via an effect. The old
-  // app used useEffect + setState here, causing a cascading render per keystroke.
-  const strength = evaluate(password);
-  const matches = password !== "" && password === confirmPassword;
-  const acceptable = strength !== "weak";
-  const bar = STRENGTH_STYLE[strength];
+  const met = RULES.filter((rule) => rule.test(password)).length;
+  const strong = met === RULES.length;
+  const matches = password !== "" && password === confirm;
 
   function onSubmit(formData: FormData) {
     setError(null);
@@ -54,137 +44,166 @@ export default function SignUpPage() {
   }
 
   return (
-    <section className="planet-bg fixed z-30 flex h-screen w-screen flex-row overflow-auto">
-      <StarryCanvas numberOfStars={140} />
-
-      <div className="animation-fade-in relative z-10 flex h-screen w-screen flex-col items-center gap-6 overflow-y-auto bg-black/20 p-6 pt-4 backdrop-blur-3xl transition-all lg:w-1/3">
-        <div className="flex w-full flex-row justify-between">
-          <Button asChild variant="ghost" className="text-white hover:bg-white/10">
-            <Link href="/">Back</Link>
-          </Button>
-          <Button asChild variant="ghost" className="text-white hover:bg-white/10">
-            <Link href="/login">Login</Link>
-          </Button>
-        </div>
-
-        <div className="flex flex-col items-center gap-4">
-          <Image
-            src="/images/logo-white.png"
-            alt="SPARK"
-            width={56}
-            height={56}
-            className="size-14 object-contain"
-            priority
-          />
-          <h1 className="text-3xl font-bold text-white">Create an Account</h1>
-          <p className="font-light text-white">
-            Enter your details to become a member.
+    <AuthShell
+      eyebrow="Join SPARK"
+      title="Create an account"
+      subtitle="It is free, and there is no entry test."
+      aside={{
+        quote:
+          "There is nothing more difficult to take in hand, more perilous to conduct, or more uncertain in its success, than to take the lead in the introduction of a new order of things.",
+        source: "Machiavelli",
+        work: "The Prince, 1532",
+      }}
+      footer={
+        <>
+          Already a member?{" "}
+          <Link href="/login" className="text-primary hover:underline">
+            Sign in
+          </Link>
+        </>
+      }
+    >
+      {sent ? (
+        <div className="rounded-xl border border-primary/40 bg-primary/10 p-5">
+          <MailCheck className="mb-3 size-6 text-primary" />
+          <p className="font-semibold">Check your email</p>
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            We have sent a confirmation link. Open it and you are in.
           </p>
         </div>
+      ) : (
+        <div className="space-y-5">
+          <form action={onSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="fullName">Full name</Label>
+              <Input
+                id="fullName"
+                name="fullName"
+                required
+                autoComplete="name"
+                placeholder="Ayesha Khan"
+                className="h-11"
+              />
+              <p className="text-xs text-muted-foreground">
+                This is the name printed on your certificates.
+              </p>
+            </div>
 
-        {sent ? (
-          <p className="rounded-lg border border-primary/40 bg-primary/10 p-4 text-center text-white">
-            An email for account verification has been sent!
-          </p>
-        ) : (
-          <>
-            <form action={onSubmit} className="flex w-full flex-col gap-3">
-              <label className="flex flex-row items-center gap-3">
-                <User className="size-5 shrink-0 text-white/70" aria-hidden />
-                <span className="hidden w-1/5 text-white md:flex">Name</span>
-                <Input
-                  name="fullName"
-                  placeholder="Name"
-                  required
-                  autoComplete="name"
-                  className="h-12 w-full rounded-lg bg-white/95 text-slate-900 placeholder:text-slate-500"
-                />
-              </label>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                placeholder="you@university.edu.pk"
+                className="h-11"
+              />
+            </div>
 
-              <label className="flex flex-row items-center gap-3">
-                <Mail className="size-5 shrink-0 text-white/70" aria-hidden />
-                <span className="hidden w-1/5 text-white md:flex">Email</span>
-                <Input
-                  name="email"
-                  type="email"
-                  placeholder="Email"
-                  required
-                  autoComplete="email"
-                  className="h-12 w-full rounded-lg bg-white/95 text-slate-900 placeholder:text-slate-500"
-                />
-              </label>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                required
+                autoComplete="new-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-11"
+              />
 
-              <label className="flex flex-row items-center gap-3">
-                <KeyRound className="size-5 shrink-0 text-white/70" aria-hidden />
-                <span className="hidden w-1/5 text-white md:flex">Password</span>
-                <Input
-                  name="password"
-                  type="password"
-                  placeholder="Password"
-                  required
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-12 w-full rounded-lg bg-white/95 text-slate-900 placeholder:text-slate-500"
-                />
-              </label>
-
-              <div className="ml-8 h-1 w-full overflow-hidden rounded-full bg-white/15 md:ml-0">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ease-out ${bar.className}`}
-                  style={{ width: password ? bar.width : "0%" }}
-                />
+              {/* Segmented strength meter, one segment per rule, so progress is
+                  legible without reading the list. */}
+              <div className="flex gap-1 pt-1">
+                {RULES.map((rule, i) => (
+                  <span
+                    key={rule.label}
+                    className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
+                      password === "" || i >= met
+                        ? "bg-white/10"
+                        : strong
+                          ? "bg-emerald-500"
+                          : met >= 3
+                            ? "bg-amber-500"
+                            : "bg-destructive"
+                    }`}
+                  />
+                ))}
               </div>
 
-              <label className="flex flex-row items-center gap-3">
-                <ShieldCheck className="size-5 shrink-0 text-white/70" aria-hidden />
-                <span className="hidden w-1/5 text-white md:flex">Confirm</span>
+              {password !== "" && !strong && (
+                <ul className="space-y-1 pt-1">
+                  {RULES.filter((rule) => !rule.test(password)).map((rule) => (
+                    <li
+                      key={rule.label}
+                      className="flex items-center gap-2 text-xs text-muted-foreground"
+                    >
+                      <span className="size-1 rounded-full bg-muted-foreground" />
+                      {rule.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm password</Label>
+              <div className="relative">
                 <Input
+                  id="confirmPassword"
                   name="confirmPassword"
                   type="password"
-                  placeholder="Confirm Password"
                   required
                   autoComplete="new-password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`h-12 w-full rounded-lg border-b-4 bg-white/95 text-slate-900 transition-colors duration-300 placeholder:text-slate-500 ${
-                    confirmPassword === ""
-                      ? "border-b-transparent"
-                      : matches
-                        ? "border-b-green-500"
-                        : "border-b-red-500"
-                  }`}
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                  className="h-11 pr-10"
                 />
-              </label>
+                {matches && (
+                  <Check className="absolute top-1/2 right-3 size-4 -translate-y-1/2 text-emerald-400" />
+                )}
+              </div>
+              {confirm !== "" && !matches && (
+                <p className="text-xs text-destructive">
+                  These do not match yet.
+                </p>
+              )}
+            </div>
 
-              <p className="p-2 text-center text-xs text-white/80">
-                Password must contain one Uppercase, one Lowercase character. A
-                numerical digit and a Special Character!
+            {error && (
+              <p
+                role="alert"
+                className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm text-destructive"
+              >
+                <AlertCircle className="mt-0.5 size-4 shrink-0" />
+                {error}
               </p>
+            )}
 
-              {error && <p className="self-center text-red-400">{error}</p>}
+            <Button
+              type="submit"
+              disabled={pending || !strong || !matches}
+              className="h-11 w-full gap-2"
+            >
+              {pending && <Loader2 className="size-4 animate-spin" />}
+              {pending ? "Creating account…" : "Create account"}
+            </Button>
+          </form>
 
-              <Button
-                type="submit"
-                disabled={pending || !matches || !acceptable}
-                className="h-12 w-full"
-              >
-                {pending ? "Registering…" : "Register"}
-              </Button>
-            </form>
+          <div className="flex items-center gap-3">
+            <span className="h-px flex-1 bg-border" />
+            <span className="text-xs text-muted-foreground">or</span>
+            <span className="h-px flex-1 bg-border" />
+          </div>
 
-            <form action={() => signInWithGoogle("/")} className="w-full">
-              <Button
-                type="submit"
-                variant="outline"
-                className="h-12 w-full border-white/40 bg-transparent text-white hover:bg-white/10"
-              >
-                Continue with Google
-              </Button>
-            </form>
-          </>
-        )}
-      </div>
-    </section>
+          <form action={() => signInWithGoogle("/")}>
+            <GoogleButton>Continue with Google</GoogleButton>
+          </form>
+        </div>
+      )}
+    </AuthShell>
   );
 }
