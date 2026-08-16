@@ -64,6 +64,18 @@ export async function updateTemplate(
   return row;
 }
 
+/** How many certificates were issued from a template, for the delete warning. */
+export async function countCertificatesFromTemplate(
+  templateId: string,
+): Promise<number> {
+  await requireAdmin();
+  const [row] = await db
+    .select({ n: sql<number>`count(*)::int` })
+    .from(certificates)
+    .where(eq(certificates.templateId, templateId));
+  return row.n;
+}
+
 export async function deleteTemplate(id: string): Promise<void> {
   await requireAdmin();
   // The FK from certificates uses ON DELETE RESTRICT, so this throws rather

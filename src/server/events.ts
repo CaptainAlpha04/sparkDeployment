@@ -200,6 +200,73 @@ export async function updateEvent(id: string, input: EventInput): Promise<Event>
   return row;
 }
 
+export type EventDeletionImpact = {
+  registrations: number;
+  checkIns: number;
+  certificates: number;
+};
+
+/** What deleting this event would destroy, so the confirmation can be honest. */
+export async function getEventDeletionImpact(
+  eventId: string,
+): Promise<EventDeletionImpact> {
+  await requireAdmin();
+
+  const [row] = await db.execute<{
+    registrations: number;
+    check_ins: number;
+    certificates: number;
+  }>(sql`
+    select
+      (select count(*) from registrations where event_id = ${eventId})::int
+        as registrations,
+      (select count(*) from check_ins c
+         join registrations r on r.id = c.registration_id
+        where r.event_id = ${eventId})::int as check_ins,
+      (select count(*) from certificates where event_id = ${eventId})::int
+        as certificates
+  `);
+
+  return {
+    registrations: row.registrations,
+    checkIns: row.check_ins,
+    certificates: row.certificates,
+  };
+}
+
+/**
+ * Permanently deletes an event.
+ *
+ * Registrations, answers and check-ins cascade away with it, which is
+ * acceptable: they only have meaning in the context of the event.
+ *
+ * Certificates do not. They are credentials people may already have shared,
+ * printed, or linked from a CV, and their public verification URLs would start
+ * returning "no certificate found" with no way to undo it. So an event that has
+ * issued any is refused, and the admin is pointed at cancelling instead, which
+ * keeps the record intact.
+ */
+export async function deleteEvent(eventId: string): Promise<void> {
+  await requireAdmin();
+
+  const impact = await getEventDeletionImpact(eventId);
+
+  if (impact.certificates > 0) {
+    throw new Error(
+      `This event has issued ${impact.certificates} certificate${
+        impact.certificates === 1 ? "" : "s"
+      }. Deleting it would break their public verification links permanently. Set the event to cancelled instead.`,
+    );
+  }
+
+  const [deleted] = await db
+    .delete(events)
+    .where(eq(events.id, eventId))
+    .returning({ id: events.id });
+
+  if (!deleted) throw new Error("Event not found");
+}
+
 export type AttendeeRow = {
   registration: Registration;
   fullName: string | null;

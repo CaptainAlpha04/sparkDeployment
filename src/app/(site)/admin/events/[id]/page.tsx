@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getEvent } from "@/server/events";
 import { EventForm } from "@/components/admin/event-form";
+import { DeleteEventButton } from "@/components/admin/delete-event-button";
 
 export default async function EditEventPage({
   params,
@@ -21,7 +22,10 @@ export default async function EditEventPage({
       </Link>
 
       <p className="eyebrow mb-2">Edit event</p>
-      <h1 className="mb-8 text-4xl font-bold">{event.title}</h1>
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+        <h1 className="text-4xl font-bold">{event.title}</h1>
+        <DeleteEventButton id={event.id} title={event.title} />
+      </div>
 
       <EventForm
         initial={{

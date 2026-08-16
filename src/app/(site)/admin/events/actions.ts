@@ -1,7 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createEvent, getEvent, updateEvent, type EventInput } from "@/server/events";
+import {
+  createEvent,
+  deleteEvent,
+  getEvent,
+  getEventDeletionImpact,
+  updateEvent,
+  type EventDeletionImpact,
+  type EventInput,
+} from "@/server/events";
 import { cancelUserRegistration, checkIn } from "@/server/registrations";
 
 /**
@@ -176,6 +184,35 @@ export async function cancelRegistrationAction(
     await cancelUserRegistration(eventId, userId);
     const event = await getEvent(eventId);
     revalidateEvent(eventId, [event?.slug ?? ""]);
+    return { ok: true, data: undefined };
+  } catch (error) {
+    return { ok: false, error: toMessage(error) };
+  }
+}
+
+/** What deleting this event would destroy, so the confirmation can say so. */
+export async function eventDeletionImpactAction(
+  id: string,
+): Promise<ActionResult<EventDeletionImpact>> {
+  try {
+    return { ok: true, data: await getEventDeletionImpact(id) };
+  } catch (error) {
+    return { ok: false, error: toMessage(error) };
+  }
+}
+
+export async function deleteEventAction(id: string): Promise<ActionResult> {
+  try {
+    // Read the slug before the row is gone, so the public page can be
+    // invalidated too. Otherwise a deleted event stays cached and reachable.
+    const event = await getEvent(id);
+    await deleteEvent(id);
+
+    revalidatePath("/admin/events");
+    revalidatePath("/admin");
+    revalidatePath("/events");
+    if (event) revalidatePath(`/events/${event.slug}`);
+
     return { ok: true, data: undefined };
   } catch (error) {
     return { ok: false, error: toMessage(error) };
