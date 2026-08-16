@@ -46,14 +46,25 @@ async function countConfirmed(eventId: string): Promise<number> {
 }
 
 afterAll(async () => {
+  // Two statements, not one per fixture. The concurrency test alone creates a
+  // dozen users, and deleting them one at a time against a remote database
+  // spent longer in round trips than the default 10s hook timeout allowed.
+  // sql.join builds "in ($1, $2, ...)". Interpolating the array directly
+  // expands it to a tuple, which is not a Postgres array and fails to parse.
+  const list = (ids: string[]) =>
+    sql.join(
+      ids.map((id) => sql`${id}`),
+      sql`, `,
+    );
+
+  if (eventIds.length > 0) {
+    await db.execute(sql`delete from events where id in (${list(eventIds)})`);
+  }
+  if (userIds.length > 0) {
+    await db.execute(sql`delete from auth.users where id in (${list(userIds)})`);
+  }
   await closeConcurrentDb();
-  for (const id of eventIds) {
-    await db.execute(sql`delete from events where id = ${id}`);
-  }
-  for (const id of userIds) {
-    await db.execute(sql`delete from auth.users where id = ${id}`);
-  }
-});
+}, 60_000);
 
 describe("registerUserForEvent", () => {
   it("confirms when there is room", async () => {

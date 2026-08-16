@@ -6,6 +6,7 @@ import {
   listPastEvents,
   listUpcomingEvents,
 } from "./events";
+import { CLEANUP_TIMEOUT, deleteEventsByIds } from "@/test/cleanup";
 
 /**
  * The listing and lookup functions are public — no auth guard, because the
@@ -40,10 +41,8 @@ async function makeEvent(opts: {
 }
 
 afterAll(async () => {
-  for (const id of eventIds) {
-    await db.execute(sql`delete from events where id = ${id}`);
-  }
-});
+  await deleteEventsByIds(eventIds);
+}, CLEANUP_TIMEOUT);
 
 describe("listUpcomingEvents", () => {
   it("never includes draft events", async () => {

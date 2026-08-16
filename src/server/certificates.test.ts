@@ -3,6 +3,12 @@ import { sql } from "drizzle-orm";
 import { db } from "./db";
 import { verifyCertificate } from "./certificates";
 import { generateCertificateCode } from "@/lib/certificate-code";
+import {
+  CLEANUP_TIMEOUT,
+  deleteAuthUsersByIds,
+  deleteEventsByIds,
+  deleteTemplatesByIds,
+} from "@/test/cleanup";
 
 /**
  * verifyCertificate is the one certificate function with no auth guard — it is
@@ -56,16 +62,10 @@ async function fixture(opts: { revoked?: boolean } = {}) {
 }
 
 afterAll(async () => {
-  for (const id of userIds) {
-    await db.execute(sql`delete from auth.users where id = ${id}`);
-  }
-  for (const id of eventIds) {
-    await db.execute(sql`delete from events where id = ${id}`);
-  }
-  for (const id of templateIds) {
-    await db.execute(sql`delete from certificate_templates where id = ${id}`);
-  }
-});
+  await deleteAuthUsersByIds(userIds);
+  await deleteEventsByIds(eventIds);
+  await deleteTemplatesByIds(templateIds);
+}, CLEANUP_TIMEOUT);
 
 describe("verifyCertificate", () => {
   it("confirms a genuine certificate", async () => {

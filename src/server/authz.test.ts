@@ -2,6 +2,7 @@ import { describe, expect, it, afterAll } from "vitest";
 import { sql } from "drizzle-orm";
 import { db } from "./db";
 import { isAdminRole, isModeratorRole } from "./auth";
+import { CLEANUP_TIMEOUT, deleteAuthUsersByIds } from "@/test/cleanup";
 
 const created: string[] = [];
 
@@ -18,10 +19,8 @@ async function makeAuthUser(): Promise<string> {
 }
 
 afterAll(async () => {
-  for (const id of created) {
-    await db.execute(sql`delete from auth.users where id = ${id}`);
-  }
-});
+  await deleteAuthUsersByIds(created);
+}, CLEANUP_TIMEOUT);
 
 describe("role assignment", () => {
   it("defaults a new signup to member, never admin", async () => {
