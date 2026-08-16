@@ -32,7 +32,13 @@ function wedge(index: number, count: number): string {
   const points = [`${CX},${CY}`];
   for (let i = 0; i <= 8; i += 1) {
     const a = start + (step * i) / 8;
-    points.push(`${CX + Math.cos(a) * r},${CY + Math.sin(a) * r}`);
+    // Rounded deliberately. The precision of Math.cos and Math.sin is
+    // implementation defined, so Node and the browser can disagree in the
+    // final digits and React reports a hydration mismatch on the serialised
+    // points. Three decimals is far finer than a 92 unit viewBox can show.
+    const x = (CX + Math.cos(a) * r).toFixed(3);
+    const y = (CY + Math.sin(a) * r).toFixed(3);
+    points.push(`${x},${y}`);
   }
   return points.join(" ");
 }
