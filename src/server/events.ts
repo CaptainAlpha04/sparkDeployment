@@ -262,15 +262,26 @@ export async function getMyRegistrations(): Promise<MyRegistrationRow[]> {
 export async function getAdminOverview() {
   await requireModerator();
 
-  const [[eventTally], [memberTally], [regTally], [checkTally]] = await Promise.all([
-    db.select({ n: count() }).from(events),
-    db.select({ n: count() }).from(profiles),
-    db
-      .select({ n: count() })
-      .from(registrations)
-      .where(eq(registrations.status, "confirmed")),
-    db.select({ n: count() }).from(checkIns),
-  ]);
+  // One round trip for four numbers rather than four. This also used to be a
+  // Promise.all of four separate queries, which deadlocked the connection pool
+  // and hung the entire admin dashboard. See the comment in db.ts.
+  const [tallies] = await db.execute<{
+    events: number;
+    members: number;
+    confirmed: number;
+    checked_in: number;
+  }>(sql`
+    select
+      (select count(*) from events)::int as events,
+      (select count(*) from profiles)::int as members,
+      (select count(*) from registrations where status = 'confirmed')::int as confirmed,
+      (select count(*) from check_ins)::int as checked_in
+  `);
+
+  const eventTally = { n: tallies.events };
+  const memberTally = { n: tallies.members };
+  const regTally = { n: tallies.confirmed };
+  const checkTally = { n: tallies.checked_in };
 
   const upcoming = await db
     .select()
