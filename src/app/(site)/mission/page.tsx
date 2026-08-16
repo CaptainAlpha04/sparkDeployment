@@ -269,11 +269,11 @@ export default function MissionPage() {
         <div className="relative mx-auto max-w-2xl text-center">
           <Reveal>
             <h2 className="text-5xl font-bold">
-              Ask the thing you have been too embarrassed to ask.
+              Curiosity is the only requirement.
             </h2>
             <p className="mx-auto mt-6 max-w-lg text-lg leading-relaxed text-muted-foreground">
-              It is free, nobody is marking you, and you can walk out whenever you
-              want. That is most of the design.
+              No fees, no entry test, nothing you need to know first. Turn up to one
+              session and see what you think.
             </p>
           </Reveal>
 
