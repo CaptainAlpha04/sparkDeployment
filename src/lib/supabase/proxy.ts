@@ -27,10 +27,53 @@ const PUBLIC_PREFIXES = [
   // printed on the certificate. The holder's downloadable copy lives at
   // /certificates/<code> and stays behind auth.
   "/verify",
+  // Published writing, and the machine-readable variants of it. A crawler has
+  // no session, so anything left off this list is served a redirect to /login
+  // instead of the page — which is indistinguishable, from the outside, from
+  // the content not existing.
+  "/blog",
+  "/case-studies",
 ];
+
+/**
+ * Single-file public routes.
+ *
+ * Kept apart from the prefix list because these are exact paths, and matching
+ * them by prefix would also open "/robots.txt-ish" style near misses.
+ */
+const PUBLIC_FILES = new Set([
+  "/robots.txt",
+  "/sitemap.xml",
+  // The site map written for language models, and the full text behind it.
+  // Both are useless if they need a login.
+  "/llms.txt",
+  "/llms-full.txt",
+  "/manifest.webmanifest",
+  // Where a security researcher looks for somewhere to report a flaw. Putting
+  // it behind auth would defeat the only reason the file exists.
+  "/.well-known/security.txt",
+]);
+
+/**
+ * Generated social card images.
+ *
+ * Matched by prefix, not exact path: Next appends a content hash to these
+ * routes (`/opengraph-image-fx5gi7`), so the URL cannot be written out here.
+ * Everything under the name is our own generated imagery, and the scraper
+ * fetching it is Slack or WhatsApp unfurling a link, with no session.
+ */
+function isGeneratedImage(pathname: string) {
+  return (
+    pathname.startsWith("/opengraph-image") ||
+    pathname.endsWith("/opengraph-image") ||
+    /\/opengraph-image-[a-z0-9]+$/i.test(pathname)
+  );
+}
 
 export function isPublic(pathname: string) {
   if (pathname === "/") return true;
+  if (PUBLIC_FILES.has(pathname)) return true;
+  if (isGeneratedImage(pathname)) return true;
   return PUBLIC_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(p + "/"),
   );

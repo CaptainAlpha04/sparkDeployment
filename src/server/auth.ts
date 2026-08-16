@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { db } from "./db";
 import { profiles, type Profile } from "./schema";
 
-export type Role = "member" | "moderator" | "admin";
+export type Role = "member" | "moderator" | "editor" | "admin";
 
 /**
  * Role predicates.
@@ -18,6 +18,17 @@ export function isAdminRole(role: string | null | undefined): boolean {
 
 export function isModeratorRole(role: string | null | undefined): boolean {
   return role === "moderator" || role === "admin";
+}
+
+/**
+ * May write and publish to the site's masthead.
+ *
+ * Note what this deliberately does not include: `moderator`. Moderation and
+ * publishing are different powers, and the enum's ordering is not a ladder.
+ * Admin is the only role that implies the others.
+ */
+export function isEditorRole(role: string | null | undefined): boolean {
+  return role === "editor" || role === "admin";
 }
 
 export class AuthError extends Error {
@@ -71,5 +82,19 @@ export async function requireAdmin(): Promise<Profile> {
 export async function requireModerator(): Promise<Profile> {
   const profile = await requireUser();
   if (!isModeratorRole(profile.role)) throw new AuthError("Not authorised");
+  return profile;
+}
+
+/**
+ * Throws unless signed in AND editor or admin.
+ *
+ * Call this at the top of every studio action rather than relying on the
+ * /studio layout. Two of the admin action files already lean on their layout
+ * gate alone, which is exactly why the studio is a separate route tree: a gate
+ * you can forget is a gate that will be forgotten.
+ */
+export async function requireEditor(): Promise<Profile> {
+  const profile = await requireUser();
+  if (!isEditorRole(profile.role)) throw new AuthError("Not authorised");
   return profile;
 }

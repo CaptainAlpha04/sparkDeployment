@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SparkMark } from "@/components/brand/spark-mark";
 
 const PAGES = [
+  { href: "/case-studies", label: "Case studies" },
   { href: "/legal", label: "Legal" },
   { href: "/sponsorship", label: "Sponsorships" },
   { href: "/products", label: "Products" },

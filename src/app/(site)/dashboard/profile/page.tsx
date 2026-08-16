@@ -11,6 +11,7 @@ export const metadata = {
 const ROLE_LABEL: Record<string, string> = {
   member: "Member",
   moderator: "Moderator",
+  editor: "Editor",
   admin: "Admin",
 };
 

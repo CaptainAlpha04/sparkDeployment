@@ -42,7 +42,7 @@ export async function listMembers(): Promise<MemberRow[]> {
  */
 export async function updateMemberRole(
   userId: string,
-  role: "member" | "moderator" | "admin",
+  role: "member" | "moderator" | "editor" | "admin",
 ): Promise<Profile> {
   const admin = await requireAdmin();
 

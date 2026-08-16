@@ -22,6 +22,8 @@ export type HeaderUser = {
   email: string | null;
   avatarUrl: string | null;
   isAdmin: boolean;
+  /** Editors reach the studio; admins are editors too. */
+  isEditor: boolean;
 };
 
 const NAV = [
@@ -29,6 +31,9 @@ const NAV = [
   { href: "/mission", label: "Mission" },
   { href: "/alliance", label: "Alliance" },
   { href: "/events", label: "Events" },
+  // Label and path differ on purpose: "Writing" is what it is, "/blog" is
+  // where people and crawlers look for it.
+  { href: "/blog", label: "Writing" },
   { href: "/highlights", label: "Highlights" },
 ];
 
@@ -222,6 +227,11 @@ export function Header({ user }: { user: HeaderUser | null }) {
                 <DropdownMenuItem asChild>
                   <Link href="/dashboard/profile">Profile</Link>
                 </DropdownMenuItem>
+                {user.isEditor && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/studio">Studio</Link>
+                  </DropdownMenuItem>
+                )}
                 {user.isAdmin && (
                   <DropdownMenuItem asChild>
                     <Link href="/admin">Admin</Link>

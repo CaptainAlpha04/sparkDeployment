@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   Bricolage_Grotesque,
   Instrument_Serif,
@@ -7,6 +7,15 @@ import {
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/sonner";
+import { JsonLd } from "@/components/seo/json-ld";
+import {
+  ORG_DESCRIPTION,
+  SITE_NAME,
+  SITE_TAGLINE,
+  organizationJsonLd,
+  websiteJsonLd,
+} from "@/lib/seo";
+import { siteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 // Bricolage Grotesque carries display: variable width and optical sizing give
@@ -43,10 +52,70 @@ const notoSerifTC = Noto_Serif_TC({
   display: "swap",
 });
 
+/**
+ * Site-wide defaults. Every page inherits these and overrides what it needs.
+ *
+ * metadataBase is the load-bearing line: without it Next cannot turn a
+ * relative image path into the absolute URL that Open Graph requires, so
+ * social cards silently fall back to no image at all. It is also what makes
+ * `alternates.canonical` resolvable from a relative path on every other page.
+ */
 export const metadata: Metadata = {
-  title: "SPARK Chapter | The fastest growing community",
-  description:
-    "SPARK is Pakistan's premier innovation community — events, research, entrepreneurship, and the people building what comes next.",
+  metadataBase: new URL(siteUrl()),
+  title: {
+    default: `${SITE_NAME} | ${SITE_TAGLINE}`,
+    // Pages set a bare title and get the brand appended, so no page has to
+    // remember to do it and none of them do it differently.
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: ORG_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    "SPARK Chapter",
+    "student innovation Pakistan",
+    "NUST",
+    "Islamabad",
+    "student community",
+    "hackathons Pakistan",
+    "research",
+  ],
+  authors: [{ name: SITE_NAME, url: siteUrl() }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  alternates: {
+    canonical: "/",
+    types: { "application/rss+xml": "/blog/rss.xml" },
+  },
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: "en_PK",
+    url: siteUrl(),
+    title: `${SITE_NAME} | ${SITE_TAGLINE}`,
+    description: ORG_DESCRIPTION,
+  },
+  twitter: { card: "summary_large_image" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      // Uncapped on purpose: the defaults let Google show a short snippet and
+      // a thumbnail, which is most of what a result is.
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
+  },
+  // Silences the "this site may not be mobile friendly" heuristics and gets
+  // the address bar tinted to match the page rather than flashing white.
+  formatDetection: { telephone: false },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#06070f",
+  colorScheme: "dark",
 };
 
 /**
@@ -64,6 +133,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`dark ${bricolage.variable} ${inter.variable} ${instrumentSerif.variable} ${notoSerifTC.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col overflow-x-hidden">
+        {/* Identity, stated once for the whole site. Every page's own JSON-LD
+            references these by @id rather than restating them, which is what
+            lets a consumer tie an article to its publisher. */}
+        <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
         {children}
         {/* Mounted once here so toast() works anywhere. Without it, calls
             silently no-op — which is worse than an error, because the code

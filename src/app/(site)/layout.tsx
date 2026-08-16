@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Header, type HeaderUser } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
-import { getCurrentProfile, isAdminRole } from "@/server/auth";
+import { getCurrentProfile, isAdminRole, isEditorRole } from "@/server/auth";
 
 /**
  * Site chrome — everything except the auth screens, which are deliberately
@@ -16,6 +16,7 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
         email: null,
         avatarUrl: profile.avatarUrl,
         isAdmin: isAdminRole(profile.role),
+        isEditor: isEditorRole(profile.role),
       }
     : null;
 

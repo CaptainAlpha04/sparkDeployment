@@ -7,7 +7,7 @@ export type ActionResult<T = undefined> =
   | { ok: true; data: T }
   | { ok: false; error: string };
 
-const ROLES = ["member", "moderator", "admin"] as const;
+const ROLES = ["member", "moderator", "editor", "admin"] as const;
 type Role = (typeof ROLES)[number];
 
 function isRole(value: unknown): value is Role {

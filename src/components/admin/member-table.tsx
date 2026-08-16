@@ -42,12 +42,14 @@ type Props = {
 
 const ROLE_VARIANT: Record<string, "default" | "secondary" | "outline"> = {
   admin: "default",
+  editor: "secondary",
   moderator: "secondary",
   member: "outline",
 };
 
 const ROLE_LABEL: Record<string, string> = {
   admin: "Admin",
+  editor: "Editor",
   moderator: "Moderator",
   member: "Member",
 };
@@ -215,6 +217,7 @@ export function MemberTable({ members, currentUserId }: Props) {
                           <SelectContent>
                             <SelectItem value="member">Member</SelectItem>
                             <SelectItem value="moderator">Moderator</SelectItem>
+                            <SelectItem value="editor">Editor</SelectItem>
                             <SelectItem value="admin">Admin</SelectItem>
                           </SelectContent>
                         </Select>

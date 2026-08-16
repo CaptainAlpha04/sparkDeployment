@@ -39,5 +39,10 @@ export async function deleteTemplatesByIds(ids: string[]) {
   );
 }
 
+export async function deletePostsByIds(ids: string[]) {
+  if (ids.length === 0) return;
+  await db.execute(sql`delete from posts where id in (${idList(ids)})`);
+}
+
 /** Generous, because these run against a remote database. */
 export const CLEANUP_TIMEOUT = 60_000;
