@@ -219,6 +219,9 @@ export function Header({ user }: { user: HeaderUser | null }) {
                 <DropdownMenuItem asChild>
                   <Link href="/dashboard/certificates">Certificates</Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard/profile">Profile</Link>
+                </DropdownMenuItem>
                 {user.isAdmin && (
                   <DropdownMenuItem asChild>
                     <Link href="/admin">Admin</Link>
@@ -315,6 +318,11 @@ export function Header({ user }: { user: HeaderUser | null }) {
               <Button asChild variant="outline">
                 <Link href="/dashboard" onClick={() => setIsOpen(false)}>
                   Dashboard
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/dashboard/profile" onClick={() => setIsOpen(false)}>
+                  Profile
                 </Link>
               </Button>
               <form action={signOut}>

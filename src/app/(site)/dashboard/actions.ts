@@ -71,6 +71,10 @@ export async function updateProfileAction(
   try {
     const profile = await updateOwnProfile(input);
 
+    // The header renders the name from (site)/layout.tsx, so revalidating the
+    // pages alone leaves the old name showing in the corner until a hard
+    // reload. "layout" scope is what refreshes it.
+    revalidatePath("/", "layout");
     revalidatePath("/dashboard");
     revalidatePath("/dashboard/profile");
 

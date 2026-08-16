@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { CircleCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,6 +50,7 @@ export function ProfileForm({ initial, email }: Props) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [pending, startTransition] = useTransition();
+  const router = useRouter();
 
   function set<K extends keyof Values>(key: K, value: string) {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -93,6 +95,9 @@ export function ProfileForm({ initial, email }: Props) {
         return;
       }
       setSaved(true);
+      // Pull the revalidated layout so the name in the header updates now
+      // rather than on the next navigation.
+      router.refresh();
     });
   }
 

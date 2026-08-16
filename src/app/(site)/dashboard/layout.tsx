@@ -1,14 +1,15 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Award, CalendarDays, UserRound } from "lucide-react";
+import { Award, CalendarDays, LayoutDashboard, UserRound } from "lucide-react";
 import { getCurrentProfile } from "@/server/auth";
 import { SparkMark } from "@/components/brand/spark-mark";
 
 const NAV = [
-  { href: "/dashboard", label: "Overview", icon: UserRound },
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/events", label: "My events", icon: CalendarDays },
   { href: "/dashboard/certificates", label: "Certificates", icon: Award },
+  { href: "/dashboard/profile", label: "Profile", icon: UserRound },
 ];
 
 export default async function DashboardLayout({
