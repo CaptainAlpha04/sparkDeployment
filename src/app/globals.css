@@ -1,0 +1,524 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * SPARK design tokens.
+ *
+ * The system is dark-first: the cosmic palette is the default in `:root` and
+ * repeated in `.dark` so shadcn's `dark:` variants resolve consistently.
+ * `<html>` carries `className="dark"` (see src/app/layout.tsx).
+ *
+ * Never write a colour literal in a component — reference a token.
+ */
+:root {
+  --background: oklch(0.14 0.02 275);
+  --foreground: oklch(0.97 0.01 275);
+
+  --card: oklch(0.18 0.025 275);
+  --card-foreground: oklch(0.97 0.01 275);
+
+  --popover: oklch(0.16 0.025 275);
+  --popover-foreground: oklch(0.97 0.01 275);
+
+  --primary: oklch(0.62 0.19 296);
+  --primary-foreground: oklch(0.99 0.005 296);
+
+  --secondary: oklch(0.24 0.03 275);
+  --secondary-foreground: oklch(0.97 0.01 275);
+
+  --muted: oklch(0.22 0.025 275);
+  --muted-foreground: oklch(0.68 0.02 275);
+
+  --accent: oklch(0.7 0.17 45);
+  --accent-foreground: oklch(0.15 0.02 45);
+
+  --destructive: oklch(0.58 0.21 25);
+  --destructive-foreground: oklch(0.98 0.01 25);
+
+  --border: oklch(0.28 0.03 275);
+  --input: oklch(0.28 0.03 275);
+  --ring: oklch(0.62 0.19 296);
+
+  --radius: 0.75rem;
+
+  /* SPARK-specific */
+  --nebula: oklch(0.62 0.19 296);
+  --ember: oklch(0.7 0.17 45);
+  --void: oklch(0.09 0.015 275);
+  --starlight: oklch(0.99 0.005 275);
+
+  /* Categorical ramp: distinct hues at near-equal lightness, so no series
+     reads as more important than another. */
+  --chart-1: oklch(0.62 0.19 296);
+  --chart-2: oklch(0.7 0.17 45);
+  --chart-3: oklch(0.65 0.15 220);
+  --chart-4: oklch(0.72 0.16 150);
+  --chart-5: oklch(0.68 0.18 350);
+
+  --sidebar: oklch(0.16 0.025 275);
+  --sidebar-foreground: oklch(0.97 0.01 275);
+  --sidebar-primary: oklch(0.62 0.19 296);
+  --sidebar-primary-foreground: oklch(0.99 0.005 296);
+  --sidebar-accent: oklch(0.24 0.03 275);
+  --sidebar-accent-foreground: oklch(0.97 0.01 275);
+  --sidebar-border: oklch(0.28 0.03 275);
+  --sidebar-ring: oklch(0.62 0.19 296);
+}
+
+.dark {
+  --background: oklch(0.14 0.02 275);
+  --foreground: oklch(0.97 0.01 275);
+
+  --card: oklch(0.18 0.025 275);
+  --card-foreground: oklch(0.97 0.01 275);
+
+  --popover: oklch(0.16 0.025 275);
+  --popover-foreground: oklch(0.97 0.01 275);
+
+  --primary: oklch(0.62 0.19 296);
+  --primary-foreground: oklch(0.99 0.005 296);
+
+  --secondary: oklch(0.24 0.03 275);
+  --secondary-foreground: oklch(0.97 0.01 275);
+
+  --muted: oklch(0.22 0.025 275);
+  --muted-foreground: oklch(0.68 0.02 275);
+
+  --accent: oklch(0.7 0.17 45);
+  --accent-foreground: oklch(0.15 0.02 45);
+
+  --destructive: oklch(0.58 0.21 25);
+  --destructive-foreground: oklch(0.98 0.01 25);
+
+  --border: oklch(0.28 0.03 275);
+  --input: oklch(0.28 0.03 275);
+  --ring: oklch(0.62 0.19 296);
+
+  --chart-1: oklch(0.62 0.19 296);
+  --chart-2: oklch(0.7 0.17 45);
+  --chart-3: oklch(0.65 0.15 220);
+  --chart-4: oklch(0.72 0.16 150);
+  --chart-5: oklch(0.68 0.18 350);
+
+  --sidebar: oklch(0.16 0.025 275);
+  --sidebar-foreground: oklch(0.97 0.01 275);
+  --sidebar-primary: oklch(0.62 0.19 296);
+  --sidebar-primary-foreground: oklch(0.99 0.005 296);
+  --sidebar-accent: oklch(0.24 0.03 275);
+  --sidebar-accent-foreground: oklch(0.97 0.01 275);
+  --sidebar-border: oklch(0.28 0.03 275);
+  --sidebar-ring: oklch(0.62 0.19 296);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-nebula: var(--nebula);
+  --color-ember: var(--ember);
+  --color-void: var(--void);
+  --color-starlight: var(--starlight);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-bricolage);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-bricolage);
+
+  /* ---------------------------------------------------------------------
+   * TYPE SCALE
+   *
+   * The old build ran headings at text-8xl (96px) and stat figures at
+   * text-9xl (128px), with everything else close behind — so nothing read as
+   * more important than anything else. These override Tailwind's defaults
+   * rather than adding new names, which re-scales all 15 pages at once and
+   * keeps existing class names meaningful.
+   *
+   * Every display size is fluid, so the mobile case stops being an
+   * afterthought.
+   * ------------------------------------------------------------------- */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.0625rem;
+  --text-xl: 1.1875rem;
+  --text-2xl: 1.375rem;
+  --text-3xl: 1.625rem;
+  --text-4xl: clamp(1.5rem, 2vw, 1.875rem);
+  --text-5xl: clamp(1.75rem, 2.6vw, 2.25rem);
+  --text-6xl: clamp(2rem, 3.2vw, 2.75rem);
+  --text-7xl: clamp(2.25rem, 4vw, 3.25rem);
+  --text-8xl: clamp(2.5rem, 5vw, 4rem);
+  --text-9xl: clamp(2.75rem, 6vw, 4.75rem);
+}
+
+/* Display sizes need tighter leading and optical letter-spacing; at the old
+ * sizes the default tracking left headlines looking loose and unset. */
+h1,
+h2,
+h3 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* Eyebrow labels — small, tracked, mono. Structural signposting that tells
+ * you where you are without another oversized heading. */
+.eyebrow {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Ported from the original SPARK stylesheet (git a630ff7:app/globals.css).
+ * Kept because they carry the brand's visual identity.
+ * ------------------------------------------------------------------------ */
+
+/* Orange → magenta brand accent. Drives the nav underline and gradient text. */
+:root {
+  --primary-gradient: linear-gradient(90deg, #f17211, #b10eca);
+}
+
+.planet-bg {
+  background-image: url("/images/login-bg.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.mask-image-gradient {
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+}
+
+/* Underline grows from the centre outward on hover. */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::before {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background: var(--primary-gradient);
+  transition:
+    width 300ms ease,
+    left 300ms ease;
+}
+
+.nav-link:hover::before {
+  width: 100%;
+  left: 0;
+}
+
+/* In the old build this was written as `hover:nav-selected`, which is not a
+ * real Tailwind variant and emitted no CSS — the gradient-text hover never
+ * fired. Implemented properly here as a real hover state. */
+.nav-link:hover,
+.nav-selected {
+  background-image: var(--primary-gradient);
+  font-weight: 700;
+  background-clip: text;
+  color: transparent;
+}
+
+/* The signature entrance curve. Reused by every scroll reveal so new motion
+ * reads as the same design language. */
+@keyframes swipe-from-bottom {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animation-swipe-from-bottom {
+  animation: swipe-from-bottom 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* The original held opacity at 0 for the first 50% of a 3s run — a 1.5s dead
+ * hold. Replaced with a real delay and a shorter fade. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animation-fade-in {
+  animation: fade-in 900ms ease-out 350ms both;
+}
+
+/* Traditional Chinese display face — the 傳道部 glyphs on the mission hero. */
+.font-tc {
+  font-family: "Noto Serif TC", serif;
+  font-optical-sizing: auto;
+}
+
+/* The brand's signature CTA. Pill with a gradient that sweeps left→right on
+ * hover. Ported from the old `@layer components` .btn-stylized. */
+.btn-stylized {
+  @apply inline-flex items-center justify-center rounded-3xl border-2 border-gray-100
+    bg-gradient-to-r from-transparent to-transparent p-3 px-10 font-medium text-gray-100
+    transition-all duration-500 ease-in-out
+    hover:border-transparent hover:from-orange-400 hover:via-pink-500 hover:to-violet-700
+    hover:text-white;
+  background-size: 170% 100%;
+  background-position: left;
+}
+
+.btn-stylized:hover {
+  background-position: right;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px -10px oklch(0.62 0.19 296 / 0.6);
+}
+
+.btn-stylized:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* The old build had no focus indicator at all on this control. */
+.btn-stylized:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+/* Scroll-reveal. Reuses the swipe-from-bottom curve so newly-added motion
+ * reads as the same design language as the original hero animation. */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 700ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 700ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Slow independent drift for the decorative shapes in the geometric hero,
+ * which were completely static in the old build. */
+@keyframes float-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(var(--drift-x, 10px), var(--drift-y, -14px), 0);
+  }
+}
+
+.float-drift {
+  animation: float-drift var(--drift-duration, 12s) ease-in-out infinite;
+  animation-delay: var(--drift-delay, 0s);
+}
+
+@keyframes gradient-pan {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.gradient-pan {
+  background-size: 200% 100%;
+  animation: gradient-pan 8s linear infinite;
+}
+
+/* Element pills. Each carries its own accent through --pill rather than every
+ * one defaulting to the brand purple, so the eight read as eight things. */
+.element-pill {
+  border-color: var(--border);
+  transition:
+    border-color 300ms ease,
+    color 300ms ease,
+    background-color 300ms ease,
+    transform 300ms ease;
+}
+
+.element-pill:hover,
+.element-pill:focus-visible {
+  border-color: color-mix(in oklch, var(--pill) 60%, transparent);
+  background-color: color-mix(in oklch, var(--pill) 12%, transparent);
+  color: var(--pill);
+  transform: translateY(-2px);
+}
+
+.element-pill .element-pill-mark {
+  color: var(--pill);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .element-pill:hover,
+  .element-pill:focus-visible {
+    transform: none;
+  }
+}
+
+/* Mission page element captions.
+ * Stacked in one grid cell and cross-faded by the container's data-index, so
+ * the scroll loop swaps captions with a single attribute write instead of a
+ * React render per frame. Scoped to .mission-captions. */
+.mission-captions > [data-caption] {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 320ms ease,
+    transform 320ms ease;
+}
+
+.mission-captions[data-index="0"] > [data-caption="0"],
+.mission-captions[data-index="1"] > [data-caption="1"],
+.mission-captions[data-index="2"] > [data-caption="2"],
+.mission-captions[data-index="3"] > [data-caption="3"],
+.mission-captions[data-index="4"] > [data-caption="4"],
+.mission-captions[data-index="5"] > [data-caption="5"],
+.mission-captions[data-index="6"] > [data-caption="6"],
+.mission-captions[data-index="7"] > [data-caption="7"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mission-captions > [data-caption] {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Print — certificate download.
+ *
+ * "Save as PDF" from the print dialog is the download mechanism, so the sheet
+ * has to be the only thing on the page and must fill it edge to edge.
+ * ------------------------------------------------------------------------ */
+@media print {
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    height: auto !important;
+  }
+
+  /* Site chrome never belongs on a printed certificate. */
+  header,
+  footer,
+  nav {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  .certificate-sheet {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    break-inside: avoid;
+  }
+
+  .certificate-sheet > div {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: var(--certificate-aspect, auto);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animation-swipe-from-bottom,
+  .animation-fade-in,
+  .float-drift,
+  .gradient-pan {
+    animation: none;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .btn-stylized:hover {
+    transform: none;
+  }
+}
