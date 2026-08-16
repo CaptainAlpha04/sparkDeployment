@@ -284,7 +284,7 @@ The current admin and settings pages are two unrelated visual languages. Phase 1
 
 **Member** (authenticated) — `/dashboard` · `/dashboard/events` (upcoming, past, waitlisted) · `/dashboard/profile`
 
-**Admin** (`role = admin`) — `/admin` · `/admin/events` · `/admin/events/[id]/edit` · `/admin/events/[id]/questions` · `/admin/events/[id]/registrations` (table, CSV export, check-in) · `/admin/members` (list, role management)
+**Admin** (`role = admin`) — `/admin` · `/admin/events` · `/admin/events/[id]/edit` · `/admin/events/[id]/questions` · `/admin/events/[id]/attendees` (table, search, check-in) · `/admin/members` (list, role management)
 
 Phase 2 adds `/forum`, `/forum/[category]`, `/forum/[category]/[slug]`, `/admin/forum`. Phase 3 adds `/dashboard/certificates`, `/admin/certificates`, and public `/verify/[code]`.
 

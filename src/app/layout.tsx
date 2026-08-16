@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Inter, Noto_Serif_TC } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 // Bricolage Grotesque carries display: variable width and optical sizing give
@@ -49,6 +50,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col overflow-x-hidden">
         {children}
+        {/* Mounted once here so toast() works anywhere. Without it, calls
+            silently no-op — which is worse than an error, because the code
+            looks like it is giving feedback and is not. */}
+        <Toaster position="bottom-right" />
         <Analytics />
       </body>
     </html>

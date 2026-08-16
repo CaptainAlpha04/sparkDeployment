@@ -186,6 +186,34 @@ export async function issueCertificatesForEvent(
   };
 }
 
+export type IssuedCertificateRow = {
+  id: string;
+  code: string;
+  recipientName: string;
+  issuedAt: Date;
+  revokedAt: Date | null;
+  revokedReason: string | null;
+};
+
+/** Certificates already issued for an event, newest first. */
+export async function listIssuedForEvent(
+  eventId: string,
+): Promise<IssuedCertificateRow[]> {
+  await requireAdmin();
+  return db
+    .select({
+      id: certificates.id,
+      code: certificates.code,
+      recipientName: certificates.recipientName,
+      issuedAt: certificates.issuedAt,
+      revokedAt: certificates.revokedAt,
+      revokedReason: certificates.revokedReason,
+    })
+    .from(certificates)
+    .where(eq(certificates.eventId, eventId))
+    .orderBy(desc(certificates.issuedAt));
+}
+
 export async function revokeCertificate(
   id: string,
   reason: string,

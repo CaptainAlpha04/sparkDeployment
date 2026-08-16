@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Award } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { listTemplates } from "@/server/certificates";
 import { CertificateRender } from "@/components/certificates/certificate-render";
 import { NewTemplateForm } from "@/components/certificates/new-template-form";
@@ -17,7 +19,17 @@ export default async function AdminCertificatesPage() {
   return (
     <div>
       <p className="eyebrow mb-2">Certificates</p>
-      <h1 className="mb-2 text-4xl font-bold">Templates</h1>
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-4">
+        <h1 className="text-4xl font-bold">Templates</h1>
+        {templates.length > 0 && (
+          <Button asChild>
+            <Link href="/admin/certificates/issue" className="gap-2">
+              <Award className="size-4" />
+              Issue certificates
+            </Link>
+          </Button>
+        )}
+      </div>
       <p className="mb-8 max-w-2xl text-muted-foreground">
         Design a certificate once, then issue it to everyone who checked in to an
         event. Each certificate gets a unique code that anyone can verify at{" "}

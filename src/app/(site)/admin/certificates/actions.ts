@@ -6,8 +6,12 @@ import {
   createTemplate,
   deleteTemplate,
   issueCertificatesForEvent,
+  listIssuanceCandidates,
+  listIssuedForEvent,
   revokeCertificate,
   updateTemplate,
+  type IssuanceCandidate,
+  type IssuedCertificateRow,
 } from "@/server/certificates";
 import { requireAdmin } from "@/server/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -118,7 +122,38 @@ export async function issueAction(
   try {
     const result = await issueCertificatesForEvent(eventId, templateId);
     revalidatePath("/admin/certificates");
+    revalidatePath("/admin/certificates/issue");
+    revalidatePath("/dashboard/certificates");
     return { ok: true, data: result };
+  } catch (error) {
+    return { ok: false, error: (error as Error).message };
+  }
+}
+
+/**
+ * Who would receive a certificate for this event, and who already has one.
+ *
+ * Called when the admin picks an event, so the issue screen can show exactly
+ * what will happen before anything is written. Issuing certificates emails
+ * nothing but is still effectively irreversible in the recipient's eyes, so
+ * the preview matters.
+ */
+export async function listCandidatesAction(
+  eventId: string,
+): Promise<ActionResult<IssuanceCandidate[]>> {
+  try {
+    const candidates = await listIssuanceCandidates(eventId);
+    return { ok: true, data: candidates };
+  } catch (error) {
+    return { ok: false, error: (error as Error).message };
+  }
+}
+
+export async function listIssuedAction(
+  eventId: string,
+): Promise<ActionResult<IssuedCertificateRow[]>> {
+  try {
+    return { ok: true, data: await listIssuedForEvent(eventId) };
   } catch (error) {
     return { ok: false, error: (error as Error).message };
   }
