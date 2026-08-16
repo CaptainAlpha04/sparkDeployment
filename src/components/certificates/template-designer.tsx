@@ -369,14 +369,17 @@ export function TemplateDesigner({
                       }
                       className="mt-1 h-9 w-full rounded-md border border-input bg-transparent px-2 text-sm"
                     >
-                      <option value="display" className="bg-popover">
-                        Display
-                      </option>
                       <option value="sans" className="bg-popover">
-                        Body
+                        Sans (Helvetica)
+                      </option>
+                      <option value="serif" className="bg-popover">
+                        Serif (Times)
                       </option>
                       <option value="mono" className="bg-popover">
-                        Mono
+                        Mono (Courier)
+                      </option>
+                      <option value="display" className="bg-popover">
+                        Display (Helvetica)
                       </option>
                     </select>
                   </div>

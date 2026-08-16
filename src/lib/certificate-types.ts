@@ -31,7 +31,7 @@ export type TemplateField = {
   color: string;
   align: "left" | "center" | "right";
   weight: number;
-  family: "display" | "sans" | "mono";
+  family: "display" | "sans" | "serif" | "mono";
   letterSpacing?: number;
   uppercase?: boolean;
 };

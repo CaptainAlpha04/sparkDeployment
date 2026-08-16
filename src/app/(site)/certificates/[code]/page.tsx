@@ -6,7 +6,7 @@ import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { getCertificateForRender } from "@/server/certificates";
 import { requireUser, isAdminRole } from "@/server/auth";
 import { CertificateRender } from "@/components/certificates/certificate-render";
-import { PrintButton } from "@/components/certificates/print-button";
+import { DownloadButton } from "@/components/certificates/download-button";
 
 export const metadata: Metadata = {
   title: "Your certificate | SPARK",
@@ -78,7 +78,7 @@ export default async function CertificatePage({
         </div>
 
         <div className="mt-8 flex flex-wrap items-center gap-3 print:hidden">
-          <PrintButton />
+          <DownloadButton code={certificate.code} />
           <Link
             href={`/verify/${certificate.code}`}
             className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2.5 text-sm transition-colors hover:bg-white/5"
@@ -92,7 +92,8 @@ export default async function CertificatePage({
         </div>
 
         <p className="mt-4 text-xs text-muted-foreground print:hidden">
-          Choose &ldquo;Save as PDF&rdquo; in the print dialog to download.
+          The PDF is generated on our side, so it looks the same wherever you
+          open it.
           Anyone can confirm this certificate is genuine at{" "}
           <span className="font-mono">/verify/{certificate.code}</span>.
         </p>

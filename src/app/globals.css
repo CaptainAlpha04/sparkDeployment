@@ -459,10 +459,15 @@ p {
 }
 
 /* ---------------------------------------------------------------------------
- * Print — certificate download.
+ * Print.
  *
- * "Save as PDF" from the print dialog is the download mechanism, so the sheet
- * has to be the only thing on the page and must fill it edge to edge.
+ * The supported way to get a file is the Download PDF button, which builds the
+ * document server-side. This block only exists so that someone who reaches for
+ * Ctrl+P out of habit gets something sensible instead of a dark page.
+ *
+ * The reason the old print-to-PDF route produced blank pages was
+ * print-color-adjust: browsers strip background images and colours from print
+ * output unless it is set to exact.
  * ------------------------------------------------------------------------ */
 @media print {
   @page {
@@ -474,6 +479,8 @@ p {
   body {
     background: #fff !important;
     height: auto !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   /* Site chrome never belongs on a printed certificate. */
@@ -488,19 +495,17 @@ p {
     background: #fff !important;
   }
 
+  .certificate-sheet,
+  .certificate-sheet * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   .certificate-sheet {
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
     box-shadow: none !important;
     border-radius: 0 !important;
     break-inside: avoid;
-  }
-
-  .certificate-sheet > div {
-    width: 100% !important;
-    height: auto !important;
-    aspect-ratio: var(--certificate-aspect, auto);
   }
 }
 

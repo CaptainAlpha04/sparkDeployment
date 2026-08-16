@@ -11,10 +11,17 @@ export type CertificateValues = {
   verify_url: string;
 };
 
+/**
+ * Deliberately the PDF standard font stacks rather than the site's brand
+ * faces. The downloaded PDF can only use fonts built into the spec without
+ * embedding font files, so matching here means the designer preview and the
+ * exported certificate are the same document.
+ */
 const FAMILY_VAR: Record<TemplateField["family"], string> = {
-  display: "var(--font-bricolage), system-ui, sans-serif",
-  sans: "var(--font-inter), system-ui, sans-serif",
-  mono: "var(--font-geist-mono), ui-monospace, monospace",
+  display: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+  sans: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+  serif: '"Times New Roman", Times, serif',
+  mono: '"Courier New", Courier, monospace',
 };
 
 export function fieldText(field: TemplateField, values: CertificateValues): string {
