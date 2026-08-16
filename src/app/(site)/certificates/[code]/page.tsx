@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { verifyUrl } from "@/lib/site-url";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
@@ -41,6 +42,7 @@ export default async function CertificatePage({
     event_title: certificate.eventTitle,
     event_date: formatDate(certificate.eventDate),
     certificate_code: certificate.code,
+                    verify_url: verifyUrl(certificate.code),
     issued_date: formatDate(certificate.issuedAt),
   };
 

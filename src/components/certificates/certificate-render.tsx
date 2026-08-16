@@ -1,4 +1,5 @@
 import type { TemplateField } from "@/lib/certificate-types";
+import { QrCode } from "@/components/certificates/qr-code";
 
 export type CertificateValues = {
   recipient_name: string;
@@ -6,6 +7,8 @@ export type CertificateValues = {
   event_date: string;
   certificate_code: string;
   issued_date: string;
+  /** Absolute URL the QR field resolves to. */
+  verify_url: string;
 };
 
 const FAMILY_VAR: Record<TemplateField["family"], string> = {
@@ -16,6 +19,8 @@ const FAMILY_VAR: Record<TemplateField["family"], string> = {
 
 export function fieldText(field: TemplateField, values: CertificateValues): string {
   if (field.source === "static") return field.text ?? "";
+  // Rendered as a graphic, never as text.
+  if (field.source === "qr_code") return "";
   return values[field.source] ?? "";
 }
 
@@ -72,6 +77,31 @@ export function CertificateRender({
       />
 
       {fields.map((field) => {
+        if (field.source === "qr_code") {
+          // fontSize doubles as the QR's edge length, as a fraction of the
+          // artwork height, so it scales with every other field.
+          const edge = height * field.fontSize;
+          return (
+            <div
+              key={field.id}
+              className="absolute"
+              style={{
+                left: `${field.x * 100}%`,
+                top: `${field.y * 100}%`,
+                transform: "translate(-50%, -50%)",
+                lineHeight: 0,
+              }}
+            >
+              <QrCode
+                value={values.verify_url}
+                size={edge}
+                dark={field.color}
+                light="#ffffff"
+              />
+            </div>
+          );
+        }
+
         const text = fieldText(field, values);
         if (!text) return null;
 
@@ -154,6 +184,17 @@ export function defaultFields(): TemplateField[] {
       y: 0.7,
       fontSize: 0.026,
       color: "#66627f",
+      align: "center",
+      weight: 400,
+      family: "sans",
+    },
+    {
+      id: "qr",
+      source: "qr_code",
+      x: 0.88,
+      y: 0.84,
+      fontSize: 0.13,
+      color: "#1a1030",
       align: "center",
       weight: 400,
       family: "sans",

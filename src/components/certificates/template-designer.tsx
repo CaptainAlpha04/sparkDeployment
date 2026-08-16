@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { Plus, Save, Trash2 } from "lucide-react";
 import {
   FIELD_SOURCE_LABELS,
+  isGraphicField,
   type TemplateField,
   type TemplateFieldSource,
 } from "@/lib/certificate-types";
+import { verifyUrl } from "@/lib/site-url";
 import { CertificateRender } from "@/components/certificates/certificate-render";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +23,7 @@ const SAMPLE = {
   event_title: "SPARKx Talk — Building for the Digital Age",
   event_date: "27 October 2025",
   certificate_code: "SPARK-A7K2-9QX4",
+  verify_url: verifyUrl("SPARK-A7K2-9QX4"),
   issued_date: "15 August 2026",
 };
 
@@ -276,9 +279,19 @@ export function TemplateDesigner({
                 </div>
               )}
 
+              {isGraphicField(selected.source) && (
+                <p className="rounded-lg border border-border bg-white/5 p-3 text-xs text-muted-foreground">
+                  Generated automatically from the certificate code. It links to
+                  the public verification page, so you only choose where it sits
+                  and how large it is.
+                </p>
+              )}
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-xs">Size</Label>
+                  <Label className="text-xs">
+                    {isGraphicField(selected.source) ? "QR size" : "Size"}
+                  </Label>
                   <Input
                     type="number"
                     step={0.005}
@@ -292,26 +305,9 @@ export function TemplateDesigner({
                   />
                 </div>
                 <div>
-                  <Label className="text-xs">Weight</Label>
-                  <select
-                    value={selected.weight}
-                    onChange={(e) =>
-                      patch(selected.id, { weight: Number(e.target.value) })
-                    }
-                    className="mt-1 h-9 w-full rounded-md border border-input bg-transparent px-2 text-sm"
-                  >
-                    {[300, 400, 500, 600, 700, 800].map((w) => (
-                      <option key={w} value={w} className="bg-popover">
-                        {w}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-xs">Colour</Label>
+                  <Label className="text-xs">
+                    {isGraphicField(selected.source) ? "Dark colour" : "Colour"}
+                  </Label>
                   <input
                     type="color"
                     value={selected.color}
@@ -319,48 +315,73 @@ export function TemplateDesigner({
                     className="mt-1 h-9 w-full cursor-pointer rounded-md border border-input bg-transparent"
                   />
                 </div>
-                <div>
-                  <Label className="text-xs">Align</Label>
-                  <select
-                    value={selected.align}
-                    onChange={(e) =>
-                      patch(selected.id, {
-                        align: e.target.value as TemplateField["align"],
-                      })
-                    }
-                    className="mt-1 h-9 w-full rounded-md border border-input bg-transparent px-2 text-sm"
-                  >
-                    {["left", "center", "right"].map((a) => (
-                      <option key={a} value={a} className="bg-popover">
-                        {a}
-                      </option>
-                    ))}
-                  </select>
-                </div>
               </div>
 
-              <div>
-                <Label className="text-xs">Typeface</Label>
-                <select
-                  value={selected.family}
-                  onChange={(e) =>
-                    patch(selected.id, {
-                      family: e.target.value as TemplateField["family"],
-                    })
-                  }
-                  className="mt-1 h-9 w-full rounded-md border border-input bg-transparent px-2 text-sm"
-                >
-                  <option value="display" className="bg-popover">
-                    Display
-                  </option>
-                  <option value="sans" className="bg-popover">
-                    Body
-                  </option>
-                  <option value="mono" className="bg-popover">
-                    Mono
-                  </option>
-                </select>
-              </div>
+              {/* Weight, alignment and typeface are meaningless for a generated
+                  QR, so they are hidden rather than shown doing nothing. */}
+              {!isGraphicField(selected.source) && (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-xs">Weight</Label>
+                      <select
+                        value={selected.weight}
+                        onChange={(e) =>
+                          patch(selected.id, { weight: Number(e.target.value) })
+                        }
+                        className="mt-1 h-9 w-full rounded-md border border-input bg-transparent px-2 text-sm"
+                      >
+                        {[300, 400, 500, 600, 700, 800].map((w) => (
+                          <option key={w} value={w} className="bg-popover">
+                            {w}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <Label className="text-xs">Align</Label>
+                      <select
+                        value={selected.align}
+                        onChange={(e) =>
+                          patch(selected.id, {
+                            align: e.target.value as TemplateField["align"],
+                          })
+                        }
+                        className="mt-1 h-9 w-full rounded-md border border-input bg-transparent px-2 text-sm"
+                      >
+                        {["left", "center", "right"].map((a) => (
+                          <option key={a} value={a} className="bg-popover">
+                            {a}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="text-xs">Typeface</Label>
+                    <select
+                      value={selected.family}
+                      onChange={(e) =>
+                        patch(selected.id, {
+                          family: e.target.value as TemplateField["family"],
+                        })
+                      }
+                      className="mt-1 h-9 w-full rounded-md border border-input bg-transparent px-2 text-sm"
+                    >
+                      <option value="display" className="bg-popover">
+                        Display
+                      </option>
+                      <option value="sans" className="bg-popover">
+                        Body
+                      </option>
+                      <option value="mono" className="bg-popover">
+                        Mono
+                      </option>
+                    </select>
+                  </div>
+                </>
+              )}
 
               <p className="pt-1 font-mono text-[0.6875rem] text-muted-foreground">
                 x {(selected.x * 100).toFixed(1)}% · y {(selected.y * 100).toFixed(1)}%

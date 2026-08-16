@@ -13,7 +13,9 @@ export type TemplateFieldSource =
   | "event_date"
   | "certificate_code"
   | "issued_date"
-  | "static";
+  | "static"
+  /** Scannable link to the public verification page for this certificate. */
+  | "qr_code";
 
 export type TemplateField = {
   id: string;
@@ -41,4 +43,10 @@ export const FIELD_SOURCE_LABELS: Record<TemplateFieldSource, string> = {
   certificate_code: "Certificate code",
   issued_date: "Issue date",
   static: "Fixed text",
+  qr_code: "QR code",
 };
+
+/** Sources that render as a square graphic rather than a line of text. */
+export function isGraphicField(source: TemplateFieldSource): boolean {
+  return source === "qr_code";
+}

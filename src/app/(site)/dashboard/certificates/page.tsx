@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { verifyUrl } from "@/lib/site-url";
 import { Award, ExternalLink } from "lucide-react";
 import { getMyCertificates } from "@/server/certificates";
 import { CertificateRender } from "@/components/certificates/certificate-render";
@@ -62,6 +63,7 @@ export default async function MyCertificatesPage() {
                     event_title: cert.eventTitle,
                     event_date: formatDate(cert.eventDate),
                     certificate_code: cert.code,
+                    verify_url: verifyUrl(cert.code),
                     issued_date: formatDate(cert.issuedAt),
                   }}
                   width={420}

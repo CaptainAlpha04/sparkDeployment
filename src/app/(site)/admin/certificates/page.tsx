@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { verifyUrl } from "@/lib/site-url";
 import { Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { listTemplates } from "@/server/certificates";
@@ -10,6 +11,7 @@ const PREVIEW = {
   event_title: "SPARKx Talk",
   event_date: "27 October 2025",
   certificate_code: "SPARK-A7K2-9QX4",
+  verify_url: verifyUrl("SPARK-A7K2-9QX4"),
   issued_date: "15 August 2026",
 };
 
