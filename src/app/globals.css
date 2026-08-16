@@ -398,6 +398,36 @@ p {
   animation: gradient-pan 8s linear infinite;
 }
 
+/* Element pills. Each carries its own accent through --pill rather than every
+ * one defaulting to the brand purple, so the eight read as eight things. */
+.element-pill {
+  border-color: var(--border);
+  transition:
+    border-color 300ms ease,
+    color 300ms ease,
+    background-color 300ms ease,
+    transform 300ms ease;
+}
+
+.element-pill:hover,
+.element-pill:focus-visible {
+  border-color: color-mix(in oklch, var(--pill) 60%, transparent);
+  background-color: color-mix(in oklch, var(--pill) 12%, transparent);
+  color: var(--pill);
+  transform: translateY(-2px);
+}
+
+.element-pill .element-pill-mark {
+  color: var(--pill);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .element-pill:hover,
+  .element-pill:focus-visible {
+    transform: none;
+  }
+}
+
 /* Mission page element captions.
  * Stacked in one grid cell and cross-faded by the container's data-index, so
  * the scroll loop swaps captions with a single attribute write instead of a

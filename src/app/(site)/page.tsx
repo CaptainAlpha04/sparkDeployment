@@ -39,15 +39,26 @@ const programmes = [
   },
 ];
 
-const elements = [
-  "Research",
-  "Entrepreneurship",
-  "Innovation",
-  "Leadership",
-  "Creativity",
-  "Education",
-  "Technology",
-  "Collaboration",
+/**
+ * Each element carries its own accent so the eight read as eight distinct
+ * things rather than one brand colour repeated. Colours match the mission
+ * page sequence, so an element looks the same wherever it appears.
+ *
+ * Split 5 then 3 on desktop, which balances better than an even wrap and
+ * echoes the uneven points of the mark. Both rows wrap freely on mobile.
+ */
+const elementsRowOne = [
+  { name: "Research", accent: "#3b82f6" },
+  { name: "Entrepreneurship", accent: "#94a3b8" },
+  { name: "Innovation", accent: "#f97316" },
+  { name: "Leadership", accent: "#ef4444" },
+  { name: "Creativity", accent: "#a855f7" },
+];
+
+const elementsRowTwo = [
+  { name: "Education", accent: "#6366f1" },
+  { name: "Technology", accent: "#06b6d4" },
+  { name: "Collaboration", accent: "#22c55e" },
 ];
 
 const benefits = [
@@ -92,7 +103,8 @@ export default async function HomePage() {
       {/* ── Hero ─────────────────────────────────────────────────────────
           One line, nothing else competing with it. Everything the visitor
           needs to understand is taught by the sections underneath. */}
-      <section className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-black via-slate-950 to-slate-950 px-6">
+      <section className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-6"
+        style={{ background: "linear-gradient(to bottom, #000000 0%, #05060f 55%, #0a0b16 100%)" }}>
         <StarryCanvas numberOfStars={200} />
 
         <div className="relative z-10 flex flex-col items-center text-center">
@@ -123,7 +135,9 @@ export default async function HomePage() {
       </section>
 
       {/* ── The claim ────────────────────────────────────────────────────── */}
-      <section className="w-full border-t border-white/5 bg-slate-950 px-6 py-32">
+      <section className="w-full px-6 py-32"
+        style={{ background: "linear-gradient(to bottom, #0a0b16, #10132e)" }}
+      >
         <div className="mx-auto max-w-4xl">
           <Reveal>
             <p className="eyebrow mb-6">Why we exist</p>
@@ -144,7 +158,9 @@ export default async function HomePage() {
       </section>
 
       {/* ── What we build ────────────────────────────────────────────────── */}
-      <section className="w-full border-t border-white/5 bg-slate-950 px-6 py-32">
+      <section className="w-full px-6 py-32"
+        style={{ background: "linear-gradient(to bottom, #10132e, #0b1a22)" }}
+      >
         <div className="mx-auto max-w-6xl">
           <Reveal>
             <p className="eyebrow mb-4">What we build</p>
@@ -167,7 +183,8 @@ export default async function HomePage() {
       </section>
 
       {/* ── Programmes ───────────────────────────────────────────────────── */}
-      <section className="w-full border-t border-white/5 bg-gradient-to-b from-slate-950 to-background px-6 py-32">
+      <section className="w-full px-6 py-32"
+        style={{ background: "linear-gradient(to bottom, #0b1a22, #0a0b16)" }}>
         <div className="mx-auto max-w-6xl">
           <Reveal>
             <p className="eyebrow mb-4">Programmes</p>
@@ -204,7 +221,8 @@ export default async function HomePage() {
       </section>
 
       {/* ── Elements ─────────────────────────────────────────────────────── */}
-      <section className="relative w-full overflow-hidden border-t border-white/5 bg-background px-6 py-32">
+      <section className="relative w-full overflow-hidden px-6 py-32"
+        style={{ background: "linear-gradient(to bottom, #0a0b16, #050610)" }}>
         <SparkMark
           className="pointer-events-none absolute top-1/2 left-1/2 h-[90vmin] w-[90vmin] -translate-x-1/2 -translate-y-1/2 text-white/[0.02]"
           aria-hidden
@@ -220,20 +238,37 @@ export default async function HomePage() {
             </p>
           </Reveal>
 
-          <Stagger
-            step={60}
-            className="mt-14 flex flex-wrap justify-center gap-3"
-          >
-            {elements.map((element) => (
-              <span
-                key={element}
-                className="flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm transition-colors duration-300 hover:border-primary/60 hover:text-primary"
-              >
-                <SparkBullet className="size-3 text-primary" />
-                {element}
-              </span>
-            ))}
-          </Stagger>
+          <div className="mt-14 space-y-3">
+            <Stagger step={60} className="flex flex-wrap justify-center gap-3">
+              {elementsRowOne.map((element) => (
+                <span
+                  key={element.name}
+                  className="element-pill flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm"
+                  style={{ ["--pill" as string]: element.accent }}
+                >
+                  <SparkBullet className="element-pill-mark size-3" />
+                  {element.name}
+                </span>
+              ))}
+            </Stagger>
+
+            <Stagger
+              step={60}
+              initialDelay={300}
+              className="flex flex-wrap justify-center gap-3"
+            >
+              {elementsRowTwo.map((element) => (
+                <span
+                  key={element.name}
+                  className="element-pill flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm"
+                  style={{ ["--pill" as string]: element.accent }}
+                >
+                  <SparkBullet className="element-pill-mark size-3" />
+                  {element.name}
+                </span>
+              ))}
+            </Stagger>
+          </div>
 
           <Reveal delay={200}>
             <Link
@@ -248,7 +283,8 @@ export default async function HomePage() {
 
       {/* ── Impact ───────────────────────────────────────────────────────── */}
       {stats.length > 0 && (
-        <section className="w-full border-t border-white/5 bg-background px-6 py-28">
+        <section className="w-full px-6 py-28"
+          style={{ background: "linear-gradient(to bottom, #050610, #0a0b16)" }}>
           <div className="mx-auto max-w-6xl">
             <Reveal>
               <p className="eyebrow mb-10 text-center">So far</p>
@@ -277,57 +313,61 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ── Membership ───────────────────────────────────────────────────── */}
-      <section className="relative w-full overflow-hidden border-t border-white/5 py-28">
-        <div
-          className="absolute inset-0 bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 opacity-15"
-          aria-hidden
-        />
-        <div
-          className="gradient-pan absolute top-0 right-0 left-0 h-px bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500"
-          aria-hidden
-        />
-        <div
-          className="gradient-pan absolute right-0 bottom-0 left-0 h-px bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500"
-          aria-hidden
-        />
-
-        <div className="relative z-10 mx-auto grid max-w-5xl items-center gap-14 px-6 md:grid-cols-2">
+      {/* ── Joining ──────────────────────────────────────────────────────
+          Previously carried a full-bleed orange-to-blue wash with animated
+          rules top and bottom, which read as a promotional banner rather than
+          part of the page. It now sits in the same palette as everything else,
+          with the single accent doing the work. */}
+      <section
+        className="relative w-full px-6 py-28"
+        style={{
+          // Picks up wherever the previous section actually ended. The impact
+          // block is conditional, so hardcoding a start colour here would leave
+          // a visible seam on any page load where the stats fail to resolve.
+          background: `linear-gradient(to bottom, ${
+            stats.length > 0 ? "#0a0b16" : "#050610"
+          }, #150e2a)`,
+        }}
+      >
+        <div className="mx-auto grid max-w-5xl items-center gap-14 md:grid-cols-2">
           <div>
             <Reveal>
-              <p className="eyebrow mb-4">Membership</p>
-              <h2 className="mb-8 text-5xl font-bold">What you get.</h2>
+              <p className="eyebrow mb-4">Joining</p>
+              <h2 className="mb-8 text-5xl font-bold">
+                It costs nothing to start.
+              </h2>
+              <p className="mb-10 text-lg leading-relaxed text-muted-foreground">
+                No fees, no entry test, no prerequisites. Turn up to one thing and
+                decide afterwards whether you want the next one.
+              </p>
             </Reveal>
 
-            <Stagger step={90} className="space-y-4">
-              {benefits.map((benefit) => (
-                <div key={benefit} className="flex items-start gap-3">
-                  <SparkBullet className="mt-1 size-3.5 shrink-0 text-orange-500" />
-                  <span className="text-muted-foreground">{benefit}</span>
-                </div>
-              ))}
-            </Stagger>
-          </div>
-
-          <Reveal delay={120}>
-            <div className="rounded-2xl border border-primary/40 bg-black/50 p-9 backdrop-blur-lg transition-all duration-500 hover:-translate-y-1 hover:border-primary/70">
-              <h3 className="mb-3 text-2xl font-semibold">
-                It costs nothing to start.
-              </h3>
-              <p className="mb-8 text-muted-foreground">
-                No fees, no entry test, no prerequisites. Turn up to one thing and
-                see whether you want the next one.
-              </p>
+            <Reveal delay={120}>
               <Link href="/signup" className="btn-stylized">
                 Join SPARK
               </Link>
-            </div>
-          </Reveal>
+            </Reveal>
+          </div>
+
+          <Stagger step={90} className="space-y-5">
+            {benefits.map((benefit) => (
+              <div
+                key={benefit}
+                className="flex items-start gap-3 border-t border-white/8 pt-5"
+              >
+                <SparkBullet className="mt-1 size-3.5 shrink-0 text-primary" />
+                <span className="leading-relaxed text-muted-foreground">
+                  {benefit}
+                </span>
+              </div>
+            ))}
+          </Stagger>
         </div>
       </section>
 
       {/* ── Community ────────────────────────────────────────────────────── */}
-      <section className="relative z-10 w-full overflow-hidden border-t border-white/5 bg-background px-6 py-28">
+      <section className="relative z-10 w-full overflow-hidden px-6 py-28"
+        style={{ background: "linear-gradient(to bottom, #150e2a, #000000)" }}>
         <div
           className="float-drift absolute top-1/3 left-1/4 -z-10 h-40 w-1/2 bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 opacity-20 blur-3xl"
           style={{
