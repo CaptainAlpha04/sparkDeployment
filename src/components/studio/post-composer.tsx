@@ -11,7 +11,6 @@ import {
   Cloud,
   ExternalLink,
   History,
-  ImagePlus,
   Loader2,
   PanelRight,
   RotateCcw,
@@ -27,8 +26,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RichEditor, type EditorHandle } from "@/components/studio/rich-editor";
-import { CoverPicker } from "@/components/studio/cover-picker";
+import { RichEditor } from "@/components/studio/rich-editor";
+import { CoverCanvas } from "@/components/studio/cover-canvas";
 import { cn } from "@/lib/utils";
 import {
   deletePostAction,
@@ -128,9 +127,6 @@ export function PostComposer({ post }: { post: ComposerPost }) {
   const [bodyHtml, setBodyHtml] = useState(post.bodyHtml ?? "");
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [panelOpen, setPanelOpen] = useState(false);
-  const [editor, setEditor] = useState<EditorHandle | null>(null);
-
-  const fileInput = useRef<HTMLInputElement>(null);
 
   const isCase = draft.kind === "case_study";
   const publicPath = `${isCase ? "/case-studies" : "/blog"}/${draft.slug}`;
@@ -338,18 +334,6 @@ export function PostComposer({ post }: { post: ComposerPost }) {
             {words.toLocaleString()} words · {Math.max(1, Math.round(words / 200))} min
           </span>
 
-          <BarButton
-            label="Insert image"
-            onClick={() => fileInput.current?.click()}
-            disabled={!editor || editor.uploading}
-          >
-            {editor?.uploading ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <ImagePlus className="size-4" />
-            )}
-          </BarButton>
-
           {live && (
             <BarButton label="View live" href={publicPath}>
               <ExternalLink className="size-4" />
@@ -404,19 +388,6 @@ export function PostComposer({ post }: { post: ComposerPost }) {
         </div>
       </header>
 
-      <input
-        ref={fileInput}
-        type="file"
-        accept="image/png,image/jpeg,image/webp,image/gif,image/avif"
-        className="hidden"
-        onChange={(event) => {
-          const file = event.target.files?.[0];
-          if (file) void editor?.insertImage(file);
-          // Reset so choosing the same file twice still fires a change event.
-          event.target.value = "";
-        }}
-      />
-
       {/* ---------------------------------------------------------------- */}
       {/* Document                                                         */}
       {/* ---------------------------------------------------------------- */}
@@ -429,7 +400,16 @@ export function PostComposer({ post }: { post: ComposerPost }) {
           panelOpen && "xl:pr-[23rem]",
         )}
       >
-        <div className="mx-auto w-full max-w-3xl px-6 py-14 sm:px-10">
+        <div className="mx-auto w-full max-w-3xl px-6 pt-14 pb-40 sm:px-10">
+          {/* The cover is edited as the hero it becomes, not as a thumbnail in
+              a panel, so choosing one is a decision about the finished page.
+              The headline is drawn inside it once an image exists. */}
+          <CoverCanvas
+            postId={draft.id}
+            url={draft.coverImageUrl}
+            alt={draft.coverAlt}
+            onChange={({ url, alt }) => patch({ coverImageUrl: url, coverAlt: alt })}
+          >
           <textarea
             value={draft.title}
             onChange={(event) => patch({ title: event.target.value })}
@@ -459,12 +439,13 @@ export function PostComposer({ post }: { post: ComposerPost }) {
             aria-label="Subtitle"
             className="mt-4 w-full bg-transparent text-xl text-white/50 outline-none placeholder:text-white/20"
           />
+          </CoverCanvas>
 
           <div className="mt-10">
             <RichEditor
               postId={draft.id}
               initialContent={post.bodyJson}
-              onReady={setEditor}
+              panelOpen={panelOpen}
               onChange={({ json, html }) => {
                 setDraft((prev) => ({ ...prev, bodyJson: json }));
                 setBodyHtml(html);
@@ -660,13 +641,6 @@ function SettingsPanel({
             publicPath={publicPath}
             isPublished={draft.status === "published"}
             onChange={(slug) => onDraftChange((prev) => ({ ...prev, slug }))}
-          />
-
-          <CoverPicker
-            postId={draft.id}
-            url={draft.coverImageUrl}
-            alt={draft.coverAlt}
-            onChange={({ url, alt }) => patch({ coverImageUrl: url, coverAlt: alt })}
           />
 
           <TagInput tags={draft.tags} onChange={(tags) => patch({ tags })} />

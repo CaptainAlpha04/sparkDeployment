@@ -1,8 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { EditorContent, useEditor, type Editor } from "@tiptap/react";
-import { BubbleMenu } from "@tiptap/react/menus";
+import {
+  EditorContent,
+  useEditor,
+  useEditorState,
+  type Editor,
+} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -11,14 +15,19 @@ import {
   Code,
   Heading2,
   Heading3,
+  ImagePlus,
   Italic,
   Link2,
   Link2Off,
   List,
   ListOrdered,
+  Loader2,
+  Minus,
   Quote,
+  Redo2,
   Strikethrough,
   Underline as UnderlineIcon,
+  Undo2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -26,14 +35,14 @@ import { uploadPostImage } from "@/lib/post-media";
 import { formatBytes, ImageRejected } from "@/lib/image-compress";
 
 /**
- * The writing surface.
+ * The writing surface, with a floating command bar pinned to the bottom.
  *
- * There is no toolbar attached to this component on purpose. A permanent bar
- * sitting on top of the page is what made the first version feel like a form:
- * it floated over the first line of the document and competed with the text
- * for attention. Formatting appears on selection instead, the way it does in a
- * document editor, and the two commands that need no selection — insert image,
- * insert link — are lifted into the app bar via `onReady`.
+ * The bar is always there rather than appearing on selection. A selection-only
+ * menu means the controls do not exist until you already know they do, and it
+ * cannot offer anything that acts without a selection — undo, insert image,
+ * insert a divider. Pinned to the bottom it stays out of the text's way while
+ * remaining one glance away, and it never covers the line being typed the way
+ * a top toolbar does.
  *
  * Headings start at h2. The post title is the page's only h1, and a second one
  * inside the body breaks the document outline that screen readers and crawlers
@@ -46,50 +55,45 @@ type Props = {
   /** Namespaces uploaded images so a deleted post can sweep its own folder. */
   postId: string;
   onChange: (value: { json: unknown; html: string }) => void;
-  /**
-   * Hands the editor instance up so the app bar can drive commands that do not
-   * belong in a selection menu.
-   */
-  onReady?: (editor: EditorHandle | null) => void;
+  /** Shifts the bar clear of the settings panel when it is open. */
+  panelOpen?: boolean;
   placeholder?: string;
 };
 
-export type EditorHandle = {
-  insertImage: (file: File) => Promise<void>;
-  setLink: () => void;
-  focus: () => void;
-  uploading: boolean;
-};
-
-function BubbleButton({
+function BarButton({
   onClick,
   active,
+  disabled,
   label,
   children,
 }: {
   onClick: () => void;
   active?: boolean;
+  disabled?: boolean;
   label: string;
   children: React.ReactNode;
 }) {
   return (
     <button
       type="button"
-      // Mousedown, not click: a click handler fires after the browser has
-      // already moved focus out of the document, which collapses the selection
-      // the command is meant to act on.
+      // Mousedown, not click. A click handler runs after the browser has
+      // already moved focus out of the document, collapsing the selection the
+      // command is meant to act on. This matters more with a permanent bar
+      // than a selection menu, because the caret is always somewhere.
       onMouseDown={(event) => {
         event.preventDefault();
-        onClick();
+        if (!disabled) onClick();
       }}
+      disabled={disabled}
       title={label}
       aria-label={label}
       aria-pressed={active}
       className={cn(
-        "inline-flex size-8 items-center justify-center rounded-md transition-colors",
+        "inline-flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors",
         active
           ? "bg-primary/25 text-primary"
-          : "text-white/70 hover:bg-white/10 hover:text-white",
+          : "text-white/65 hover:bg-white/10 hover:text-white",
+        disabled && "pointer-events-none opacity-30",
       )}
     >
       {children}
@@ -98,7 +102,7 @@ function BubbleButton({
 }
 
 function Divider() {
-  return <span className="mx-0.5 h-5 w-px bg-white/15" aria-hidden />;
+  return <span className="mx-1 h-5 w-px shrink-0 bg-white/12" aria-hidden />;
 }
 
 /**
@@ -127,10 +131,11 @@ export function RichEditor({
   initialContent,
   postId,
   onChange,
-  onReady,
-  placeholder = "Start writing. Select any text to format it.",
+  panelOpen = false,
+  placeholder = "Start writing.",
 }: Props) {
   const [uploading, setUploading] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
     // Server rendering produces markup React then disagrees with on hydration.
@@ -160,6 +165,38 @@ export function RichEditor({
     onUpdate: ({ editor }) => {
       onChange({ json: editor.getJSON(), html: editor.getHTML() });
     },
+  });
+
+  /*
+   * Toolbar state, subscribed rather than read during render.
+   *
+   * useEditor does not re-render on every transaction in Tiptap 3 —
+   * shouldRerenderOnTransaction defaults to false, for good performance
+   * reasons. A selection menu gets away with that because it remounts on each
+   * selection; a permanent bar does not, and would sit there showing whatever
+   * was true when the component last happened to render. This hook subscribes
+   * to exactly the flags the bar draws.
+   */
+  const state = useEditorState({
+    editor,
+    selector: ({ editor }) =>
+      editor
+        ? {
+            h2: editor.isActive("heading", { level: 2 }),
+            h3: editor.isActive("heading", { level: 3 }),
+            bold: editor.isActive("bold"),
+            italic: editor.isActive("italic"),
+            underline: editor.isActive("underline"),
+            strike: editor.isActive("strike"),
+            code: editor.isActive("code"),
+            bulletList: editor.isActive("bulletList"),
+            orderedList: editor.isActive("orderedList"),
+            blockquote: editor.isActive("blockquote"),
+            link: editor.isActive("link"),
+            canUndo: editor.can().undo(),
+            canRedo: editor.can().redo(),
+          }
+        : null,
   });
 
   const insertImage = useCallback(
@@ -198,28 +235,8 @@ export function RichEditor({
     [editor, postId],
   );
 
-  // Publish the handle upward. Depends on `uploading` so the app bar's spinner
-  // tracks an upload started from either place.
-  const onReadyRef = useRef(onReady);
-  useEffect(() => {
-    onReadyRef.current = onReady;
-  }, [onReady]);
-
-  useEffect(() => {
-    if (!editor) {
-      onReadyRef.current?.(null);
-      return;
-    }
-    onReadyRef.current?.({
-      insertImage,
-      setLink: () => promptForLink(editor),
-      focus: () => editor.chain().focus().run(),
-      uploading,
-    });
-  }, [editor, insertImage, uploading]);
-
-  // Paste and drop are how images actually get into a post; the app bar button
-  // is the fallback, not the main path.
+  // Paste and drop are how images actually get into a post; the bar button is
+  // the fallback, not the main path.
   useEffect(() => {
     if (!editor) return;
     const dom = editor.view.dom;
@@ -242,7 +259,7 @@ export function RichEditor({
     };
   }, [editor, insertImage]);
 
-  if (!editor) {
+  if (!editor || !state) {
     // Matched to the editor's own min height so the page does not jump when
     // the real surface replaces this.
     return <div className="min-h-[60vh] animate-pulse" aria-hidden />;
@@ -250,107 +267,170 @@ export function RichEditor({
 
   return (
     <>
-      <BubbleMenu
-        editor={editor}
-        className="flex items-center gap-0.5 rounded-xl border border-white/10 bg-[#15161f]/95 p-1 shadow-2xl shadow-black/60 backdrop-blur-xl"
-      >
-        <BubbleButton
-          label="Heading"
-          active={editor.isActive("heading", { level: 2 })}
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        >
-          <Heading2 className="size-4" />
-        </BubbleButton>
-        <BubbleButton
-          label="Subheading"
-          active={editor.isActive("heading", { level: 3 })}
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-        >
-          <Heading3 className="size-4" />
-        </BubbleButton>
-
-        <Divider />
-
-        <BubbleButton
-          label="Bold"
-          active={editor.isActive("bold")}
-          onClick={() => editor.chain().focus().toggleBold().run()}
-        >
-          <Bold className="size-4" />
-        </BubbleButton>
-        <BubbleButton
-          label="Italic"
-          active={editor.isActive("italic")}
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-        >
-          <Italic className="size-4" />
-        </BubbleButton>
-        <BubbleButton
-          label="Underline"
-          active={editor.isActive("underline")}
-          onClick={() => editor.chain().focus().toggleUnderline().run()}
-        >
-          <UnderlineIcon className="size-4" />
-        </BubbleButton>
-        <BubbleButton
-          label="Strikethrough"
-          active={editor.isActive("strike")}
-          onClick={() => editor.chain().focus().toggleStrike().run()}
-        >
-          <Strikethrough className="size-4" />
-        </BubbleButton>
-        <BubbleButton
-          label="Inline code"
-          active={editor.isActive("code")}
-          onClick={() => editor.chain().focus().toggleCode().run()}
-        >
-          <Code className="size-4" />
-        </BubbleButton>
-
-        <Divider />
-
-        <BubbleButton
-          label="Bulleted list"
-          active={editor.isActive("bulletList")}
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-        >
-          <List className="size-4" />
-        </BubbleButton>
-        <BubbleButton
-          label="Numbered list"
-          active={editor.isActive("orderedList")}
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        >
-          <ListOrdered className="size-4" />
-        </BubbleButton>
-        <BubbleButton
-          label="Quote"
-          active={editor.isActive("blockquote")}
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
-        >
-          <Quote className="size-4" />
-        </BubbleButton>
-
-        <Divider />
-
-        <BubbleButton
-          label="Link"
-          active={editor.isActive("link")}
-          onClick={() => promptForLink(editor)}
-        >
-          <Link2 className="size-4" />
-        </BubbleButton>
-        {editor.isActive("link") && (
-          <BubbleButton
-            label="Remove link"
-            onClick={() => editor.chain().focus().unsetLink().run()}
-          >
-            <Link2Off className="size-4" />
-          </BubbleButton>
-        )}
-      </BubbleMenu>
-
       <EditorContent editor={editor} />
+
+      <input
+        ref={fileInput}
+        type="file"
+        accept="image/png,image/jpeg,image/webp,image/gif,image/avif"
+        className="hidden"
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (file) void insertImage(file);
+          // Reset so choosing the same file twice still fires a change event.
+          event.target.value = "";
+        }}
+      />
+
+      {/* Command bar ------------------------------------------------------
+          Fixed to the viewport rather than the document, so it stays put while
+          the page scrolls. The wrapper spans the full width and centres the
+          pill inside it, which is what lets the bar follow the document when
+          the settings panel pushes it aside. pointer-events are disabled on
+          the wrapper so the strip of empty space either side of the pill does
+          not swallow clicks meant for the text underneath. */}
+      <div
+        className={cn(
+          "pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center px-4 pb-5 transition-[padding] duration-300 ease-out",
+          panelOpen && "xl:pr-[23rem]",
+        )}
+      >
+        <div
+          role="toolbar"
+          aria-label="Formatting"
+          aria-orientation="horizontal"
+          className="pointer-events-auto flex max-w-full items-center gap-0.5 overflow-x-auto rounded-2xl border border-white/10 bg-[#15161f]/95 p-1.5 shadow-2xl shadow-black/70 backdrop-blur-xl"
+        >
+          <BarButton
+            label="Undo"
+            disabled={!state.canUndo}
+            onClick={() => editor.chain().focus().undo().run()}
+          >
+            <Undo2 className="size-4" />
+          </BarButton>
+          <BarButton
+            label="Redo"
+            disabled={!state.canRedo}
+            onClick={() => editor.chain().focus().redo().run()}
+          >
+            <Redo2 className="size-4" />
+          </BarButton>
+
+          <Divider />
+
+          <BarButton
+            label="Heading"
+            active={state.h2}
+            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          >
+            <Heading2 className="size-4" />
+          </BarButton>
+          <BarButton
+            label="Subheading"
+            active={state.h3}
+            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          >
+            <Heading3 className="size-4" />
+          </BarButton>
+
+          <Divider />
+
+          <BarButton
+            label="Bold"
+            active={state.bold}
+            onClick={() => editor.chain().focus().toggleBold().run()}
+          >
+            <Bold className="size-4" />
+          </BarButton>
+          <BarButton
+            label="Italic"
+            active={state.italic}
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+          >
+            <Italic className="size-4" />
+          </BarButton>
+          <BarButton
+            label="Underline"
+            active={state.underline}
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+          >
+            <UnderlineIcon className="size-4" />
+          </BarButton>
+          <BarButton
+            label="Strikethrough"
+            active={state.strike}
+            onClick={() => editor.chain().focus().toggleStrike().run()}
+          >
+            <Strikethrough className="size-4" />
+          </BarButton>
+          <BarButton
+            label="Inline code"
+            active={state.code}
+            onClick={() => editor.chain().focus().toggleCode().run()}
+          >
+            <Code className="size-4" />
+          </BarButton>
+
+          <Divider />
+
+          <BarButton
+            label="Bulleted list"
+            active={state.bulletList}
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+          >
+            <List className="size-4" />
+          </BarButton>
+          <BarButton
+            label="Numbered list"
+            active={state.orderedList}
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          >
+            <ListOrdered className="size-4" />
+          </BarButton>
+          <BarButton
+            label="Quote"
+            active={state.blockquote}
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          >
+            <Quote className="size-4" />
+          </BarButton>
+          <BarButton
+            label="Divider"
+            onClick={() => editor.chain().focus().setHorizontalRule().run()}
+          >
+            <Minus className="size-4" />
+          </BarButton>
+
+          <Divider />
+
+          <BarButton
+            label={state.link ? "Edit link" : "Add link"}
+            active={state.link}
+            onClick={() => promptForLink(editor)}
+          >
+            <Link2 className="size-4" />
+          </BarButton>
+          {state.link && (
+            <BarButton
+              label="Remove link"
+              onClick={() => editor.chain().focus().unsetLink().run()}
+            >
+              <Link2Off className="size-4" />
+            </BarButton>
+          )}
+          <BarButton
+            label="Insert image"
+            disabled={uploading}
+            onClick={() => fileInput.current?.click()}
+          >
+            {uploading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <ImagePlus className="size-4" />
+            )}
+          </BarButton>
+        </div>
+      </div>
     </>
   );
 }

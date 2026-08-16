@@ -40,59 +40,77 @@ export function PostArticle({ post }: Props) {
   // Only worth the space once a piece is genuinely long enough to get lost in.
   const showContents = headings.filter((h) => h.level === 2).length >= 3;
 
+  // The masthead, shared by both branches below so the two cannot drift.
+  const masthead = (
+    <>
+      <Link
+        href={isCase ? "/case-studies" : "/blog"}
+        className="eyebrow mb-8 inline-flex items-center gap-2 transition-colors hover:text-foreground"
+      >
+        <ArrowLeft className="size-3.5" />
+        {isCase ? "Case studies" : "Writing"}
+      </Link>
+
+      {isCase && (
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <Badge>Case study</Badge>
+          {post.clientOrg && <span className="eyebrow">{post.clientOrg}</span>}
+          {post.period && <span className="eyebrow">{post.period}</span>}
+        </div>
+      )}
+
+      <h1 className="text-6xl font-bold tracking-tight">{post.title}</h1>
+
+      {post.subtitle && (
+        <p className="mt-5 text-xl leading-relaxed text-muted-foreground">
+          {post.subtitle}
+        </p>
+      )}
+
+      <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+        {post.authorName && (
+          <span className="text-foreground">{post.authorName}</span>
+        )}
+        {published && <time dateTime={post.publishedAt?.toISOString()}>{published}</time>}
+        <span aria-hidden>·</span>
+        <span>{post.readingMinutes} min read</span>
+      </div>
+    </>
+  );
+
   return (
     <article className="pb-24">
-      {/* Header ------------------------------------------------------- */}
-      <header className="mx-auto max-w-3xl px-6 pt-32 pb-10">
-        <Link
-          href={isCase ? "/case-studies" : "/blog"}
-          className="eyebrow mb-8 inline-flex items-center gap-2 transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="size-3.5" />
-          {isCase ? "Case studies" : "Writing"}
-        </Link>
-
-        {isCase && (
-          <div className="mb-4 flex flex-wrap items-center gap-2">
-            <Badge>Case study</Badge>
-            {post.clientOrg && <span className="eyebrow">{post.clientOrg}</span>}
-            {post.period && <span className="eyebrow">{post.period}</span>}
-          </div>
-        )}
-
-        <h1 className="text-6xl font-bold tracking-tight">{post.title}</h1>
-
-        {post.subtitle && (
-          <p className="mt-5 text-xl leading-relaxed text-muted-foreground">
-            {post.subtitle}
-          </p>
-        )}
-
-        <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
-          {post.authorName && (
-            <span className="text-foreground">{post.authorName}</span>
-          )}
-          {published && <time dateTime={post.publishedAt?.toISOString()}>{published}</time>}
-          <span aria-hidden>·</span>
-          <span>{post.readingMinutes} min read</span>
-        </div>
-      </header>
-
-      {/* Cover -------------------------------------------------------- */}
-      {post.coverImageUrl && (
-        <figure className="mx-auto mb-14 max-w-5xl px-6">
+      {/* Masthead -----------------------------------------------------
+          With a cover the image is the backdrop and the headline sits on it;
+          without one the headline stands alone. Keep this in step with
+          CoverCanvas in the studio, which draws the same thing so that
+          choosing a cover is a decision about the finished page. */}
+      {post.coverImageUrl ? (
+        <header className="relative mb-14 overflow-hidden">
           <Image
             src={post.coverImageUrl}
             alt={post.coverAlt ?? ""}
-            width={1600}
-            height={900}
-            // The one image guaranteed to be in the first viewport, so it is
-            // the only one worth preloading.
+            width={2000}
+            height={1200}
+            // The one image guaranteed to be in the first viewport, so the
+            // only one worth preloading.
             priority
-            sizes="(max-width: 1024px) 100vw, 1024px"
-            className="aspect-video w-full rounded-3xl object-cover"
+            sizes="100vw"
+            className="absolute inset-0 size-full object-cover"
           />
-        </figure>
+          {/* Opaque where the words are, clearing upward so the photograph is
+              still a photograph. Without this, light images make white text
+              unreadable — and the editor cannot know what they will upload. */}
+          <div
+            className="absolute inset-0 bg-gradient-to-t from-background via-background/75 to-background/25"
+            aria-hidden
+          />
+          <div className="relative mx-auto min-h-[34rem] max-w-3xl px-6 pt-56 pb-14">
+            {masthead}
+          </div>
+        </header>
+      ) : (
+        <header className="mx-auto max-w-3xl px-6 pt-32 pb-10">{masthead}</header>
       )}
 
       {/* Headline figures --------------------------------------------- */}
