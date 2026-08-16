@@ -1,7 +1,13 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Award, CalendarDays, LayoutDashboard, Users } from "lucide-react";
+import {
+  Award,
+  CalendarDays,
+  ChartNoAxesColumn,
+  LayoutDashboard,
+  Users,
+} from "lucide-react";
 import { getCurrentProfile, isAdminRole } from "@/server/auth";
 import { SparkMark } from "@/components/brand/spark-mark";
 
@@ -10,6 +16,7 @@ const NAV = [
   { href: "/admin/events", label: "Events", icon: CalendarDays },
   { href: "/admin/members", label: "Members", icon: Users },
   { href: "/admin/certificates", label: "Certificates", icon: Award },
+  { href: "/admin/stats", label: "Homepage figures", icon: ChartNoAxesColumn },
 ];
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
