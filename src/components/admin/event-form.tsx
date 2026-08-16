@@ -55,14 +55,6 @@ function partsOf(instant: Date): Record<string, string> {
   return parts;
 }
 
-/** ISO instant → the "YYYY-MM-DDTHH:mm" a clock in Karachi would read. */
-function toInputValue(iso: string | null): string {
-  if (!iso) return "";
-  const instant = new Date(iso);
-  if (Number.isNaN(instant.getTime())) return "";
-  const p = partsOf(instant);
-  return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
-}
 
 /** Offset of the event zone at a given instant, ms east of UTC. */
 function zoneOffsetMs(instant: Date): number {
@@ -96,6 +88,41 @@ function toIso(value: string): string | null {
   );
   const instant = new Date(asIfUtc - zoneOffsetMs(new Date(asIfUtc)));
   return Number.isNaN(instant.getTime()) ? null : instant.toISOString();
+}
+
+/* ── Date and time, kept as separate fields ────────────────────────────────
+   A single `datetime-local` forces a time before it will yield any value, so
+   an admin who knows the date but not yet the hour cannot save at all. Split
+   into two inputs, with the time optional and a sensible default filled in. */
+
+/** ISO instant → "YYYY-MM-DD" as read in Karachi. */
+function toDateValue(iso: string | null): string {
+  if (!iso) return "";
+  const instant = new Date(iso);
+  if (Number.isNaN(instant.getTime())) return "";
+  const p = partsOf(instant);
+  return `${p.year}-${p.month}-${p.day}`;
+}
+
+/** ISO instant → "HH:mm" as read in Karachi. */
+function toTimeValue(iso: string | null): string {
+  if (!iso) return "";
+  const instant = new Date(iso);
+  if (Number.isNaN(instant.getTime())) return "";
+  const p = partsOf(instant);
+  return `${p.hour}:${p.minute}`;
+}
+
+/**
+ * Joins a date and an optional time into the wall-clock string `toIso` wants.
+ *
+ * `fallback` is used when no time is given: start-like fields open the day at
+ * 00:00 and end-like fields close it at 23:59, so a date-only event reads as
+ * lasting the whole day rather than starting and ending at midnight.
+ */
+function combine(date: string, time: string, fallback: "00:00" | "23:59"): string {
+  if (!date.trim()) return "";
+  return `${date}T${time.trim() || fallback}`;
 }
 
 /* ── Slug ──────────────────────────────────────────────────────────────── */
@@ -149,13 +176,17 @@ type FormState = {
   description: string;
   venueName: string;
   venueAddress: string;
-  /** datetime-local wall clock strings, Asia/Karachi. */
-  startsAt: string;
-  endsAt: string;
+  /** Wall clock in Asia/Karachi, split so the time can be left blank. */
+  startsDate: string;
+  startsTime: string;
+  endsDate: string;
+  endsTime: string;
   /** Kept as text so "" can mean unlimited without colliding with 0. */
   capacity: string;
-  registrationOpensAt: string;
-  registrationClosesAt: string;
+  regOpensDate: string;
+  regOpensTime: string;
+  regClosesDate: string;
+  regClosesTime: string;
   status: EventStatus;
 };
 
@@ -175,11 +206,15 @@ function initialState(initial?: EventFormInitial): FormState {
       description: "",
       venueName: "",
       venueAddress: "",
-      startsAt: "",
-      endsAt: "",
+      startsDate: "",
+      startsTime: "",
+      endsDate: "",
+      endsTime: "",
       capacity: "",
-      registrationOpensAt: "",
-      registrationClosesAt: "",
+      regOpensDate: "",
+      regOpensTime: "",
+      regClosesDate: "",
+      regClosesTime: "",
       status: "draft",
     };
   }
@@ -190,11 +225,15 @@ function initialState(initial?: EventFormInitial): FormState {
     description: initial.description,
     venueName: initial.venueName,
     venueAddress: initial.venueAddress,
-    startsAt: toInputValue(initial.startsAt),
-    endsAt: toInputValue(initial.endsAt),
+    startsDate: toDateValue(initial.startsAt),
+    startsTime: toTimeValue(initial.startsAt),
+    endsDate: toDateValue(initial.endsAt),
+    endsTime: toTimeValue(initial.endsAt),
     capacity: initial.capacity === null ? "" : String(initial.capacity),
-    registrationOpensAt: toInputValue(initial.registrationOpensAt),
-    registrationClosesAt: toInputValue(initial.registrationClosesAt),
+    regOpensDate: toDateValue(initial.registrationOpensAt),
+    regOpensTime: toTimeValue(initial.registrationOpensAt),
+    regClosesDate: toDateValue(initial.registrationClosesAt),
+    regClosesTime: toTimeValue(initial.registrationClosesAt),
     status: initial.status,
   };
 }
@@ -223,12 +262,90 @@ function Field({
   );
 }
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
+function Section({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  children: ReactNode;
+}) {
   return (
     <section className="rounded-2xl border border-border bg-card/60 p-6 backdrop-blur-xl">
-      <h2 className="mb-5 text-2xl font-semibold">{title}</h2>
+      <h2 className="text-2xl font-semibold">{title}</h2>
+      {hint && <p className="mt-1 mb-5 text-sm text-muted-foreground">{hint}</p>}
+      {!hint && <div className="mb-5" />}
       {children}
     </section>
+  );
+}
+
+/**
+ * A date beside an optional time.
+ *
+ * The time input is visibly secondary and labelled with what happens when it
+ * is left empty, so an admin who only knows the day is not stuck guessing.
+ */
+function DateTimeField({
+  id,
+  label,
+  date,
+  time,
+  onDate,
+  onTime,
+  fallbackLabel,
+  help,
+  required = false,
+}: {
+  id: string;
+  label: string;
+  date: string;
+  time: string;
+  onDate: (value: string) => void;
+  onTime: (value: string) => void;
+  fallbackLabel: string;
+  help?: string;
+  required?: boolean;
+}) {
+  return (
+    <div>
+      <Label htmlFor={`${id}-date`} className="text-xs">
+        {label}
+        {!required && (
+          <span className="ml-1.5 font-normal text-muted-foreground">
+            optional
+          </span>
+        )}
+      </Label>
+
+      <div className="mt-1.5 grid grid-cols-[1.4fr_1fr] gap-2">
+        <Input
+          id={`${id}-date`}
+          type="date"
+          value={date}
+          onChange={(e) => onDate(e.target.value)}
+          className="[&::-webkit-calendar-picker-indicator]:opacity-60"
+        />
+        <Input
+          id={`${id}-time`}
+          type="time"
+          value={time}
+          onChange={(e) => onTime(e.target.value)}
+          aria-label={`${label} time`}
+          className="[&::-webkit-calendar-picker-indicator]:opacity-60"
+        />
+      </div>
+
+      <p className="mt-1.5 text-xs text-muted-foreground">
+        {help ? `${help} ` : ""}
+        {date && !time ? (
+          <span className="text-foreground/70">Time blank, so {fallbackLabel}.</span>
+        ) : (
+          <>Leave the time blank and {fallbackLabel}.</>
+        )}
+      </p>
+    </div>
   );
 }
 
@@ -263,6 +380,40 @@ export function EventForm({ initial }: { initial?: EventFormInitial }) {
     set("slug", sanitizeSlug(value));
   }
 
+  // Read-back of the window the current inputs actually produce. Computed
+  // during render rather than in an effect; it is derived state.
+  const preview = (() => {
+    const startIso = toIso(combine(state.startsDate, state.startsTime, "00:00"));
+    const endIso = toIso(
+      combine(state.endsDate || state.startsDate, state.endsTime, "23:59"),
+    );
+    if (!startIso || !endIso) return null;
+
+    const fmt = new Intl.DateTimeFormat("en-GB", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+      timeZone: EVENT_TIME_ZONE,
+    });
+    const sameDay =
+      toDateValue(startIso) === toDateValue(endIso);
+
+    if (sameDay) {
+      const endTime = new Intl.DateTimeFormat("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23",
+        timeZone: EVENT_TIME_ZONE,
+      }).format(new Date(endIso));
+      return `${fmt.format(new Date(startIso))} to ${endTime} PKT`;
+    }
+    return `${fmt.format(new Date(startIso))} to ${fmt.format(new Date(endIso))} PKT`;
+  })();
+
   function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
@@ -281,14 +432,21 @@ export function EventForm({ initial }: { initial?: EventFormInitial }) {
     }
     if (slug !== state.slug) setState((prev) => ({ ...prev, slug }));
 
-    const startsAt = toIso(state.startsAt);
-    const endsAt = toIso(state.endsAt);
+    // Time is optional. A date on its own runs 00:00 to 23:59.
+    const startsAt = toIso(combine(state.startsDate, state.startsTime, "00:00"));
+    const endsAt = toIso(
+      combine(state.endsDate || state.startsDate, state.endsTime, "23:59"),
+    );
     if (!startsAt) {
-      setError("Add a start date and time.");
+      setError("Pick a start date.");
       return;
     }
     if (!endsAt) {
-      setError("Add an end date and time.");
+      setError("Pick an end date.");
+      return;
+    }
+    if (new Date(endsAt) <= new Date(startsAt)) {
+      setError("The event has to end after it starts.");
       return;
     }
 
@@ -314,8 +472,12 @@ export function EventForm({ initial }: { initial?: EventFormInitial }) {
       startsAt,
       endsAt,
       capacity,
-      registrationOpensAt: toIso(state.registrationOpensAt),
-      registrationClosesAt: toIso(state.registrationClosesAt),
+      registrationOpensAt: toIso(
+        combine(state.regOpensDate, state.regOpensTime, "00:00"),
+      ),
+      registrationClosesAt: toIso(
+        combine(state.regClosesDate, state.regClosesTime, "23:59"),
+      ),
       status: state.status,
     };
 
@@ -457,55 +619,66 @@ export function EventForm({ initial }: { initial?: EventFormInitial }) {
         </div>
       </Section>
 
-      <Section title="When and where">
-        <p className="-mt-3 mb-5 text-xs text-muted-foreground">
-          All times are {EVENT_TIME_ZONE} (PKT), regardless of your own clock.
-        </p>
+      <Section
+        title="When and where"
+        hint={`All times are ${EVENT_TIME_ZONE} (PKT), whatever your own clock says.`}
+      >
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field htmlFor="event-starts" label="Starts">
-            <Input
-              id="event-starts"
-              type="datetime-local"
-              value={state.startsAt}
-              onChange={(e) => set("startsAt", e.target.value)}
-            />
-          </Field>
+          <DateTimeField
+            id="event-starts"
+            label="Starts"
+            required
+            date={state.startsDate}
+            time={state.startsTime}
+            onDate={(v) => set("startsDate", v)}
+            onTime={(v) => set("startsTime", v)}
+            fallbackLabel="the day starts at midnight"
+          />
 
-          <Field htmlFor="event-ends" label="Ends">
-            <Input
-              id="event-ends"
-              type="datetime-local"
-              value={state.endsAt}
-              onChange={(e) => set("endsAt", e.target.value)}
-            />
-          </Field>
+          <DateTimeField
+            id="event-ends"
+            label="Ends"
+            required
+            date={state.endsDate}
+            time={state.endsTime}
+            onDate={(v) => set("endsDate", v)}
+            onTime={(v) => set("endsTime", v)}
+            fallbackLabel="it runs to 23:59"
+          />
 
-          <Field
-            htmlFor="event-reg-opens"
+          <DateTimeField
+            id="event-reg-opens"
             label="Registration opens"
-            help="Optional. Empty means open as soon as the event is published."
-          >
-            <Input
-              id="event-reg-opens"
-              type="datetime-local"
-              value={state.registrationOpensAt}
-              onChange={(e) => set("registrationOpensAt", e.target.value)}
-            />
-          </Field>
+            date={state.regOpensDate}
+            time={state.regOpensTime}
+            onDate={(v) => set("regOpensDate", v)}
+            onTime={(v) => set("regOpensTime", v)}
+            help="No date means open the moment the event is published."
+            fallbackLabel="it opens at midnight"
+          />
 
-          <Field
-            htmlFor="event-reg-closes"
+          <DateTimeField
+            id="event-reg-closes"
             label="Registration closes"
-            help="Optional. Empty means open until the event starts."
-          >
-            <Input
-              id="event-reg-closes"
-              type="datetime-local"
-              value={state.registrationClosesAt}
-              onChange={(e) => set("registrationClosesAt", e.target.value)}
-            />
-          </Field>
+            date={state.regClosesDate}
+            time={state.regClosesTime}
+            onDate={(v) => set("regClosesDate", v)}
+            onTime={(v) => set("regClosesTime", v)}
+            help="No date means open right up until the event starts."
+            fallbackLabel="it closes at 23:59"
+          />
+        </div>
 
+        {/* Live read-back. Splitting date and time makes it easy to set a
+            window you did not intend, so the result is shown plainly. */}
+        {preview && (
+          <p className="mt-5 rounded-xl border border-border bg-white/5 px-4 py-3 text-sm">
+            <span className="eyebrow mr-2">Event runs</span>
+            <span className="text-foreground">{preview}</span>
+          </p>
+        )}
+
+        <div className="mt-5 grid gap-5 sm:grid-cols-2">
           <Field htmlFor="event-venue-name" label="Venue name">
             <Input
               id="event-venue-name"
