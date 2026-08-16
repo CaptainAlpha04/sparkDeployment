@@ -105,7 +105,7 @@ export default async function HomePage() {
           needs to understand is taught by the sections underneath. */}
       <section className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-6"
         style={{ background: "linear-gradient(to bottom, #000000 0%, #05060f 55%, #0a0b16 100%)" }}>
-        <StarryCanvas numberOfStars={200} />
+        <StarryCanvas numberOfStars={200} shootingStars />
 
         <div className="relative z-10 flex flex-col items-center text-center">
           <SparkMark
