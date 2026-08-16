@@ -16,7 +16,7 @@
 
 Before Task 1, confirm these are available. Stop and report if any are missing.
 
-- **Node >= 20.9** — `node --version`
+- **Node >= 22** — `node --version`. @supabase/* declares node >= 22, and Vercel has deprecated 20.x.
 - **Docker Desktop running** — required by `supabase start` for the local stack. `docker ps` must succeed.
 - **Supabase CLI** — `npx supabase --version`
 - A **Supabase cloud project** created, with these values to hand: project ref, database password, project URL, publishable key.

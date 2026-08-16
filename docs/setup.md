@@ -137,7 +137,11 @@ is why the app never sees it.
 
 ## 4. Deploying to Vercel
 
-1. Set **Node 20.9+** in project settings — builds on 18 fail.
+1. Set **Node.js Version to 24.x** in Project Settings.
+   Node 20 is deprecated on Vercel and, more immediately, `@supabase/*`
+   packages now declare `node >= 22`, so a Node 20 build fails outright.
+   `engines.node` in package.json and `.nvmrc` both pin this, but the
+   Project Settings value is what Vercel actually honours.
 2. Add all five environment variables. `DATABASE_URL` must be the **6543**
    pooler; a direct connection will exhaust connections under serverless.
 3. Add the production domain to Supabase **Redirect URLs** and to Google's
