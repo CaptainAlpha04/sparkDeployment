@@ -1,12 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  EditorContent,
-  useEditor,
-  useEditorState,
-  type Editor,
-} from "@tiptap/react";
+import { EditorContent, useEditor, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -141,6 +136,23 @@ export function RichEditor({
     // Server rendering produces markup React then disagrees with on hydration.
     // Tiptap exposes this flag for exactly this case.
     immediatelyRender: false,
+    /*
+     * Re-render on every transaction, so the command bar's active states are
+     * read fresh as the caret moves.
+     *
+     * Tiptap 3 defaults this to false, which is right for a page with many
+     * editors or a very long document and wrong for a permanent toolbar: the
+     * bar would show whichever states were true when the component last
+     * happened to render. One editor on one page can afford the renders.
+     *
+     * Tiptap marks this option "legacy behavior that will be removed in future
+     * versions". When it goes, the replacement is useEditorState with a
+     * selector — but subscribe with it, do NOT gate this component's render on
+     * its result. It returns null until the editor exists, and an earlier
+     * version of this file returned a placeholder on that null, which blanked
+     * the entire writing surface and the bar along with it.
+     */
+    shouldRerenderOnTransaction: true,
     extensions: [
       StarterKit.configure({
         heading: { levels: [2, 3, 4] },
@@ -165,38 +177,6 @@ export function RichEditor({
     onUpdate: ({ editor }) => {
       onChange({ json: editor.getJSON(), html: editor.getHTML() });
     },
-  });
-
-  /*
-   * Toolbar state, subscribed rather than read during render.
-   *
-   * useEditor does not re-render on every transaction in Tiptap 3 —
-   * shouldRerenderOnTransaction defaults to false, for good performance
-   * reasons. A selection menu gets away with that because it remounts on each
-   * selection; a permanent bar does not, and would sit there showing whatever
-   * was true when the component last happened to render. This hook subscribes
-   * to exactly the flags the bar draws.
-   */
-  const state = useEditorState({
-    editor,
-    selector: ({ editor }) =>
-      editor
-        ? {
-            h2: editor.isActive("heading", { level: 2 }),
-            h3: editor.isActive("heading", { level: 3 }),
-            bold: editor.isActive("bold"),
-            italic: editor.isActive("italic"),
-            underline: editor.isActive("underline"),
-            strike: editor.isActive("strike"),
-            code: editor.isActive("code"),
-            bulletList: editor.isActive("bulletList"),
-            orderedList: editor.isActive("orderedList"),
-            blockquote: editor.isActive("blockquote"),
-            link: editor.isActive("link"),
-            canUndo: editor.can().undo(),
-            canRedo: editor.can().redo(),
-          }
-        : null,
   });
 
   const insertImage = useCallback(
@@ -259,9 +239,12 @@ export function RichEditor({
     };
   }, [editor, insertImage]);
 
-  if (!editor || !state) {
-    // Matched to the editor's own min height so the page does not jump when
-    // the real surface replaces this.
+  // Gated on the editor alone. An earlier version also required the toolbar
+  // state object here, so one null from a state hook blanked the entire
+  // writing surface. Nothing about the bar may hide the document.
+  if (!editor) {
+    // Matched to the editor own min height so the page does not jump when the
+    // real surface replaces this.
     return <div className="min-h-[60vh] animate-pulse" aria-hidden />;
   }
 
@@ -303,14 +286,14 @@ export function RichEditor({
         >
           <BarButton
             label="Undo"
-            disabled={!state.canUndo}
+            disabled={!editor.can().undo()}
             onClick={() => editor.chain().focus().undo().run()}
           >
             <Undo2 className="size-4" />
           </BarButton>
           <BarButton
             label="Redo"
-            disabled={!state.canRedo}
+            disabled={!editor.can().redo()}
             onClick={() => editor.chain().focus().redo().run()}
           >
             <Redo2 className="size-4" />
@@ -320,14 +303,14 @@ export function RichEditor({
 
           <BarButton
             label="Heading"
-            active={state.h2}
+            active={editor.isActive("heading", { level: 2 })}
             onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
           >
             <Heading2 className="size-4" />
           </BarButton>
           <BarButton
             label="Subheading"
-            active={state.h3}
+            active={editor.isActive("heading", { level: 3 })}
             onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
           >
             <Heading3 className="size-4" />
@@ -337,35 +320,35 @@ export function RichEditor({
 
           <BarButton
             label="Bold"
-            active={state.bold}
+            active={editor.isActive("bold")}
             onClick={() => editor.chain().focus().toggleBold().run()}
           >
             <Bold className="size-4" />
           </BarButton>
           <BarButton
             label="Italic"
-            active={state.italic}
+            active={editor.isActive("italic")}
             onClick={() => editor.chain().focus().toggleItalic().run()}
           >
             <Italic className="size-4" />
           </BarButton>
           <BarButton
             label="Underline"
-            active={state.underline}
+            active={editor.isActive("underline")}
             onClick={() => editor.chain().focus().toggleUnderline().run()}
           >
             <UnderlineIcon className="size-4" />
           </BarButton>
           <BarButton
             label="Strikethrough"
-            active={state.strike}
+            active={editor.isActive("strike")}
             onClick={() => editor.chain().focus().toggleStrike().run()}
           >
             <Strikethrough className="size-4" />
           </BarButton>
           <BarButton
             label="Inline code"
-            active={state.code}
+            active={editor.isActive("code")}
             onClick={() => editor.chain().focus().toggleCode().run()}
           >
             <Code className="size-4" />
@@ -375,21 +358,21 @@ export function RichEditor({
 
           <BarButton
             label="Bulleted list"
-            active={state.bulletList}
+            active={editor.isActive("bulletList")}
             onClick={() => editor.chain().focus().toggleBulletList().run()}
           >
             <List className="size-4" />
           </BarButton>
           <BarButton
             label="Numbered list"
-            active={state.orderedList}
+            active={editor.isActive("orderedList")}
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
           >
             <ListOrdered className="size-4" />
           </BarButton>
           <BarButton
             label="Quote"
-            active={state.blockquote}
+            active={editor.isActive("blockquote")}
             onClick={() => editor.chain().focus().toggleBlockquote().run()}
           >
             <Quote className="size-4" />
@@ -404,13 +387,13 @@ export function RichEditor({
           <Divider />
 
           <BarButton
-            label={state.link ? "Edit link" : "Add link"}
-            active={state.link}
+            label={editor.isActive("link") ? "Edit link" : "Add link"}
+            active={editor.isActive("link")}
             onClick={() => promptForLink(editor)}
           >
             <Link2 className="size-4" />
           </BarButton>
-          {state.link && (
+          {editor.isActive("link") && (
             <BarButton
               label="Remove link"
               onClick={() => editor.chain().focus().unsetLink().run()}
