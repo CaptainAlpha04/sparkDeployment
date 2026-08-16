@@ -79,6 +79,15 @@ type StaggerProps = {
   initialDelay?: number;
   as?: ElementType;
   className?: string;
+  /**
+   * Applied to each child's wrapper.
+   *
+   * Matters inside a grid: the wrapper is the grid item, not the element you
+   * wrote. Without `h-full` here a card shorter than its row leaves the grid's
+   * own background showing through beneath it, which looked like a stray
+   * rectangle bleeding past the container's rounded corner.
+   */
+  itemClassName?: string;
 };
 
 /**
@@ -92,12 +101,15 @@ export function Stagger({
   initialDelay = 0,
   as: Tag = "div",
   className = "",
+  itemClassName = "",
 }: StaggerProps) {
   return (
     <Tag className={className}>
       {Children.map(children, (child, i) =>
         isValidElement(child) ? (
-          <Reveal delay={initialDelay + i * step}>{child}</Reveal>
+          <Reveal delay={initialDelay + i * step} className={itemClassName}>
+            {child}
+          </Reveal>
         ) : (
           child
         ),

@@ -26,8 +26,8 @@ const programmes = [
     body: "Founders and builders in the open, taking real questions from a room that is allowed to push back.",
   },
   {
-    name: "Camps",
-    body: "Multi week, voluntary, ungraded. A technical track running alongside open discussion, with nothing riding on either.",
+    name: "Camps & hackathons",
+    body: "Multi week camps and weekend builds. Voluntary, ungraded, and a technical track running alongside open discussion with nothing riding on either.",
   },
   {
     name: "Mentorship",
@@ -191,11 +191,15 @@ export default async function HomePage() {
             <h2 className="max-w-2xl text-5xl font-bold">Four ways in.</h2>
           </Reveal>
 
-          <Stagger step={80} className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-2">
+          <Stagger
+            step={80}
+            itemClassName="h-full"
+            className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-2"
+          >
             {programmes.map((programme, i) => (
               <div
                 key={programme.name}
-                className="group bg-background p-8 transition-colors duration-300 hover:bg-card md:p-10"
+                className="group h-full bg-background p-8 transition-colors duration-300 hover:bg-card md:p-10"
               >
                 <span className="font-mono text-xs text-muted-foreground">
                   {String(i + 1).padStart(2, "0")}
