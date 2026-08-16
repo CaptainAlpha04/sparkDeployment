@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import {
   createTemplateAction,
   uploadBackground,
-} from "@/app/admin/certificates/actions";
+} from "@/app/(site)/admin/certificates/actions";
 
 /**
  * Creating a template needs the artwork's intrinsic dimensions, which only the

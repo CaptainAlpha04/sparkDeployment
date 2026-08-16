@@ -12,7 +12,7 @@ import { CertificateRender } from "@/components/certificates/certificate-render"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { saveTemplateAction } from "@/app/admin/certificates/actions";
+import { saveTemplateAction } from "@/app/(site)/admin/certificates/actions";
 
 const CANVAS_WIDTH = 760;
 

@@ -3,8 +3,32 @@ import { db } from "./db";
 import { siteStats, type SiteStat } from "./schema";
 import { requireAdmin } from "./auth";
 
+/**
+ * Strict read — throws if the database is unreachable. Use in admin screens,
+ * where a silent empty list would be misleading.
+ */
 export async function getSiteStats(): Promise<SiteStat[]> {
   return db.select().from(siteStats).orderBy(asc(siteStats.position));
+}
+
+/**
+ * Resilient read for public pages.
+ *
+ * The homepage is the most important page on the site and it must not return
+ * 500 because one decorative section could not load. On failure this logs
+ * loudly and returns an empty list; the caller renders without the stats block
+ * rather than taking the whole page down.
+ */
+export async function getSiteStatsSafe(): Promise<SiteStat[]> {
+  try {
+    return await getSiteStats();
+  } catch (error) {
+    console.error(
+      "[stats] Could not load site stats; rendering homepage without them.",
+      error,
+    );
+    return [];
+  }
 }
 
 export async function updateSiteStat(

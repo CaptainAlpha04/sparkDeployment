@@ -3,7 +3,7 @@ import StarryCanvas from "@/components/starry-canvas";
 import { Reveal, Stagger } from "@/components/motion/reveal";
 import { CountUp } from "@/components/motion/count-up";
 import { SparkMark, SparkBullet } from "@/components/brand/spark-mark";
-import { getSiteStats } from "@/server/stats";
+import { getSiteStatsSafe } from "@/server/stats";
 
 const benefits = [
   "Access to exclusive innovation events and workshops",
@@ -45,7 +45,7 @@ const communities = [
 export default async function HomePage() {
   // Editable by admins rather than hardcoded in JSX, which is how the previous
   // build ended up publishing figures nobody could substantiate.
-  const stats = await getSiteStats();
+  const stats = await getSiteStatsSafe();
 
   return (
     <>
@@ -155,7 +155,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Our Impact ───────────────────────────────────────────────────── */}
+      {/* ── Our Impact ─────────────────────────────────────────────────────
+          Hidden entirely if the figures cannot be loaded, rather than
+          rendering an empty grid or taking the page down. */}
+      {stats.length > 0 && (
       <section className="w-full bg-gradient-to-b from-slate-950 to-background px-6 py-24">
         <div className="mx-auto max-w-6xl">
           <Reveal>
@@ -184,6 +187,7 @@ export default async function HomePage() {
           </Stagger>
         </div>
       </section>
+      )}
 
       {/* ── Become a Member ──────────────────────────────────────────────── */}
       <section className="relative w-full overflow-hidden py-24">
