@@ -169,6 +169,47 @@ describe("visibility", () => {
   });
 });
 
+describe("scheduling", () => {
+  it("hides a post whose publication time has not arrived", async () => {
+    const future = `sched-${tag}`;
+    // daysAgo is negative, so published_at lands in the future.
+    await makePost({ slug: future, daysAgo: -3 });
+
+    // The whole scheduling mechanism is this predicate. If it regresses, a
+    // post scheduled for next week is public the moment it is scheduled.
+    expect(await getPublishedPost(future)).toBeNull();
+
+    const listed = await listPublishedPosts({ limit: 200 });
+    expect(listed.map((p) => p.slug)).not.toContain(future);
+  });
+
+  it("keeps scheduled posts out of the sitemap index", async () => {
+    const future = `sched-idx-${tag}`;
+    await makePost({ slug: future, daysAgo: -1 });
+
+    const index = await listPublishedIndex();
+    expect(index.map((p) => p.slug)).not.toContain(future);
+  });
+
+  it("does not leak a scheduled post's tags into the tag list", async () => {
+    // listPublishedTags is raw SQL and does not inherit the isPublished
+    // predicate, so it is the most likely place for this to drift.
+    const secret = `unreleased${tag}`;
+    await makePost({ slug: `sched-tag-${tag}`, daysAgo: -2, tags: [secret] });
+
+    const counts = await listPublishedTags();
+    expect(counts.find((c) => c.tag === secret)).toBeUndefined();
+  });
+
+  it("publishes it once the moment passes", async () => {
+    const justNow = `sched-past-${tag}`;
+    // A second ago: same code path, on the other side of now().
+    await makePost({ slug: justNow, daysAgo: 0.00001 });
+
+    expect(await getPublishedPost(justNow)).not.toBeNull();
+  });
+});
+
 describe("tags", () => {
   it("filters by tag", async () => {
     const wanted = `t-${tag}`;

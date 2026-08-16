@@ -71,6 +71,13 @@
       "when": 1786883605306,
       "tag": "0009_post_media_editor_write",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1786886458659,
+      "tag": "0010_post_revisions",
+      "breakpoints": true
     }
   ]
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
@@ -26,14 +26,22 @@ export type HeaderUser = {
   isEditor: boolean;
 };
 
+/*
+ * Blog and case studies are separate top-level entries rather than a "Writing"
+ * dropdown. A dropdown would hide two real destinations behind a JavaScript
+ * interaction, on a site whose whole point is being reachable by crawlers and
+ * agents, and it would break the sliding indicator's flat href model.
+ *
+ * "Home" is gone to make room without pushing the bar to seven items, which
+ * overflows at exactly the 1024px breakpoint where this nav first appears. The
+ * logo links home, which is where everyone already clicks.
+ */
 const NAV = [
-  { href: "/", label: "Home" },
   { href: "/mission", label: "Mission" },
   { href: "/alliance", label: "Alliance" },
   { href: "/events", label: "Events" },
-  // Label and path differ on purpose: "Writing" is what it is, "/blog" is
-  // where people and crawlers look for it.
-  { href: "/blog", label: "Writing" },
+  { href: "/blog", label: "Blog" },
+  { href: "/case-studies", label: "Case studies" },
   { href: "/highlights", label: "Highlights" },
 ];
 
@@ -49,14 +57,39 @@ export function Header({ user }: { user: HeaderUser | null }) {
   const navRef = useRef<HTMLElement>(null);
   const itemRefs = useRef(new Map<string, HTMLAnchorElement>());
 
-  const links = user?.isAdmin ? [...NAV, { href: "/admin", label: "Admin" }] : NAV;
+  // Memoised because moveIndicator closes over the result; rebuilding this
+  // array on every render defeats that callback's own memoization.
+  const links = useMemo(
+    () => (user?.isAdmin ? [...NAV, { href: "/admin", label: "Admin" }] : NAV),
+    [user?.isAdmin],
+  );
+
+  /**
+   * Which nav entry the current page belongs to.
+   *
+   * Matched by prefix, not equality: reading /blog/some-post is still being in
+   * the Blog section, and exact matching left both the highlight and the
+   * sliding indicator blank on every post, event and tag page. Longest match
+   * wins so /case-studies never loses to a shorter prefix.
+   */
+  const activeHref = useMemo(
+    () =>
+      links
+        .map((link) => link.href)
+        .filter((href) => pathname === href || pathname.startsWith(`${href}/`))
+        .sort((a, b) => b.length - a.length)[0] ?? null,
+    [links, pathname],
+  );
   const initials = (user?.fullName ?? user?.email ?? "?").slice(0, 1).toUpperCase();
 
   /** Position the sliding indicator under a given href, or the active route. */
   const moveIndicator = useCallback(
     (href: string | null) => {
-      const target = href ?? pathname;
-      const el = itemRefs.current.get(target);
+      // Null when the current page is not in the nav at all — /dashboard, a
+      // certificate, the 404. The indicator simply hides rather than parking
+      // itself under an unrelated item.
+      const target = href ?? activeHref;
+      const el = target ? itemRefs.current.get(target) : undefined;
       const nav = navRef.current;
 
       if (!el || !nav) {
@@ -68,7 +101,7 @@ export function Header({ user }: { user: HeaderUser | null }) {
       const rect = el.getBoundingClientRect();
       setIndicator({ left: rect.left - navRect.left, width: rect.width });
     },
-    [pathname],
+    [activeHref],
   );
 
   // Scroll state: blur/border past the fold, plus a reading-progress bar.
@@ -160,7 +193,7 @@ export function Header({ user }: { user: HeaderUser | null }) {
           )}
 
           {links.map((link) => {
-            const active = pathname === link.href;
+            const active = activeHref === link.href;
             return (
               <Link
                 key={link.href}
@@ -302,7 +335,7 @@ export function Header({ user }: { user: HeaderUser | null }) {
               href={link.href}
               onClick={() => setIsOpen(false)}
               className={`border-b border-white/5 py-4 text-3xl font-bold transition-all duration-300 ${
-                pathname === link.href ? "text-primary" : "text-foreground"
+                activeHref === link.href ? "text-primary" : "text-foreground"
               }`}
               style={{
                 transitionDelay: isOpen ? `${100 + i * 45}ms` : "0ms",

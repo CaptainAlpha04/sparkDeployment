@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, PenLine } from "lucide-react";
+import { ArrowLeft, Loader2, PenLine } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createPostAction } from "@/app/(site)/studio/actions";
+import { createPostAction } from "@/app/(studio)/studio/actions";
 
 type Kind = "article" | "case_study";
 
@@ -54,7 +55,15 @@ export function NewPostForm({ kind }: { kind: Kind }) {
   }
 
   return (
-    <div className="mx-auto max-w-xl py-16">
+    <div className="mx-auto max-w-xl px-6 py-24">
+      <Link
+        href="/studio"
+        className="mb-10 inline-flex items-center gap-2 text-sm text-white/50 transition-colors hover:text-white"
+      >
+        <ArrowLeft className="size-4" />
+        Studio
+      </Link>
+
       <p className="eyebrow mb-3">{copy.eyebrow}</p>
       <h1 className="text-5xl font-bold">{copy.heading}</h1>
 

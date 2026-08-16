@@ -1,9 +1,15 @@
 import { and, arrayOverlaps, desc, eq, ne, or, sql } from "drizzle-orm";
 import { db } from "./db";
-import { posts, profiles, type Post } from "./schema";
+import {
+  postRevisions,
+  posts,
+  profiles,
+  type Post,
+  type PostRevision,
+} from "./schema";
 import type { PostOutcome } from "@/lib/post-types";
 import { requireEditor } from "./auth";
-import { deriveBody } from "@/lib/post-html";
+import { countWords, deriveBody } from "@/lib/post-html";
 
 export type PostKind = "article" | "case_study";
 export type PostStatus = "draft" | "published" | "archived";
@@ -111,9 +117,24 @@ export async function uniqueSlug(
  * Public reads
  * ---------------------------------------------------------------------- */
 
+/**
+ * What "live" means, in one place.
+ *
+ * The `published_at <= now()` clause is how scheduling works, and it is the
+ * whole mechanism: a scheduled post is an ordinary published post with a
+ * publication date in the future. Nothing has to run at the appointed hour, so
+ * there is no cron to fail, nothing to retry, and no dependence on Vercel's
+ * once-a-day limit on scheduled functions for hobby projects. The post becomes
+ * visible because the clock passed it.
+ *
+ * This works only because every public page is server rendered on demand. If
+ * these pages were ever statically cached, a scheduled post would appear
+ * whenever the cache next revalidated instead of when it was due.
+ */
 const isPublished = and(
   eq(posts.status, "published"),
   sql`${posts.publishedAt} is not null`,
+  sql`${posts.publishedAt} <= now()`,
 );
 
 export async function listPublishedPosts({
@@ -190,7 +211,12 @@ export async function listPublishedTags(): Promise<
   const rows = await db.execute<{ tag: string; count: number }>(sql`
     select unnest(tags) as tag, count(*)::int as count
     from posts
-    where status = 'published' and published_at is not null
+    -- Must match the isPublished predicate above, including published_at <=
+    -- now(). Raw SQL does not get it for free, and without it a scheduled
+    -- post's tags appear in the index before the post itself does.
+    where status = 'published'
+      and published_at is not null
+      and published_at <= now()
     group by 1
     order by count desc, tag asc
   `);
@@ -224,6 +250,35 @@ export async function getRelatedPosts(
 /* -------------------------------------------------------------------------
  * Studio reads
  * ---------------------------------------------------------------------- */
+
+/**
+ * The studio list, already split into the four states it displays.
+ *
+ * Grouped here rather than in the page because deciding which bucket a post
+ * falls into needs the current time, and reading the clock during render is
+ * impure — the React compiler rejects it, and rightly, since two renders of
+ * the same data could disagree. On the server "now" is a single instant for
+ * the whole response, which is exactly what this needs.
+ */
+export async function listPostsForStudio(): Promise<{
+  drafts: PostWithAuthor[];
+  scheduled: PostWithAuthor[];
+  live: PostWithAuthor[];
+  archived: PostWithAuthor[];
+}> {
+  const all = await listAllPosts();
+  const now = Date.now();
+
+  const isFuture = (post: PostWithAuthor) =>
+    post.publishedAt !== null && post.publishedAt.getTime() > now;
+
+  return {
+    drafts: all.filter((p) => p.status === "draft"),
+    scheduled: all.filter((p) => p.status === "published" && isFuture(p)),
+    live: all.filter((p) => p.status === "published" && !isFuture(p)),
+    archived: all.filter((p) => p.status === "archived"),
+  };
+}
 
 export async function listAllPosts(kind?: PostKind): Promise<PostWithAuthor[]> {
   return selectWithAuthor()
@@ -261,6 +316,188 @@ export async function countPostsByStatus(): Promise<
 /* -------------------------------------------------------------------------
  * Writes
  * ---------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------
+ * Revisions
+ * ---------------------------------------------------------------------- */
+
+/**
+ * How stale the newest snapshot must be before an ordinary save takes another.
+ *
+ * Autosave fires roughly every 1.5 seconds while someone types. Snapshotting
+ * each one would produce hundreds of rows per session and a history nobody can
+ * read. Fifteen minutes gives a timeline of sittings rather than keystrokes.
+ * Publishing and restoring always snapshot regardless.
+ */
+const REVISION_THROTTLE_MINUTES = 15;
+
+/** How many snapshots a post keeps. Older ones are pruned as new ones land. */
+const MAX_REVISIONS_PER_POST = 50;
+
+/**
+ * Store the post's *current* state as a revision, before it is overwritten.
+ *
+ * Called before the update, not after, so the newest revision is always "what
+ * it looked like before the last save" rather than a copy of the live row.
+ * That makes restoring uniform: take a revision and write it back.
+ */
+async function snapshot(
+  postId: string,
+  authorId: string,
+  reason: string,
+  { force = true }: { force?: boolean } = {},
+): Promise<void> {
+  const [current] = await db
+    .select({
+      title: posts.title,
+      subtitle: posts.subtitle,
+      excerpt: posts.excerpt,
+      bodyJson: posts.bodyJson,
+      bodyHtml: posts.bodyHtml,
+      bodyText: posts.bodyText,
+      coverImageUrl: posts.coverImageUrl,
+      coverAlt: posts.coverAlt,
+    })
+    .from(posts)
+    .where(eq(posts.id, postId))
+    .limit(1);
+
+  if (!current) return;
+
+  // Nothing written yet: a snapshot of an empty post is noise in the history.
+  if (!current.bodyText && !current.title.trim()) return;
+
+  if (!force) {
+    const [latest] = await db
+      .select({ createdAt: postRevisions.createdAt, bodyText: postRevisions.bodyText })
+      .from(postRevisions)
+      .where(eq(postRevisions.postId, postId))
+      .orderBy(desc(postRevisions.createdAt))
+      .limit(1);
+
+    if (latest) {
+      // Unchanged body: nothing happened worth recording, whatever the clock says.
+      if (latest.bodyText === current.bodyText) return;
+
+      const ageMinutes = (Date.now() - latest.createdAt.getTime()) / 60_000;
+      if (ageMinutes < REVISION_THROTTLE_MINUTES) return;
+    }
+  }
+
+  await db.insert(postRevisions).values({
+    postId,
+    title: current.title,
+    subtitle: current.subtitle,
+    excerpt: current.excerpt,
+    bodyJson: current.bodyJson,
+    bodyHtml: current.bodyHtml,
+    bodyText: current.bodyText,
+    coverImageUrl: current.coverImageUrl,
+    coverAlt: current.coverAlt,
+    wordCount: countWords(current.bodyText ?? ""),
+    reason,
+    createdBy: authorId,
+  });
+
+  await pruneRevisions(postId);
+}
+
+/**
+ * Keep only the most recent snapshots.
+ *
+ * Unbounded history on a heavily edited post would grow without limit, and
+ * each row carries a full copy of the body. One statement rather than a read
+ * then a delete, so two concurrent saves cannot both decide to keep the same
+ * row.
+ */
+async function pruneRevisions(postId: string): Promise<void> {
+  await db.execute(sql`
+    delete from post_revisions
+    where post_id = ${postId}
+      and id not in (
+        select id from post_revisions
+        where post_id = ${postId}
+        order by created_at desc
+        limit ${MAX_REVISIONS_PER_POST}
+      )
+  `);
+}
+
+export type RevisionSummary = {
+  id: string;
+  createdAt: Date;
+  reason: string | null;
+  wordCount: number;
+  title: string;
+  authorName: string | null;
+};
+
+export async function listRevisions(postId: string): Promise<RevisionSummary[]> {
+  await requireEditor();
+
+  return db
+    .select({
+      id: postRevisions.id,
+      createdAt: postRevisions.createdAt,
+      reason: postRevisions.reason,
+      wordCount: postRevisions.wordCount,
+      title: postRevisions.title,
+      authorName: profiles.fullName,
+    })
+    .from(postRevisions)
+    .leftJoin(profiles, eq(postRevisions.createdBy, profiles.id))
+    .where(eq(postRevisions.postId, postId))
+    .orderBy(desc(postRevisions.createdAt));
+}
+
+export async function getRevision(id: string): Promise<PostRevision | null> {
+  await requireEditor();
+  const [row] = await db
+    .select()
+    .from(postRevisions)
+    .where(eq(postRevisions.id, id))
+    .limit(1);
+  return row ?? null;
+}
+
+/**
+ * Write a revision back over the live post.
+ *
+ * Snapshots the current state first, so restoring is itself undoable — the
+ * thing you just replaced becomes the newest entry in the history. Restoring
+ * the wrong version should cost one more click, not the afternoon.
+ *
+ * Only the authored fields are restored. Slug, status, publication date and
+ * tags stay as they are: rolling back the prose should not unpublish a post or
+ * change its address.
+ */
+export async function restoreRevision(revisionId: string): Promise<Post> {
+  const author = await requireEditor();
+
+  const revision = await getRevision(revisionId);
+  if (!revision) throw new Error("That version no longer exists");
+
+  await snapshot(revision.postId, author.id, "before restoring an earlier version");
+
+  const [row] = await db
+    .update(posts)
+    .set({
+      title: revision.title,
+      subtitle: revision.subtitle,
+      excerpt: revision.excerpt,
+      bodyJson: revision.bodyJson,
+      bodyHtml: revision.bodyHtml,
+      bodyText: revision.bodyText,
+      coverImageUrl: revision.coverImageUrl,
+      coverAlt: revision.coverAlt,
+      readingMinutes: Math.max(1, Math.round(revision.wordCount / 200)),
+    })
+    .where(eq(posts.id, revision.postId))
+    .returning();
+
+  if (!row) throw new Error("Post not found");
+  return row;
+}
 
 export type PostInput = {
   kind: PostKind;
@@ -371,26 +608,73 @@ export async function setPostSlug(id: string, slug: string): Promise<Post> {
 }
 
 /**
- * Publish, preserving the original publication date on republish.
+ * Publish now, preserving a genuine past publication date on republish.
  *
  * Resetting publishedAt on every edit would reorder the archive and tell
  * readers, RSS clients and search engines that an old piece is new. Fixing a
  * typo is not publishing.
+ *
+ * A *future* date is pulled forward instead of preserved: pressing "Publish
+ * now" on something scheduled for next Tuesday means now, not Tuesday.
  */
 export async function publishPost(id: string): Promise<Post> {
-  await requireEditor();
+  const author = await requireEditor();
+  await snapshot(id, author.id, "before publishing");
 
   const [row] = await db
     .update(posts)
     .set({
       status: "published",
-      publishedAt: sql`coalesce(${posts.publishedAt}, now())`,
+      publishedAt: sql`case
+        when ${posts.publishedAt} is null or ${posts.publishedAt} > now()
+        then now()
+        else ${posts.publishedAt}
+      end`,
     })
     .where(eq(posts.id, id))
     .returning();
 
   if (!row) throw new Error("Post not found");
   return row;
+}
+
+/**
+ * Publish at a future moment.
+ *
+ * Refuses a past date rather than quietly publishing immediately: someone
+ * mistyping the year should be told, not surprised by a live post. A date
+ * inside the next minute is treated as "now" so the clock ticking over between
+ * choosing and submitting is not an error.
+ */
+export async function schedulePost(id: string, when: Date): Promise<Post> {
+  const author = await requireEditor();
+
+  if (Number.isNaN(when.getTime())) {
+    throw new Error("That is not a valid date and time");
+  }
+  if (when.getTime() < Date.now() - 60_000) {
+    throw new Error("That time has already passed. Pick a future time, or publish now.");
+  }
+
+  await snapshot(id, author.id, "before scheduling");
+
+  const [row] = await db
+    .update(posts)
+    .set({ status: "published", publishedAt: when })
+    .where(eq(posts.id, id))
+    .returning();
+
+  if (!row) throw new Error("Post not found");
+  return row;
+}
+
+/** True when a post is published but its moment has not arrived yet. */
+export function isScheduled(post: Pick<Post, "status" | "publishedAt">): boolean {
+  return (
+    post.status === "published" &&
+    post.publishedAt !== null &&
+    post.publishedAt.getTime() > Date.now()
+  );
 }
 
 export async function setPostStatus(

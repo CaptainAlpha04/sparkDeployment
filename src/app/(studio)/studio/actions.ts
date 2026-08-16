@@ -4,7 +4,10 @@ import { revalidatePath } from "next/cache";
 import {
   createPost,
   deletePost,
+  listRevisions,
   publishPost,
+  restoreRevision,
+  schedulePost,
   setPostSlug,
   setPostStatus,
   updatePost,
@@ -105,6 +108,72 @@ export async function publishPostAction(
         publishedAt: post.publishedAt?.toISOString() ?? null,
       },
     };
+  } catch (error) {
+    return { ok: false, error: toMessage(error) };
+  }
+}
+
+/**
+ * Publish at a future moment.
+ *
+ * Nothing runs at the appointed hour. A scheduled post is an ordinary
+ * published post whose date has not arrived, and the read predicate filters on
+ * `published_at <= now()` — so it appears because the clock passed it, with no
+ * cron to fail and no dependence on Vercel's once-a-day scheduled functions.
+ */
+export async function schedulePostAction(
+  id: string,
+  isoDateTime: string,
+): Promise<ActionResult<{ publishedAt: string | null }>> {
+  try {
+    const post = await schedulePost(id, new Date(isoDateTime));
+    revalidatePost(post.kind, post.slug);
+    return {
+      ok: true,
+      data: { publishedAt: post.publishedAt?.toISOString() ?? null },
+    };
+  } catch (error) {
+    return { ok: false, error: toMessage(error) };
+  }
+}
+
+export type RevisionRow = {
+  id: string;
+  createdAt: string;
+  reason: string | null;
+  wordCount: number;
+  title: string;
+  authorName: string | null;
+};
+
+/** Fetched on demand, when the History tab is opened rather than on page load. */
+export async function listRevisionsAction(
+  postId: string,
+): Promise<ActionResult<RevisionRow[]>> {
+  try {
+    const rows = await listRevisions(postId);
+    return {
+      ok: true,
+      data: rows.map((row) => ({
+        ...row,
+        // Dates cannot cross the server/client boundary as Date objects.
+        createdAt: row.createdAt.toISOString(),
+      })),
+    };
+  } catch (error) {
+    return { ok: false, error: toMessage(error) };
+  }
+}
+
+/** Roll the body back to an earlier snapshot. Itself undoable — see restoreRevision. */
+export async function restoreRevisionAction(
+  revisionId: string,
+): Promise<ActionResult<{ id: string }>> {
+  try {
+    const post = await restoreRevision(revisionId);
+    revalidatePost(post.kind, post.slug);
+    revalidatePath(`/studio/${post.id}`);
+    return { ok: true, data: { id: post.id } };
   } catch (error) {
     return { ok: false, error: toMessage(error) };
   }
