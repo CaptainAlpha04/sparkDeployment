@@ -5,20 +5,62 @@ import { CountUp } from "@/components/motion/count-up";
 import { SparkMark, SparkBullet } from "@/components/brand/spark-mark";
 import { getSiteStatsSafe } from "@/server/stats";
 
-const benefits = [
-  "Access to exclusive innovation events and workshops",
-  "Networking opportunities with industry leaders",
-  "Resources and support for your innovative projects",
-  "Potential funding opportunities for promising ideas",
+const principles = [
+  {
+    title: "No verdict",
+    body: "Expertise is in the room and available the moment you ask for it. Nobody in that room has the power to decide whether you are capable.",
+  },
+  {
+    title: "Real difficulty",
+    body: "We do not make the material easier. We remove the penalty for finding it hard, which turns out to be the part that was stopping you.",
+  },
+  {
+    title: "Your questions",
+    body: "The discussion has no syllabus. The topic is whatever the room actually wants to know, and it goes wherever that leads.",
+  },
 ];
 
-// The Discord card is deliberately absent: the invite in the old build
-// (discord.com/invite/5Tx5Ev8K) is dead — Discord's API returns "Unknown
-// Invite". Restore it when there is a working link.
+const programmes = [
+  {
+    name: "SPARKx Talks",
+    body: "Founders and builders in the open, taking real questions from a room that is allowed to push back.",
+  },
+  {
+    name: "Camps",
+    body: "Multi week, voluntary, ungraded. A technical track running alongside open discussion, with nothing riding on either.",
+  },
+  {
+    name: "Mentorship",
+    body: "Small groups working through machine learning, web, and hardware with people who are still close to learning it themselves.",
+  },
+  {
+    name: "Campus chapters",
+    body: "The whole model, brought to your university or school by students who want it there.",
+  },
+];
+
+const elements = [
+  "Research",
+  "Entrepreneurship",
+  "Innovation",
+  "Leadership",
+  "Creativity",
+  "Education",
+  "Technology",
+  "Collaboration",
+];
+
+const benefits = [
+  "Workshops and events you actually want to attend",
+  "People building things worth being in the room for",
+  "Support and resources for whatever you are chasing",
+  "A first audience for the idea you have not told anyone about",
+];
+
 const communities = [
   {
     name: "LinkedIn",
-    body: "Connect with Industry Experts and like Minded Individuals",
+    body: "Where we post what we are doing and who we are doing it with.",
     href: "https://www.linkedin.com/company/sparkchapter/",
     hover: "group-hover:text-sky-400",
     ring: "group-hover:border-sky-400/50",
@@ -26,7 +68,7 @@ const communities = [
   },
   {
     name: "Instagram",
-    body: "Follow up on our Events and Progress",
+    body: "Photos from sessions, and the occasional thing we are proud of.",
     href: "https://www.instagram.com/sparkchapter?igsh=dzZzMG01NjAxbmNi",
     hover: "group-hover:text-pink-400",
     ring: "group-hover:border-pink-400/50",
@@ -34,7 +76,7 @@ const communities = [
   },
   {
     name: "WhatsApp",
-    body: "Ask Questions and get Resources curated for Community",
+    body: "The group chat. Questions, resources, and where plans actually get made.",
     href: "https://chat.whatsapp.com/FYSriy557mw7FTKxWGprfS",
     hover: "group-hover:text-emerald-400",
     ring: "group-hover:border-emerald-400/50",
@@ -43,41 +85,24 @@ const communities = [
 ];
 
 export default async function HomePage() {
-  // Editable by admins rather than hardcoded in JSX, which is how the previous
-  // build ended up publishing figures nobody could substantiate.
   const stats = await getSiteStatsSafe();
 
   return (
     <>
-      {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative flex min-h-[88vh] w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-black via-background to-purple-950/60 px-6">
-        <StarryCanvas />
+      {/* ── Hero ─────────────────────────────────────────────────────────
+          One line, nothing else competing with it. Everything the visitor
+          needs to understand is taught by the sections underneath. */}
+      <section className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-black via-slate-950 to-slate-950 px-6">
+        <StarryCanvas numberOfStars={200} />
 
-        {/* The mark leads. It is the org's own glyph and the literal subject
-            of the name, so it earns the position a stock gradient blob usually
-            occupies. */}
-        <div className="relative z-10 mb-8">
-          <div
-            className="absolute inset-0 -z-10 blur-3xl"
-            style={{
-              background:
-                "radial-gradient(circle, oklch(0.62 0.19 296 / 0.5), transparent 68%)",
-            }}
-            aria-hidden
-          />
+        <div className="relative z-10 flex flex-col items-center text-center">
           <SparkMark
             interactive
             gradient
-            className="size-20 drop-shadow-[0_0_28px_oklch(0.62_0.19_296_/_0.55)] md:size-24"
+            className="mb-10 size-16 drop-shadow-[0_0_30px_oklch(0.62_0.19_296_/_0.5)] md:size-20"
           />
-        </div>
 
-        <div className="relative z-10 flex max-w-3xl flex-col items-center text-center">
-          <p className="eyebrow animation-fade-in mb-5">
-            Innovation community · Pakistan
-          </p>
-
-          <h1 className="text-7xl font-extrabold md:text-8xl">
+          <h1 className="max-w-4xl text-7xl font-extrabold md:text-8xl">
             <span className="animation-swipe-from-bottom block">Here ideas</span>
             <span
               className="animation-swipe-from-bottom block bg-gradient-to-r from-orange-500 via-pink-500 to-violet-500 bg-clip-text text-transparent"
@@ -86,113 +111,176 @@ export default async function HomePage() {
               spark into reality
             </span>
           </h1>
+        </div>
 
-          <p
-            className="animation-fade-in mt-6 max-w-xl text-lg text-muted-foreground"
-            style={{ animationDelay: "260ms" }}
-          >
-            The fastest growing innovation community of Pakistan — students,
-            builders, and researchers turning ideas into things that exist.
-          </p>
-
-          <div
-            className="animation-fade-in mt-9 flex flex-wrap items-center justify-center gap-3"
-            style={{ animationDelay: "380ms" }}
-          >
-            <Link href="/events" className="btn-stylized">
-              See upcoming events
-            </Link>
-            <Link
-              href="/mission"
-              className="rounded-3xl px-6 py-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              What we&apos;re building →
-            </Link>
-          </div>
+        <div
+          className="animation-fade-in absolute bottom-10 flex flex-col items-center gap-2"
+          style={{ animationDelay: "900ms" }}
+        >
+          <span className="eyebrow">Keep going</span>
+          <span className="h-12 w-px bg-gradient-to-b from-white/30 to-transparent" />
         </div>
       </section>
 
-      {/* ── How it all started ───────────────────────────────────────────── */}
-      <section className="relative w-full bg-gradient-to-b from-purple-950/60 to-slate-950 px-6 py-28">
-        <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+      {/* ── The claim ────────────────────────────────────────────────────── */}
+      <section className="w-full border-t border-white/5 bg-slate-950 px-6 py-32">
+        <div className="mx-auto max-w-4xl">
           <Reveal>
-            <div className="md:sticky md:top-28">
-              <p className="eyebrow mb-4">Origin</p>
-              <h2 className="text-6xl font-bold">
-                How it all <br /> started…
-              </h2>
-            </div>
+            <p className="eyebrow mb-6">Why we exist</p>
+            <h2 className="text-5xl leading-tight font-bold md:text-6xl">
+              You already have access to everything. That was never the hard part.
+            </h2>
           </Reveal>
 
-          <div className="flex flex-col gap-5 text-muted-foreground">
-            <Reveal delay={60}>
-              <p>
-                SPARK is Pakistan&apos;s premier innovation community, dedicated to
-                fostering creativity, entrepreneurship, and technological
-                advancement across the nation.
-              </p>
-            </Reveal>
-            <Reveal delay={120}>
-              <p>
-                Our mission is to empower individuals and institutions to turn their
-                groundbreaking ideas into reality, contributing to Pakistan&apos;s
-                growth and global competitiveness.
-              </p>
-            </Reveal>
-            <Reveal delay={180}>
-              <p>
-                We provide a platform for innovators, entrepreneurs, and students to
-                connect, collaborate, and create, driving positive change in society
-                and the economy through innovation and impact.
-              </p>
-            </Reveal>
-            <Reveal delay={240}>
-              <Link href="/mission" className="btn-stylized mt-4 w-fit">
-                Learn more
-              </Link>
-            </Reveal>
-          </div>
+          <Reveal delay={100}>
+            <p className="mt-10 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+              Every lecture, every paper, every course is one search away. What is
+              missing is somewhere to think out loud, be wrong in front of people,
+              and chase a question without being scored on it. That room is rare,
+              and it is the only thing we build.
+            </p>
+          </Reveal>
         </div>
       </section>
 
-      {/* ── Our Impact ─────────────────────────────────────────────────────
-          Hidden entirely if the figures cannot be loaded, rather than
-          rendering an empty grid or taking the page down. */}
-      {stats.length > 0 && (
-      <section className="w-full bg-gradient-to-b from-slate-950 to-background px-6 py-24">
+      {/* ── What we build ────────────────────────────────────────────────── */}
+      <section className="w-full border-t border-white/5 bg-slate-950 px-6 py-32">
         <div className="mx-auto max-w-6xl">
           <Reveal>
-            <p className="eyebrow mb-3 text-center">By the numbers</p>
-            <h2 className="mb-14 text-center text-5xl font-bold">Our impact</h2>
+            <p className="eyebrow mb-4">What we build</p>
+            <h2 className="max-w-2xl text-5xl font-bold">
+              Rooms where being wrong costs nothing.
+            </h2>
           </Reveal>
 
-          <Stagger
-            step={90}
-            className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-4"
-          >
-            {stats.map((stat) => (
-              <div
-                key={stat.key}
-                className="group border-t border-border pt-5 transition-colors duration-300 hover:border-primary/60"
-              >
-                <CountUp
-                  value={stat.value}
-                  className="block bg-gradient-to-r from-orange-500 to-violet-500 bg-clip-text text-6xl font-extrabold text-transparent tabular-nums"
-                />
-                <div className="mt-2 font-mono text-[0.6875rem] tracking-[0.16em] text-muted-foreground uppercase">
-                  {stat.label}
-                </div>
+          <Stagger step={90} className="mt-16 grid gap-10 md:grid-cols-3">
+            {principles.map((principle) => (
+              <div key={principle.title} className="border-t border-border pt-6">
+                <h3 className="mb-3 text-2xl font-semibold">{principle.title}</h3>
+                <p className="leading-relaxed text-muted-foreground">
+                  {principle.body}
+                </p>
               </div>
             ))}
           </Stagger>
         </div>
       </section>
+
+      {/* ── Programmes ───────────────────────────────────────────────────── */}
+      <section className="w-full border-t border-white/5 bg-gradient-to-b from-slate-950 to-background px-6 py-32">
+        <div className="mx-auto max-w-6xl">
+          <Reveal>
+            <p className="eyebrow mb-4">Programmes</p>
+            <h2 className="max-w-2xl text-5xl font-bold">Four ways in.</h2>
+          </Reveal>
+
+          <Stagger step={80} className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-2">
+            {programmes.map((programme, i) => (
+              <div
+                key={programme.name}
+                className="group bg-background p-8 transition-colors duration-300 hover:bg-card md:p-10"
+              >
+                <span className="font-mono text-xs text-muted-foreground">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3 className="mt-3 mb-3 text-2xl font-semibold transition-colors group-hover:text-primary">
+                  {programme.name}
+                </h3>
+                <p className="leading-relaxed text-muted-foreground">
+                  {programme.body}
+                </p>
+              </div>
+            ))}
+          </Stagger>
+
+          <Reveal delay={120}>
+            <div className="mt-10">
+              <Link href="/events" className="btn-stylized">
+                See what is coming up
+              </Link>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── Elements ─────────────────────────────────────────────────────── */}
+      <section className="relative w-full overflow-hidden border-t border-white/5 bg-background px-6 py-32">
+        <SparkMark
+          className="pointer-events-none absolute top-1/2 left-1/2 h-[90vmin] w-[90vmin] -translate-x-1/2 -translate-y-1/2 text-white/[0.02]"
+          aria-hidden
+        />
+
+        <div className="relative mx-auto max-w-5xl text-center">
+          <Reveal>
+            <p className="eyebrow mb-4">What we work on</p>
+            <h2 className="text-5xl font-bold">Eight forces, one spark.</h2>
+            <p className="mx-auto mt-6 max-w-xl text-muted-foreground">
+              Eight elements, and a mark with eight points. That was not a
+              coincidence when we chose it.
+            </p>
+          </Reveal>
+
+          <Stagger
+            step={60}
+            className="mt-14 flex flex-wrap justify-center gap-3"
+          >
+            {elements.map((element) => (
+              <span
+                key={element}
+                className="flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm transition-colors duration-300 hover:border-primary/60 hover:text-primary"
+              >
+                <SparkBullet className="size-3 text-primary" />
+                {element}
+              </span>
+            ))}
+          </Stagger>
+
+          <Reveal delay={200}>
+            <Link
+              href="/mission"
+              className="mt-12 inline-block text-sm text-primary transition-opacity hover:opacity-80"
+            >
+              Read what we actually mean by this →
+            </Link>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── Impact ───────────────────────────────────────────────────────── */}
+      {stats.length > 0 && (
+        <section className="w-full border-t border-white/5 bg-background px-6 py-28">
+          <div className="mx-auto max-w-6xl">
+            <Reveal>
+              <p className="eyebrow mb-10 text-center">So far</p>
+            </Reveal>
+
+            <Stagger
+              step={90}
+              className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-4"
+            >
+              {stats.map((stat) => (
+                <div
+                  key={stat.key}
+                  className="border-t border-border pt-5 transition-colors duration-300 hover:border-primary/60"
+                >
+                  <CountUp
+                    value={stat.value}
+                    className="block bg-gradient-to-r from-orange-500 to-violet-500 bg-clip-text text-6xl font-extrabold text-transparent tabular-nums"
+                  />
+                  <div className="mt-2 font-mono text-[0.6875rem] tracking-[0.16em] text-muted-foreground uppercase">
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
+            </Stagger>
+          </div>
+        </section>
       )}
 
-      {/* ── Become a Member ──────────────────────────────────────────────── */}
-      <section className="relative w-full overflow-hidden py-24">
+      {/* ── Membership ───────────────────────────────────────────────────── */}
+      <section className="relative w-full overflow-hidden border-t border-white/5 py-28">
         <div
-          className="absolute inset-0 bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 opacity-20"
+          className="absolute inset-0 bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 opacity-15"
           aria-hidden
         />
         <div
@@ -204,18 +292,16 @@ export default async function HomePage() {
           aria-hidden
         />
 
-        <div className="relative z-10 mx-auto grid max-w-5xl items-center gap-12 px-6 md:grid-cols-2">
+        <div className="relative z-10 mx-auto grid max-w-5xl items-center gap-14 px-6 md:grid-cols-2">
           <div>
             <Reveal>
-              <p className="eyebrow mb-3">Membership</p>
-              <h2 className="mb-8 text-5xl font-bold">Why join SPARK?</h2>
+              <p className="eyebrow mb-4">Membership</p>
+              <h2 className="mb-8 text-5xl font-bold">What you get.</h2>
             </Reveal>
 
             <Stagger step={90} className="space-y-4">
               {benefits.map((benefit) => (
                 <div key={benefit} className="flex items-start gap-3">
-                  {/* The org's own mark as the list marker, replacing a
-                      generic lightning bolt that belonged to no brand. */}
                   <SparkBullet className="mt-1 size-3.5 shrink-0 text-orange-500" />
                   <span className="text-muted-foreground">{benefit}</span>
                 </div>
@@ -224,26 +310,26 @@ export default async function HomePage() {
           </div>
 
           <Reveal delay={120}>
-            <div className="rounded-2xl border border-primary/40 bg-black/40 p-8 backdrop-blur-lg transition-all duration-500 hover:-translate-y-1 hover:border-primary/70">
+            <div className="rounded-2xl border border-primary/40 bg-black/50 p-9 backdrop-blur-lg transition-all duration-500 hover:-translate-y-1 hover:border-primary/70">
               <h3 className="mb-3 text-2xl font-semibold">
-                Ready to ignite your ideas?
+                It costs nothing to start.
               </h3>
-              <p className="mb-7 text-sm text-muted-foreground">
-                Join SPARK today and be part of Pakistan&apos;s fastest-growing
-                innovation community.
+              <p className="mb-8 text-muted-foreground">
+                No fees, no entry test, no prerequisites. Turn up to one thing and
+                see whether you want the next one.
               </p>
               <Link href="/signup" className="btn-stylized">
-                Register now
+                Join SPARK
               </Link>
             </div>
           </Reveal>
         </div>
       </section>
 
-      {/* ── Join Our Community ───────────────────────────────────────────── */}
-      <section className="relative z-10 w-full overflow-hidden bg-background px-6 py-28">
+      {/* ── Community ────────────────────────────────────────────────────── */}
+      <section className="relative z-10 w-full overflow-hidden border-t border-white/5 bg-background px-6 py-28">
         <div
-          className="float-drift absolute top-1/3 left-1/4 -z-10 h-40 w-1/2 bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 opacity-30 blur-3xl"
+          className="float-drift absolute top-1/3 left-1/4 -z-10 h-40 w-1/2 bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 opacity-20 blur-3xl"
           style={{
             ["--drift-duration" as string]: "20s",
             ["--drift-x" as string]: "50px",
@@ -254,40 +340,30 @@ export default async function HomePage() {
 
         <div className="mx-auto max-w-5xl">
           <Reveal>
-            <p className="eyebrow mb-3 text-center">Community</p>
-            <h2 className="text-center text-5xl font-bold">
-              Join our community
-            </h2>
-            <p className="mx-auto mt-4 max-w-lg text-center text-muted-foreground">
-              Innovative and talented individuals across every platform — pick
-              wherever you already are.
-            </p>
+            <p className="eyebrow mb-4 text-center">Where we are</p>
+            <h2 className="text-center text-5xl font-bold">Come find us.</h2>
           </Reveal>
 
-          <Stagger
-            step={80}
-            className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
-          >
+          <Stagger step={80} className="mt-14 grid gap-4 md:grid-cols-3">
             {communities.map((c) => (
               <a
                 key={c.name}
                 href={c.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`group flex h-full flex-col gap-3 rounded-2xl border border-border bg-card/60 p-6 transition-all duration-300 hover:-translate-y-1 hover:bg-card ${c.ring}`}
+                className={`group flex h-full flex-col gap-3 rounded-2xl border border-border bg-card/60 p-7 transition-all duration-300 hover:-translate-y-1 hover:bg-card ${c.ring}`}
               >
                 <svg
                   viewBox="0 0 24 24"
-                  className={`size-8 fill-current text-muted-foreground transition-colors duration-500 ${c.hover}`}
+                  className={`size-7 fill-current text-muted-foreground transition-colors duration-500 ${c.hover}`}
                   aria-hidden
                 >
                   <path d={c.path} />
                 </svg>
                 <h3 className="text-lg font-semibold">{c.name}</h3>
-                <p className="text-sm text-muted-foreground">{c.body}</p>
-                <span className="mt-auto pt-3 text-sm text-primary opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                  Join now →
-                </span>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {c.body}
+                </p>
               </a>
             ))}
           </Stagger>
