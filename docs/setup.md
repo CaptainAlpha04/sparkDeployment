@@ -69,6 +69,47 @@ npm run db:seed -- you@example.com
 says *"An email for account verification has been sent!"* — if you turn it off,
 change that copy, or people will sit waiting for an email that never arrives.
 
+### 2a. Custom SMTP — required before anyone signs up by email
+
+**Dashboard → Project Settings → Authentication → SMTP Settings.**
+
+Supabase's built-in mailer is a development convenience and is rate limited to
+roughly **two messages an hour, per project**. It is not a small allowance; it
+is a cap that makes email signup unusable in front of real people.
+
+Measured against this project, three signups issued back to back:
+
+```
+#1  200  ok
+#2  429  over_email_send_rate_limit
+#3  429  over_email_send_rate_limit
+```
+
+So at an event where a dozen students sign up together, the first one gets in
+and everybody else is refused. It also explains the shape of the user table:
+most accounts arrived through Google, which sends no mail and is therefore
+unaffected.
+
+The app now reports this honestly rather than blaming the password (see
+`src/lib/auth-errors.ts`), but that is damage control. The fix is a real SMTP
+provider. Any of these has a free tier well beyond what a student chapter
+needs:
+
+| Provider | Free tier | Notes |
+| --- | --- | --- |
+| Resend | 3,000/month | Simplest setup; needs a domain to send from |
+| Brevo | 300/day | No custom domain required to start |
+| SendGrid | 100/day | Long-established |
+| AWS SES | 62,000/month from EC2 | Cheapest at scale, fiddliest setup |
+
+Whichever you pick: verify your sending domain with the provider, then enter
+the host, port, username and password in Supabase and set the sender address to
+something on that domain. **Also raise Authentication → Rate Limits → "Emails
+sent per hour"**, which stays at the old low value even after SMTP is
+configured, and is the part most people miss.
+
+Until this is done, Google is the only sign-up route that reliably works.
+
 ---
 
 ## 3. Google OAuth

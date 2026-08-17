@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   Award,
@@ -9,14 +8,23 @@ import {
   Users,
 } from "lucide-react";
 import { getCurrentProfile, isAdminRole } from "@/server/auth";
-import { SparkMark } from "@/components/brand/spark-mark";
+import {
+  WorkspaceNav,
+  type WorkspaceNavItem,
+} from "@/components/workspace/workspace-nav";
 
-const NAV = [
+const NAV: WorkspaceNavItem[] = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/events", label: "Events", icon: CalendarDays },
   { href: "/admin/members", label: "Members", icon: Users },
   { href: "/admin/certificates", label: "Certificates", icon: Award },
-  { href: "/admin/stats", label: "Homepage figures", icon: ChartNoAxesColumn },
+  {
+    href: "/admin/stats",
+    label: "Homepage figures",
+    // The full label is too wide for a pill on a phone.
+    shortLabel: "Figures",
+    icon: ChartNoAxesColumn,
+  },
 ];
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
@@ -28,29 +36,9 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   if (!isAdminRole(profile.role)) redirect("/");
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-slate-950 to-background pt-20">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-10 lg:flex-row">
-        <aside className="lg:w-56 lg:shrink-0">
-          <div className="sticky top-28 rounded-2xl border border-border bg-card/60 p-4 backdrop-blur-xl">
-            <div className="mb-4 flex items-center gap-2 px-2">
-              <SparkMark className="size-5 text-primary" />
-              <span className="eyebrow">Admin</span>
-            </div>
-            <nav className="flex flex-col gap-1">
-              {NAV.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
-                >
-                  <item.icon className="size-4" />
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        </aside>
-
+    <div className="min-h-screen w-full bg-gradient-to-b from-slate-950 to-background pt-16 lg:pt-20">
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 pb-10 lg:flex-row lg:gap-8 lg:py-10">
+        <WorkspaceNav title="Admin" items={NAV} />
         <div className="min-w-0 flex-1">{children}</div>
       </div>
     </div>

@@ -40,17 +40,24 @@ export default async function StudioPage() {
           <span className="eyebrow">Studio</span>
         </Link>
 
+        {/* The labels collapse to icons below sm, where two full buttons plus
+            the brand do not fit on a phone without wrapping the bar. */}
         <nav className="ml-auto flex items-center gap-1">
-          <Button asChild variant="ghost" size="sm" className="gap-2 text-white/70">
-            <Link href="/studio/new?kind=article">
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="gap-2 text-white/70"
+          >
+            <Link href="/studio/new?kind=article" aria-label="New post">
               <PenLine className="size-4" />
-              New post
+              <span className="hidden sm:inline">New post</span>
             </Link>
           </Button>
           <Button asChild size="sm" className="gap-2">
-            <Link href="/studio/new?kind=case_study">
+            <Link href="/studio/new?kind=case_study" aria-label="New case study">
               <Plus className="size-4" />
-              New case study
+              <span className="hidden sm:inline">New case study</span>
             </Link>
           </Button>
         </nav>
