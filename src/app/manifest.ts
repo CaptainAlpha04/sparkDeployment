@@ -25,12 +25,10 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: "en",
     categories: ["education", "news"],
     icons: [
-      {
-        src: "/images/logo.png",
-        sizes: "307x323",
-        type: "image/png",
-        purpose: "any",
-      },
+      // The generated mark, not the wordmark PNG: an install prompt shows
+      // this at 48px, where a 307x323 logo with text is illegible.
+      { src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
+      { src: "/apple-icon", sizes: "180x180", type: "image/png", purpose: "any" },
     ],
   };
 }

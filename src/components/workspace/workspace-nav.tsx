@@ -1,18 +1,43 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SparkMark } from "@/components/brand/spark-mark";
 
 export type WorkspaceNavItem = {
   href: string;
   label: string;
-  icon: LucideIcon;
+  /*
+   * An already-rendered element, e.g. `<Users />`, NOT the component itself.
+   *
+   * This distinction took down /admin and /dashboard in production. The layouts
+   * that supply these are Server Components and this is a Client Component, so
+   * a prop holding a component reference is a function crossing that boundary,
+   * which React refuses: "Functions cannot be passed directly to Client
+   * Components". lucide-react does not mark its icons "use client", so they
+   * are plain functions and get no exemption.
+   *
+   * Elements are fine — they serialize the same way `children` does.
+   *
+   * Nothing caught this before deploy: both routes are dynamic, so they are
+   * never rendered during `next build`, and the error only happens for a
+   * signed-in admin, which no build step is.
+   */
+  icon: ReactNode;
   /** Shorter label for the mobile strip, where horizontal room is the constraint. */
   shortLabel?: string;
 };
+
+/** Sizing lives here so every caller's icons match without repeating classes. */
+function Icon({ children }: { children: ReactNode }) {
+  return (
+    <span className="shrink-0 [&_svg]:size-4" aria-hidden>
+      {children}
+    </span>
+  );
+}
 
 type Props = {
   /** The eyebrow above the desktop sidebar, e.g. "Admin". */
@@ -74,7 +99,7 @@ export function WorkspaceNav({ title, items }: Props) {
                     : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
                 )}
               >
-                <item.icon className="size-4 shrink-0" />
+                <Icon>{item.icon}</Icon>
                 {item.shortLabel ?? item.label}
               </Link>
             );
@@ -104,7 +129,7 @@ export function WorkspaceNav({ title, items }: Props) {
                       : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
                   )}
                 >
-                  <item.icon className="size-4 shrink-0" />
+                  <Icon>{item.icon}</Icon>
                   {item.label}
                 </Link>
               );

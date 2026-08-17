@@ -101,6 +101,10 @@ describe("public routes", () => {
       "/opengraph-image-a1b2c3",
       "/blog/some-post/opengraph-image-fx5gi7",
       "/case-studies/some-study/opengraph-image-1ieeiq",
+      // No file extension, so the middleware matcher does not skip it the way
+      // it skips /icon.svg. An iPhone fetching this has no session.
+      "/apple-icon",
+      "/apple-icon-25b2d3fa",
     ]) {
       expect(isPublic(path), path).toBe(true);
     }

@@ -7,11 +7,17 @@ import {
   type WorkspaceNavItem,
 } from "@/components/workspace/workspace-nav";
 
+// Icons are ELEMENTS, not components — see the note in admin/layout.tsx.
 const NAV: WorkspaceNavItem[] = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/events", label: "My events", icon: CalendarDays, shortLabel: "Events" },
-  { href: "/dashboard/certificates", label: "Certificates", icon: Award },
-  { href: "/dashboard/profile", label: "Profile", icon: UserRound },
+  { href: "/dashboard", label: "Overview", icon: <LayoutDashboard /> },
+  {
+    href: "/dashboard/events",
+    label: "My events",
+    shortLabel: "Events",
+    icon: <CalendarDays />,
+  },
+  { href: "/dashboard/certificates", label: "Certificates", icon: <Award /> },
+  { href: "/dashboard/profile", label: "Profile", icon: <UserRound /> },
 ];
 
 export default async function DashboardLayout({

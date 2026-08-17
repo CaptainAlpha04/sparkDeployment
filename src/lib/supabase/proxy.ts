@@ -66,7 +66,12 @@ function isGeneratedImage(pathname: string) {
   return (
     pathname.startsWith("/opengraph-image") ||
     pathname.endsWith("/opengraph-image") ||
-    /\/opengraph-image-[a-z0-9]+$/i.test(pathname)
+    /\/opengraph-image-[a-z0-9]+$/i.test(pathname) ||
+    // The iOS home-screen icon. It has no file extension, so unlike icon.svg
+    // it is not skipped by the middleware matcher, and without this an iPhone
+    // asking for the touch icon is answered with a redirect to /login.
+    pathname === "/apple-icon" ||
+    /^\/apple-icon-[a-z0-9]+$/i.test(pathname)
   );
 }
 

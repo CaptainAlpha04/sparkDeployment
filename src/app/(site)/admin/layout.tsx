@@ -13,17 +13,20 @@ import {
   type WorkspaceNavItem,
 } from "@/components/workspace/workspace-nav";
 
+// Icons are ELEMENTS, not components. This file is a Server Component and
+// WorkspaceNav is a Client Component, so a bare component reference is a
+// function crossing that boundary and React refuses it at render time.
 const NAV: WorkspaceNavItem[] = [
-  { href: "/admin", label: "Overview", icon: LayoutDashboard },
-  { href: "/admin/events", label: "Events", icon: CalendarDays },
-  { href: "/admin/members", label: "Members", icon: Users },
-  { href: "/admin/certificates", label: "Certificates", icon: Award },
+  { href: "/admin", label: "Overview", icon: <LayoutDashboard /> },
+  { href: "/admin/events", label: "Events", icon: <CalendarDays /> },
+  { href: "/admin/members", label: "Members", icon: <Users /> },
+  { href: "/admin/certificates", label: "Certificates", icon: <Award /> },
   {
     href: "/admin/stats",
     label: "Homepage figures",
     // The full label is too wide for a pill on a phone.
     shortLabel: "Figures",
-    icon: ChartNoAxesColumn,
+    icon: <ChartNoAxesColumn />,
   },
 ];
 
